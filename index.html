@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twoja Linia Lotnicza | Tanie loty</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f8ff; color: #333; }
+        header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
+        nav a { color: white; margin: 0 10px; text-decoration: none; }
+        .search { text-align: center; padding: 2rem; background-color: #e6f2ff; }
+        .search form { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .search input, .search button { padding: 10px; font-size: 1rem; }
+        .routes { padding: 2rem; text-align: center; }
+        .route-list { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .route { background: white; border: 1px solid #ddd; padding: 1rem; border-radius: 5px; width: 200px; }
+        footer { background-color: #003366; color: white; text-align: center; padding: 1rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>✈️ Twoja Linia Lotnicza</h1>
+        <nav>
+            <a href="#routes">Trasy</a>
+            <a href="#about">O nas</a>
+            <a href="#contact">Kontakt</a>
+        </nav>
+    </header>
+
+    <section class="search">
+        <h2>Znajdź swój lot</h2>
+        <form>
+            <input type="text" placeholder="Skąd (miasto)" required>
+            <input type="text" placeholder="Dokąd (miasto)" required>
+            <input type="date" placeholder="Data wylotu">
+            <button type="submit">Szukaj lotów</button>
+        </form>
+    </section>
+
+    <section id="routes" class="routes">
+        <h2>Nasze trasy</h2>
+        <div class="route-list">
+            <div class="route">Warszawa → Londyn</div>
+            <div class="route">Kraków → Paryż</div>
+            <div class="route">Gdańsk → Berlin</div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <p>✉️ kontakt@twojalinia.pl</p>
+        <p>© 2024 Twoja Linia Lotnicza</p>
+    </footer>
+</body>
+</html>
