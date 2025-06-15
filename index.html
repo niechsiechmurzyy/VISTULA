@@ -3,52 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Twoja Linia Lotnicza | Tanie loty</title>
+    <title>Vistula Airlines | Rezerwacja lotów</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f0f8ff; color: #333; }
-        header { background-color: #003366; color: white; padding: 1rem; text-align: center; }
-        nav a { color: white; margin: 0 10px; text-decoration: none; }
-        .search { text-align: center; padding: 2rem; background-color: #e6f2ff; }
-        .search form { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-        .search input, .search button { padding: 10px; font-size: 1rem; }
-        .routes { padding: 2rem; text-align: center; }
-        .route-list { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
-        .route { background: white; border: 1px solid #ddd; padding: 1rem; border-radius: 5px; width: 200px; }
-        footer { background-color: #003366; color: white; text-align: center; padding: 1rem; margin-top: 2rem; }
+        /* === GŁÓWNA KOLORYSTYKA (fiolet + niebieski) === */
+        :root {
+            --main-purple: #8a2be2;
+            --light-purple: #b57edc;
+            --main-blue: #1e90ff;
+            --light-blue: #87cefa;
+            --bg-color: #f5f0ff;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--main-purple), var(--main-blue));
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        h1::before {
+            content: "✈️ ";
+        }
+        
+        /* === PANEL WYSZUKIWANIA === */
+        .search-panel {
+            background: white;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .trip-type {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .trip-type button {
+            background: var(--light-purple);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .trip-type button.active {
+            background: var(--main-purple);
+        }
+        
+        .search-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--main-purple);
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--main-blue);
+            outline: none;
+        }
+        
+        .search-btn {
+            grid-column: span 2;
+            background: var(--main-blue);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: var(--main-purple);
+        }
+        
+        .promo-section {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .promo-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--main-purple);
+        }
+        
+        /* === LISTA LOTNISK === */
+        .airport-list {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            width: calc(100% - 1.6rem);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .airport-item {
+            padding: 0.8rem;
+            cursor: pointer;
+        }
+        
+        .airport-item:hover {
+            background: var(--light-blue);
+        }
+        
+        /* === STOPKA === */
+        footer {
+            background: linear-gradient(135deg, var(--main-blue), var(--main-purple));
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>✈️ Twoja Linia Lotnicza</h1>
-        <nav>
-            <a href="#routes">Trasy</a>
-            <a href="#about">O nas</a>
-            <a href="#contact">Kontakt</a>
-        </nav>
+        <h1>Vistula Airlines</h1>
+        <p>Podróżuj z klasą nad Wisłą!</p>
     </header>
 
-    <section class="search">
-        <h2>Znajdź swój lot</h2>
-        <form>
-            <input type="text" placeholder="Skąd (miasto)" required>
-            <input type="text" placeholder="Dokąd (miasto)" required>
-            <input type="date" placeholder="Data wylotu">
-            <button type="submit">Szukaj lotów</button>
-        </form>
-    </section>
+    <main>
+        <section class="search-panel">
+            <div class="trip-type">
+                <button class="active">Lot w obie strony</button>
+                <button>Lot w jedną stronę</button>
+                <button>Podróż wieloodcinkowa</button>
+            </div>
+            
+            <form class="search-form">
+                <div class="form-group">
+                    <label for="from">Skąd</label>
+                    <input type="text" id="from" placeholder="Warszawa (WAW)" required>
+                    <div class="airport-list" id="from-airports">
+                        <div class="airport-item" data-code="WAW">Warszawa (WAW)</div>
+                        <div class="airport-item" data-code="GDN">Gdańsk (GDN)</div>
+                        <div class="airport-item" data-code="KRK">Kraków (KRK)</div>
+                        <div class="airport-item" data-code="WRO">Wrocław (WRO)</div>
+                        <div class="airport-item" data-code="POZ">Poznań (POZ)</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="to">Dokąd</label>
+                    <input type="text" id="to" placeholder="Wybierz lotnisko przylotu" required>
+                    <div class="airport-list" id="to-airports">
+                        <div class="airport-item" data-code="WAW">Warszawa (WAW)</div>
+                        <div class="airport-item" data-code="GDN">Gdańsk (GDN)</div>
+                        <div class="airport-item" data-code="KRK">Kraków (KRK)</div>
+                        <div class="airport-item" data-code="WRO">Wrocław (WRO)</div>
+                        <div class="airport-item" data-code="POZ">Poznań (POZ)</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="departure">Wylot</label>
+                    <input type="date" id="departure" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="return">Powrót</label>
+                    <input type="date" id="return">
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengers">Klasa i pasażerowie</label>
+                    <select id="passengers">
+                        <option>Economy, 1 pasażer</option>
+                        <option>Premium Economy, 1 pasażer</option>
+                        <option>Business, 1 pasażer</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="search-btn">Szukaj lotów</button>
+            </form>
+            
+            <div class="promo-section">
+                <div class="promo-tag">
+                    <input type="checkbox" id="promo-code">
+                    <label for="promo-code">Mam kod promocyjny</label>
+                </div>
+                
+                <div class="promo-tag">
+                    <input type="checkbox" id="family-card">
+                    <label for="family-card">Mam Kartę Dużej Rodziny</label>
+                </div>
+            </div>
+            
+            <p style="color: var(--main-purple); margin-top: 1rem; font-size: 0.9rem;">
+                Bezpłatna rezygnacja w ciągu 24 godzin
+            </p>
+        </section>
+        
+        <section class="popular-routes">
+            <h2 style="text-align: center; color: var(--main-purple);">Popularne trasy:</h2>
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1rem;">
+                <div style="background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    Warszawa (WAW) → Gdańsk (GDN)
+                </div>
+                <div style="background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    Gdańsk (GDN) → Warszawa (WAW)
+                </div>
+            </div>
+        </section>
+    </main>
 
-    <section id="routes" class="routes">
-        <h2>Nasze trasy</h2>
-        <div class="route-list">
-            <div class="route">Warszawa → Londyn</div>
-            <div class="route">Kraków → Paryż</div>
-            <div class="route">Gdańsk → Berlin</div>
-        </div>
-    </section>
-
-    <footer id="contact">
-        <p>✉️ kontakt@twojalinia.pl</p>
-        <p>© 2024 Twoja Linia Lotnicza</p>
+    <footer>
+        <p>✉️ kontakt@vistulaairlines.pl</p>
+        <p>© 2024 Vistula Airlines. Wszelkie prawa zastrzeżone.</p>
     </footer>
+
+    <script>
+        // Funkcja do pokazywania listy lotnisk
+        function setupAirportDropdown(inputId, listId) {
+            const input = document.getElementById(inputId);
+            const list = document.getElementById(listId);
+            
+            input.addEventListener('focus', () => {
+                list.style.display = 'block';
+            });
+            
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    list.style.display = 'none';
+                }, 200);
+            });
+            
+            const items = list.querySelectorAll('.airport-item');
+            items.forEach(item => {
+                item.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    input.value = item.textContent;
+                    list.style.display = 'none';
+                });
+            });
+        }
+        
+        // Inicjalizacja dla obydwu pól
+        setupAirportDropdown('from', 'from-airports');
+        setupAirportDropdown('to', 'to-airports');
+        
+        // Przełączanie typu podróży
+        const tripButtons = document.querySelectorAll('.trip-type button');
+        tripButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                tripButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
