@@ -67,45 +67,65 @@
             font-size: 1rem;
         }
         
-        /* === NOWE STYLE DLA WYBORU KLAS === */
-        .passenger-class-selector {
+        /* === NOWE STYLE DLA WYBORU KLASY === */
+        .class-dropdown {
+            position: relative;
             width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .class-dropdown-btn {
+            width: 100%;
+            padding: 12px;
+            background: white;
             border: 2px solid #e0d0ff;
             border-radius: 8px;
-            padding: 15px;
+            text-align: left;
+            cursor: pointer;
+        }
+        
+        .class-dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            width: 100%;
+            border: 2px solid #e0d0ff;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 1;
+        }
+        
+        .class-dropdown:hover .class-dropdown-content {
+            display: block;
+        }
+        
+        .class-option {
+            padding: 12px;
+            cursor: pointer;
+        }
+        
+        .class-option:hover {
+            background: #f0e5ff;
+        }
+        
+        /* === STYLE DLA PASAŻERÓW === */
+        .passenger-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             margin-bottom: 15px;
         }
         
         .passenger-type {
-            margin-bottom: 15px;
-        }
-        
-        .passenger-type-title {
             font-weight: bold;
             color: #7b2cbf;
-            margin-bottom: 8px;
+            width: 120px;
         }
         
-        .class-option {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .class-name {
-            width: 150px;
-            color: #555;
-        }
-        
-        .passenger-controls {
+        .count-controls {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        
-        .passenger-count {
-            min-width: 20px;
-            text-align: center;
         }
         
         .control-btn {
@@ -118,11 +138,9 @@
             cursor: pointer;
         }
         
-        .total-passengers {
-            text-align: right;
-            font-weight: bold;
-            color: #7b2cbf;
-            margin-top: 10px;
+        .passenger-count {
+            min-width: 20px;
+            text-align: center;
         }
         
         .search-btn {
@@ -156,106 +174,50 @@
             <!-- Rząd 1: Wybór trasy i dat -->
             <div class="search-row">
                 <div class="route-selector">
-                    <input type="text" class="airport-input" placeholder="Skąd (np. Warszawa WAW)">
+                    <input type="text" class="airport-input" placeholder="Skąd (np. Warszawa WAW)" id="from-input">
                     <button class="swap-btn">⇄</button>
-                    <input type="text" class="airport-input" placeholder="Dokąd (np. Gdańsk GDN)">
+                    <input type="text" class="airport-input" placeholder="Dokąd (np. Gdańsk GDN)" id="to-input">
                 </div>
                 <input type="date" class="date-picker" placeholder="Wylot">
                 <input type="date" class="date-picker" placeholder="Powrót">
             </div>
             
-            <!-- Nowy panel wyboru klasy dla pasażerów -->
-            <div class="passenger-class-selector">
-                <h3>Wybierz klasę i liczbę pasażerów</h3>
-                
-                <!-- Dorośli -->
-                <div class="passenger-type">
-                    <div class="passenger-type-title">Dorośli (14+)</div>
-                    
-                    <div class="class-option">
-                        <div class="class-name">Ekonomiczna</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="adult" data-class="economy">-</button>
-                            <span class="passenger-count" data-type="adult" data-class="economy">0</span>
-                            <button class="control-btn plus-btn" data-type="adult" data-class="economy">+</button>
-                        </div>
-                    </div>
-                    
-                    <div class="class-option">
-                        <div class="class-name">Ekonomiczna Premium</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="adult" data-class="premium">-</button>
-                            <span class="passenger-count" data-type="adult" data-class="premium">0</span>
-                            <button class="control-btn plus-btn" data-type="adult" data-class="premium">+</button>
-                        </div>
-                    </div>
-                    
-                    <div class="class-option">
-                        <div class="class-name">Biznes</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="adult" data-class="business">-</button>
-                            <span class="passenger-count" data-type="adult" data-class="business">0</span>
-                            <button class="control-btn plus-btn" data-type="adult" data-class="business">+</button>
-                        </div>
-                    </div>
-                    
-                    <div class="class-option">
-                        <div class="class-name">Pierwsza</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="adult" data-class="first">-</button>
-                            <span class="passenger-count" data-type="adult" data-class="first">0</span>
-                            <button class="control-btn plus-btn" data-type="adult" data-class="first">+</button>
-                        </div>
-                    </div>
+            <!-- Wybór klasy podróży -->
+            <div class="class-dropdown">
+                <button class="class-dropdown-btn">Klasa Podróży ▼</button>
+                <div class="class-dropdown-content">
+                    <div class="class-option">Ekonomiczna</div>
+                    <div class="class-option">Ekonomiczna Premium</div>
+                    <div class="class-option">Biznes</div>
+                    <div class="class-option">Pierwsza</div>
                 </div>
-                
-                <!-- Dzieci -->
-                <div class="passenger-type">
-                    <div class="passenger-type-title">Dzieci (4-14 lat)</div>
-                    
-                    <div class="class-option">
-                        <div class="class-name">Ekonomiczna</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="child" data-class="economy">-</button>
-                            <span class="passenger-count" data-type="child" data-class="economy">0</span>
-                            <button class="control-btn plus-btn" data-type="child" data-class="economy">+</button>
-                        </div>
-                    </div>
-                    
-                    <div class="class-option">
-                        <div class="class-name">Ekonomiczna Premium</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="child" data-class="premium">-</button>
-                            <span class="passenger-count" data-type="child" data-class="premium">0</span>
-                            <button class="control-btn plus-btn" data-type="child" data-class="premium">+</button>
-                        </div>
-                    </div>
-                    
-                    <div class="class-option">
-                        <div class="class-name">Biznes</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="child" data-class="business">-</button>
-                            <span class="passenger-count" data-type="child" data-class="business">0</span>
-                            <button class="control-btn plus-btn" data-type="child" data-class="business">+</button>
-                        </div>
-                    </div>
+            </div>
+            
+            <!-- Wybór pasażerów -->
+            <div class="passenger-controls">
+                <div class="passenger-type">Dorośli (14+)</div>
+                <div class="count-controls">
+                    <button class="control-btn minus-btn">-</button>
+                    <span class="passenger-count">1</span>
+                    <button class="control-btn plus-btn">+</button>
                 </div>
-                
-                <!-- Niemowlęta -->
-                <div class="passenger-type">
-                    <div class="passenger-type-title">Niemowlęta (0-3 lat)</div>
-                    <div class="class-option">
-                        <div class="class-name">Ekonomiczna</div>
-                        <div class="passenger-controls">
-                            <button class="control-btn minus-btn" data-type="infant" data-class="economy">-</button>
-                            <span class="passenger-count" data-type="infant" data-class="economy">0</span>
-                            <button class="control-btn plus-btn" data-type="infant" data-class="economy">+</button>
-                        </div>
-                    </div>
+            </div>
+            
+            <div class="passenger-controls">
+                <div class="passenger-type">Dzieci (4-14)</div>
+                <div class="count-controls">
+                    <button class="control-btn minus-btn">-</button>
+                    <span class="passenger-count">0</span>
+                    <button class="control-btn plus-btn">+</button>
                 </div>
-                
-                <div class="total-passengers">
-                    Razem pasażerów: <span id="total-count">0</span>
+            </div>
+            
+            <div class="passenger-controls">
+                <div class="passenger-type">Niemowlęta (0-3)</div>
+                <div class="count-controls">
+                    <button class="control-btn minus-btn">-</button>
+                    <span class="passenger-count">0</span>
+                    <button class="control-btn plus-btn">+</button>
                 </div>
             </div>
             
@@ -269,7 +231,64 @@
     </footer>
 
     <script>
-        // Funkcjonalność przycisków +/-
+        // Lista lotnisk
+        const airports = [
+            "Warszawa (WAW)", "Gdańsk (GDN)", "Kraków (KRK)", 
+            "Wrocław (WRO)", "Poznań (POZ)", "Katowice (KTW)"
+        ];
+        
+        // Funkcja do pokazywania lotnisk
+        function setupAirportInput(inputId) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.createElement('div');
+            dropdown.className = 'airport-dropdown';
+            dropdown.style.display = 'none';
+            dropdown.style.position = 'absolute';
+            dropdown.style.backgroundColor = 'white';
+            dropdown.style.border = '1px solid #ddd';
+            dropdown.style.maxHeight = '200px';
+            dropdown.style.overflowY = 'auto';
+            dropdown.style.zIndex = '100';
+            dropdown.style.width = input.offsetWidth + 'px';
+            
+            airports.forEach(airport => {
+                const item = document.createElement('div');
+                item.textContent = airport;
+                item.style.padding = '8px';
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', () => {
+                    input.value = airport;
+                    dropdown.style.display = 'none';
+                });
+                dropdown.appendChild(item);
+            });
+            
+            input.addEventListener('focus', () => {
+                dropdown.style.display = 'block';
+                input.parentNode.appendChild(dropdown);
+            });
+            
+            input.addEventListener('blur', () => {
+                setTimeout(() => {
+                    dropdown.style.display = 'none';
+                }, 200);
+            });
+        }
+        
+        // Inicjalizacja dla obu pól
+        setupAirportInput('from-input');
+        setupAirportInput('to-input');
+        
+        // Zamiana miejscami lotnisk
+        document.querySelector('.swap-btn').addEventListener('click', function() {
+            const from = document.getElementById('from-input');
+            const to = document.getElementById('to-input');
+            const temp = from.value;
+            from.value = to.value;
+            to.value = temp;
+        });
+        
+        // Przyciski +/-
         document.querySelectorAll('.control-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const isPlus = this.classList.contains('plus-btn');
@@ -283,25 +302,14 @@
                 }
                 
                 countElement.textContent = count;
-                updateTotalPassengers();
             });
         });
         
-        // Funkcja aktualizująca łączną liczbę pasażerów
-        function updateTotalPassengers() {
-            let total = 0;
-            document.querySelectorAll('.passenger-count').forEach(el => {
-                total += parseInt(el.textContent);
+        // Wybór klasy podróży
+        document.querySelectorAll('.class-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelector('.class-dropdown-btn').textContent = this.textContent + ' ▼';
             });
-            document.getElementById('total-count').textContent = total;
-        }
-        
-        // Zamiana miejscami lotnisk
-        document.querySelector('.swap-btn').addEventListener('click', function() {
-            const inputs = document.querySelectorAll('.airport-input');
-            const temp = inputs[0].value;
-            inputs[0].value = inputs[1].value;
-            inputs[1].value = temp;
         });
     </script>
 </body>
