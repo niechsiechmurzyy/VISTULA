@@ -3,114 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistula Airlines | Oficjalna strona</title>
+    <title>Vistula Airlines | Wakacje 2025</title>
     <style>
         /* === GŁÓWNE STYLE === */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f0ff;
+            background-color: #f5f9ff;
             color: #333;
         }
         
-        header {
-            background: linear-gradient(135deg, #7b2cbf, #4895ef);
-            color: white;
-            padding: 1rem;
-            text-align: center;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
-        .search-box {
+        /* === NAGŁÓWEK === */
+        .summer-header {
+            background: linear-gradient(135deg, #7b2cbf, #4895ef);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 0;
+        }
+        
+        .summer-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+        
+        /* === PANEL WYSZUKIWANIA === */
+        .search-panel {
             background: white;
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(123, 44, 191, 0.2);
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .destination-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .destination-box {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        
+        .destination-box h3 {
+            margin-top: 0;
+            color: #7b2cbf;
         }
         
         /* === WYBÓR KLASY === */
         .class-selector {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .class-selector-btn {
-            width: 100%;
-            padding: 15px;
-            background: white;
-            border: 2px solid #e0d0ff;
-            border-radius: 8px;
-            text-align: left;
-            font-size: 1rem;
-            cursor: pointer;
+            margin-bottom: 30px;
         }
         
         .class-options {
-            display: none;
-            position: absolute;
-            width: 100%;
-            background: white;
-            border: 2px solid #e0d0ff;
-            border-top: none;
-            border-radius: 0 0 8px 8px;
-            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
         .class-option {
             padding: 15px;
-            border-bottom: 1px solid #f0f0f0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s;
         }
         
         .class-option:hover {
-            background: #f8f0ff;
+            border-color: #7b2cbf;
+            background: #f9f4ff;
         }
         
-        .class-option:last-child {
-            border-bottom: none;
-        }
-        
-        /* === FORMULARZ PASAŻERÓW === */
-        .passenger-form {
-            display: none;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e0d0ff;
-            margin-top: 15px;
-        }
-        
-        .passenger-form h3 {
-            color: #7b2cbf;
-            margin-top: 0;
-        }
-        
-        .passenger-type {
-            margin-bottom: 15px;
-        }
-        
-        .passenger-title {
+        .class-option.selected {
+            border-color: #7b2cbf;
+            background: #f0e5ff;
             font-weight: bold;
-            margin-bottom: 5px;
+        }
+        
+        .class-option strong {
+            color: #7b2cbf;
+        }
+        
+        /* === PASAŻEROWIE === */
+        .passenger-section h2 {
+            color: #7b2cbf;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        
+        .passenger-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .passenger-table tr {
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .passenger-table td {
+            padding: 15px 0;
+            vertical-align: middle;
+        }
+        
+        .passenger-category {
+            font-weight: bold;
+            width: 40%;
         }
         
         .passenger-age {
             color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
+            font-size: 0.9em;
         }
         
         .passenger-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
-        }
-        
-        .passenger-count {
-            min-width: 30px;
-            text-align: center;
+            gap: 10px;
+            justify-content: flex-end;
         }
         
         .control-btn {
@@ -124,116 +145,142 @@
             cursor: pointer;
         }
         
-        .confirm-btn {
+        .passenger-count {
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        /* === PRZYCISK === */
+        .search-btn {
             background: #7b2cbf;
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 20px;
+            padding: 15px;
             width: 100%;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 30px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #6a1fb5;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>✈️ Vistula Airlines</h1>
-    </header>
-
-    <main>
-        <div class="search-box">
-            <!-- Przycisk wyboru klasy -->
-            <div class="class-selector">
-                <button class="class-selector-btn">Wybierz klasę podróży ▼</button>
-                <div class="class-options">
-                    <div class="class-option" data-class="economy">VIS Economy Class</div>
-                    <div class="class-option" data-class="premium">VIS Premium Economy</div>
-                    <div class="class-option" data-class="business">VIS Business Class</div>
-                    <div class="class-option" data-class="first">VIS Pierwsza Klasa</div>
+    <div class="container">
+        <div class="summer-header">
+            <h1>HELLO SUMMER 2025</h1>
+            <p>Loty na wakacje</p>
+        </div>
+        
+        <div class="search-panel">
+            <div class="destination-selector">
+                <div class="destination-box">
+                    <h3>Wybierz lotnisko przylotu</h3>
+                    <input type="text" placeholder="Dokąd" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                
+                <div class="destination-box">
+                    <h3>Wybierz klasę podróży</h3>
+                    <div class="class-selector">
+                        <div class="class-options">
+                            <div class="class-option selected">
+                                <strong>VIS Economy Class</strong>
+                            </div>
+                            <div class="class-option">
+                                <strong>VIS Premium Economy</strong>
+                            </div>
+                            <div class="class-option">
+                                <strong>VIS Business Class</strong>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Formularz pasażerów (początkowo ukryty) -->
-            <div class="passenger-form" id="passengerForm">
-                <h3>Dodaj pasażerów</h3>
+            <div class="passenger-section">
+                <h2>Dodaj pasażerów</h2>
                 <p>Sprawdź wiek pasażerów w dniu wylotu</p>
                 
-                <div class="passenger-type">
-                    <div class="passenger-title">Dorośli</div>
-                    <div class="passenger-age">16+ lat</div>
-                    <div class="passenger-controls">
-                        <button class="control-btn minus-btn">-</button>
-                        <span class="passenger-count">1</span>
-                        <button class="control-btn plus-btn">+</button>
-                    </div>
-                </div>
-                
-                <div class="passenger-type">
-                    <div class="passenger-title">Nastolatkowie</div>
-                    <div class="passenger-age">12-15 lat</div>
-                    <div class="passenger-controls">
-                        <button class="control-btn minus-btn">-</button>
-                        <span class="passenger-count">0</span>
-                        <button class="control-btn plus-btn">+</button>
-                    </div>
-                </div>
-                
-                <div class="passenger-type">
-                    <div class="passenger-title">Dzieci</div>
-                    <div class="passenger-age">2-11 lat</div>
-                    <div class="passenger-controls">
-                        <button class="control-btn minus-btn">-</button>
-                        <span class="passenger-count">0</span>
-                        <button class="control-btn plus-btn">+</button>
-                    </div>
-                </div>
-                
-                <div class="passenger-type">
-                    <div class="passenger-title">Niemowlęta (z miejscem)</div>
-                    <div class="passenger-age">0-24 miesięcy</div>
-                    <div class="passenger-controls">
-                        <button class="control-btn minus-btn">-</button>
-                        <span class="passenger-count">0</span>
-                        <button class="control-btn plus-btn">+</button>
-                    </div>
-                </div>
-                
-                <div class="passenger-type">
-                    <div class="passenger-title">Niemowlęta</div>
-                    <div class="passenger-age">0-24 miesięcy</div>
-                    <div class="passenger-controls">
-                        <button class="control-btn minus-btn">-</button>
-                        <span class="passenger-count">0</span>
-                        <button class="control-btn plus-btn">+</button>
-                    </div>
-                </div>
-                
-                <button class="confirm-btn">Potwierdź</button>
+                <table class="passenger-table">
+                    <tr>
+                        <td class="passenger-category">Dorośli</td>
+                        <td class="passenger-age">16+ lat</td>
+                        <td>
+                            <div class="passenger-controls">
+                                <button class="control-btn minus-btn">-</button>
+                                <span class="passenger-count">1</span>
+                                <button class="control-btn plus-btn">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="passenger-category">Nastolatkowie</td>
+                        <td class="passenger-age">12-15 lat</td>
+                        <td>
+                            <div class="passenger-controls">
+                                <button class="control-btn minus-btn">-</button>
+                                <span class="passenger-count">0</span>
+                                <button class="control-btn plus-btn">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="passenger-category">Dzieci</td>
+                        <td class="passenger-age">2-11 lat</td>
+                        <td>
+                            <div class="passenger-controls">
+                                <button class="control-btn minus-btn">-</button>
+                                <span class="passenger-count">0</span>
+                                <button class="control-btn plus-btn">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="passenger-category">Niemowlęta (z miejscem)</td>
+                        <td class="passenger-age">0-24 miesięcy</td>
+                        <td>
+                            <div class="passenger-controls">
+                                <button class="control-btn minus-btn">-</button>
+                                <span class="passenger-count">0</span>
+                                <button class="control-btn plus-btn">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="passenger-category">Niemowlęta</td>
+                        <td class="passenger-age">0-24 miesięcy</td>
+                        <td>
+                            <div class="passenger-controls">
+                                <button class="control-btn minus-btn">-</button>
+                                <span class="passenger-count">0</span>
+                                <button class="control-btn plus-btn">+</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
+            
+            <button class="search-btn">Szukaj lotów</button>
         </div>
-    </main>
+    </div>
 
     <script>
         // Wybór klasy podróży
-        const classSelectorBtn = document.querySelector('.class-selector-btn');
-        const classOptions = document.querySelector('.class-options');
-        const passengerForm = document.getElementById('passengerForm');
-        
-        classSelectorBtn.addEventListener('click', function() {
-            classOptions.style.display = classOptions.style.display === 'block' ? 'none' : 'block';
-        });
-        
         document.querySelectorAll('.class-option').forEach(option => {
             option.addEventListener('click', function() {
-                classSelectorBtn.textContent = this.textContent + ' ▼';
-                classOptions.style.display = 'none';
-                passengerForm.style.display = 'block';
+                document.querySelectorAll('.class-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
             });
         });
         
-        // Przyciski +/-
+        // Liczenie pasażerów
         document.querySelectorAll('.control-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const isPlus = this.classList.contains('plus-btn');
@@ -248,13 +295,6 @@
                 
                 countElement.textContent = count;
             });
-        });
-        
-        // Zamknij menu po kliknięciu poza nim
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.class-selector')) {
-                classOptions.style.display = 'none';
-            }
         });
     </script>
 </body>
