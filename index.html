@@ -599,9 +599,155 @@
             text-align: center;
         }
         
+        /* Sekcja wyników wyszukiwania */
+        .search-results {
+            display: none;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 1.3rem;
+            box-shadow: 0 4px 32px rgba(31, 38, 135, 0.13);
+            backdrop-filter: blur(12px);
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .flight-option {
+            background: white;
+            border-radius: 0.8rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .flight-option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .flight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .flight-time {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #003366;
+        }
+        
+        .flight-duration {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .flight-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00b6d4;
+        }
+        
+        .flight-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #e0e0e0;
+        }
+        
+        .flight-segment {
+            flex: 1;
+            padding: 0 1rem;
+            position: relative;
+        }
+        
+        .flight-segment:not(:last-child):after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 1px;
+            background: #ccc;
+        }
+        
+        .segment-airport {
+            font-weight: bold;
+        }
+        
+        .segment-time {
+            color: #666;
+        }
+        
+        .segment-duration {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .book-btn {
+            background: linear-gradient(90deg, #00b6d4 0%, #3e8ed0 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin-top: 1rem;
+            width: 100%;
+        }
+        
+        .book-btn:hover {
+            background: linear-gradient(90deg, #008bb5 0%, #1a5ba6 100%);
+            transform: translateY(-2px);
+        }
+        
+        .back-to-search {
+            background: none;
+            border: none;
+            color: #003366;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .transfer-info {
+            background: #f0f7ff;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #003366;
+        }
+        
         @media (max-width: 768px) {
             .calendar-container {
                 flex-direction: column;
+            }
+            
+            .flight-details {
+                flex-direction: column;
+            }
+            
+            .flight-segment {
+                margin-bottom: 1rem;
+            }
+            
+            .flight-segment:after {
+                display: none;
             }
         }
     </style>
@@ -614,8 +760,7 @@
         <symbol id="icon-ticket" viewBox="0 0 24 24"><path d="M22 10V8c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v2c1.1 0 2 .9 2 2s-.9 2-2 2v2c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-2c-1.1 0-2-.9-2-2s.9-2 2-2z" fill="currentColor"/></symbol>
         <symbol id="icon-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 5c.39.39 1.02.39 1.41 0a.9959.9959 0 0 0 0-1.41l-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/></symbol>
     </svg>
-</head>
-<body>
+</head><body>
     <!-- Górny pasek nawigacji -->
     <div class="top-bar">
         <ul class="nav-links">
@@ -730,26 +875,27 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    <main>
-        <!-- NOWY DESIGN GLASSMORPHISM WYSZUKIWARKI LOTÓW -->
+    </div>    <main>
+        <!-- Formularz wyszukiwania lotów -->
         <div class="flight-search glass-card" id="flightSearch">
             <h2 class="search-title"><svg width="1.5em" height="1.5em"><use href="#icon-plane"></use></svg> Zarezerwuj lot</h2>
-            <form class="search-form">
+            <form class="search-form" id="searchForm">
                 <div class="form-group">
                     <label for="from"><svg width="1.1em" height="1.1em" style="vertical-align:-0.18em;"><use href="#icon-location"></use></svg> Skąd</label>
                     <select id="from">
                         <option value="WAW">Warszawa (WAW)</option>
-                        <option value="KRK">Kraków (KRK)</option>
                         <option value="GDN">Gdańsk (GDN)</option>
+                        <option value="KRK">Kraków (KRK)</option>
+                        <option value="WRO">Wrocław (WRO)</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="to"><svg width="1.1em" height="1.1em" style="vertical-align:-0.18em;"><use href="#icon-location"></use></svg> Dokąd</label>
                     <select id="to">
                         <option value="">Wybierz lotnisko przylotu</option>
-                        <option value="LHR">Londyn (LHR)</option>
+                        <option value="WAW">Warszawa (WAW)</option>
+                        <option value="GDN">Gdańsk (GDN)</option>
+                        <option value="BCN">Barcelona (BCN)</option>
                         <option value="CDG">Paryż (CDG)</option>
                         <option value="FRA">Frankfurt (FRA)</option>
                     </select>
@@ -773,7 +919,7 @@
                 <button type="submit" class="search-button stylish-btn">
                     <svg width="1.1em" height="1.1em" style="vertical-align:-0.18em; margin-right:0.2em;"><use href="#icon-search"></use></svg> Szukaj
                 </button>
-                <!-- Zmodyfikowana sekcja promocyjna -->
+                <!-- Sekcja promocyjna -->
                 <div class="promo-section">
                     <div class="promo-links">
                         <a href="#" class="promo-code">
@@ -788,6 +934,18 @@
                     </div>
                 </div>
             </form>
+        </div>
+        
+        <!-- Wyniki wyszukiwania -->
+        <div class="search-results" id="searchResults">
+            <div class="results-header">
+                <h2>Znalezione loty</h2>
+                <button class="back-to-search" id="backToSearch">← Wróć do wyszukiwania</button>
+            </div>
+            
+            <div id="flightsContainer">
+                <!-- Tutaj będą wstawiane wyniki wyszukiwania -->
+            </div>
         </div>
         
         <!-- Formularz odprawy (początkowo ukryty) -->
@@ -823,9 +981,7 @@
                 <p style="margin-top: 1rem;"><small>Pola oznaczone gwiazdką są obowiązkowe.</small></p>
             </form>
         </div>
-    </main>
-    
-    <!-- Popup wyboru klasy -->
+    </main>    <!-- Popup wyboru klasy -->
     <div class="popup-overlay" id="classPopupOverlay"></div>
     <div class="travel-class-popup" id="travelClassPopup">
         <h2>Wybierz klasę podróży</h2>
@@ -865,21 +1021,21 @@
             <p>Sprawdź wiek pasażerów w dniu wylotu</p>
             
             <div class="passenger-type">
-                
-        <div>
-                    <div class="passenger-label">Nastolatkowie</div>
-                    <div class="passenger-age">12-15 lat</div>
+                <div>
+                    <div class="passenger-label">Dorośli</div>
+                    <div class="passenger-age">16+ lat</div>
                 </div>
                 <div class="passenger-counter">
                     <button class="counter-btn minus">-</button>
-                    <span class="counter-value">0</span>
-                    <button class="</div>
+                    <span class="counter-value">1</span>
+                    <button class="counter-btn plus">+</button>
+                </div>
             </div>
             
             <div class="passenger-type">
                 <div>
-                    <div class="passenger-label">Dzieci</div>
-                    <div class="passenger-age">2-11 lat</div>
+                    <div class="passenger-label">Nastolatkowie</div>
+                    <div class="passenger-age">12-15 lat</div>
                 </div>
                 <div class="passenger-counter">
                     <button class="counter-btn minus">-</button>
@@ -890,8 +1046,8 @@
             
             <div class="passenger-type">
                 <div>
-                    <div class="passenger-label">Niemowlęta [z miejscem]</div>
-                    <div class="passenger-age">0-24 miesięcy</div>
+                    <div class="passenger-label">Dzieci</div>
+                    <div class="passenger-age">2-11 lat</div>
                 </div>
                 <div class="passenger-counter">
                     <button class="counter-btn minus">-</button>
@@ -916,7 +1072,7 @@
         <button class="confirm-btn" id="confirmClass">Potwierdź</button>
     </div>
 
-    <!-- Nowy popup kalendarza -->
+    <!-- Popup kalendarza -->
     <div class="popup-overlay" id="datePopupOverlay"></div>
     <div class="date-picker-popup" id="datePopup">
         <h2>Wybierz daty podróży</h2>
@@ -991,6 +1147,7 @@
         document.getElementById('reservationTab').addEventListener('click', function(e) {
             e.preventDefault();
             document.getElementById('flightSearch').style.display = 'block';
+            document.getElementById('searchResults').style.display = 'none';
             document.getElementById('checkinForm').style.display = 'none';
             
             document.querySelectorAll('.nav-links a').forEach(tab => {
@@ -1002,6 +1159,7 @@
         document.getElementById('checkinTab').addEventListener('click', function(e) {
             e.preventDefault();
             document.getElementById('flightSearch').style.display = 'none';
+            document.getElementById('searchResults').style.display = 'none';
             document.getElementById('checkinForm').style.display = 'block';
             
             document.querySelectorAll('.nav-links a').forEach(tab => {
@@ -1224,6 +1382,334 @@
                 document.getElementById('classPopupOverlay').style.display = 'none';
             } else {
                 alert('Proszę wybrać klasę podróży!');
+            }
+        });
+
+        // Dane lotów
+        const flightData = {
+            // Loty bezpośrednie Warszawa-Gdańsk
+            "WAW-GDN": [
+                {
+                    id: "WAWGDN001",
+                    departureTime: "07:00",
+                    arrivalTime: "08:00",
+                    price: 199,
+                    direct: true
+                },
+                {
+                    id: "WAWGDN002",
+                    departureTime: "19:25",
+                    arrivalTime: "20:25",
+                    price: 249,
+                    direct: true
+                },
+                {
+                    id: "WAWGDN003",
+                    departureTime: "22:55",
+                    arrivalTime: "23:55",
+                    price: 179,
+                    direct: true
+                }
+            ],
+            // Loty bezpośrednie Gdańsk-Warszawa
+            "GDN-WAW": [
+                {
+                    id: "GDNWAW001",
+                    departureTime: "06:00",
+                    arrivalTime: "07:00",
+                    price: 199,
+                    direct: true
+                },
+                {
+                    id: "GDNWAW002",
+                    departureTime: "08:45",
+                    arrivalTime: "09:45",
+                    price: 219,
+                    direct: true
+                },
+                {
+                    id: "GDNWAW003",
+                    departureTime: "21:10",
+                    arrivalTime: "22:10",
+                    price: 179,
+                    direct: true
+                }
+            ],
+            // Loty z przesiadką w Warszawie (np. Gdańsk-Barcelona)
+            "GDN-BCN": [
+                {
+                    id: "GDNBCN001",
+                    segments: [
+                        {
+                            from: "GDN",
+                            to: "WAW",
+                            departureTime: "06:00",
+                            arrivalTime: "07:00",
+                            flightNumber: "VL101"
+                        },
+                        {
+                            from: "WAW",
+                            to: "BCN",
+                            departureTime: "08:30",
+                            arrivalTime: "11:30",
+                            flightNumber: "VL202"
+                        }
+                    ],
+                    totalDuration: "4h 30m",
+                    transferTime: "1h 30m",
+                    price: 599,
+                    direct: false
+                },
+                {
+                    id: "GDNBCN002",
+                    segments: [
+                        {
+                            from: "GDN",
+                            to: "WAW",
+                            departureTime: "08:45",
+                            arrivalTime: "09:45",
+                            flightNumber: "VL103"
+                        },
+                        {
+                            from: "WAW",
+                            to: "BCN",
+                            departureTime: "12:00",
+                            arrivalTime: "15:00",
+                            flightNumber: "VL204"
+                        }
+                    ],
+                    totalDuration: "4h 15m",
+                    transferTime: "2h 15m",
+                    price: 649,
+                    direct: false
+                }
+            ]
+        };
+        
+        // Funkcja do wyświetlania wyników wyszukiwania
+        function showSearchResults(from, to) {
+            const flightSearch = document.getElementById('flightSearch');
+            const searchResults = document.getElementById('searchResults');
+            const flightsContainer = document.getElementById('flightsContainer');
+            
+            flightSearch.style.display = 'none';
+            searchResults.style.display = 'block';
+            flightsContainer.innerHTML = '';
+            
+            // Znajdź odpowiednie loty
+            const routeKey = `${from}-${to}`;
+            const flights = flightData[routeKey] || [];
+            
+            if (flights.length === 0) {
+                // Jeśli nie ma bezpośrednich lotów, pokaż loty z przesiadką w Warszawie
+                if (from !== 'WAW' && to !== 'WAW') {
+                    showConnectingFlights(from, to);
+                    return;
+                } else {
+                    flightsContainer.innerHTML = '<p>Brak dostępnych lotów na wybranej trasie.</p>';
+                    return;
+                }
+            }
+            
+            // Wyświetl dostępne loty
+            flights.forEach(flight => {
+                const flightElement = createFlightElement(flight, from, to);
+                flightsContainer.appendChild(flightElement);
+            });
+        }
+        
+        // Funkcja do tworzenia elementu lotu
+        function createFlightElement(flight, from, to) {
+            const flightElement = document.createElement('div');
+            flightElement.className = 'flight-option';
+            
+            if (flight.direct) {
+                // Lot bezpośredni
+                flightElement.innerHTML = `
+                    <div class="flight-header">
+                        <div>
+                            <div class="flight-time">${flight.departureTime} - ${flight.arrivalTime}</div>
+                            <div class="flight-duration">1h 00m • Lot bezpośredni</div>
+                        </div>
+                        <div class="flight-price">${flight.price} PLN</div>
+                    </div>
+                    <div class="flight-details">
+                        <div class="flight-segment">
+                            <div class="segment-airport">${getAirportName(from)} (${from})</div>
+                            <div class="segment-time">${flight.departureTime}</div>
+                        </div>
+                        <div class="flight-segment">
+                            <div class="segment-airport">${getAirportName(to)} (${to})</div>
+                            <div class="segment-time">${flight.arrivalTime}</div>
+                        </div>
+                    </div>
+                    <button class="book-btn" data-flight="${flight.id}">Zarezerwuj</button>
+                `;
+            } else {
+                // Lot z przesiadką
+                let segmentsHTML = '';
+                flight.segments.forEach((segment, index) => {
+                    segmentsHTML += `
+                        <div class="flight-segment">
+                            <div class="segment-airport">${getAirportName(segment.from)} (${segment.from})</div>
+                            <div class="segment-time">${segment.departureTime}</div>
+                            <div class="segment-duration">Numer lotu: ${segment.flightNumber}</div>
+                        </div>
+                    `;
+                    
+                    if (index < flight.segments.length - 1) {
+                        segmentsHTML += `
+                            <div class="flight-segment">
+                                <div class="transfer-info">
+                                    Przesiadka w ${getAirportName(segment.to)}: ${flight.transferTime}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                flightElement.innerHTML = `
+                    <div class="flight-header">
+                        <div>
+                            <div class="flight-time">${flight.segments[0].departureTime} - ${flight.segments[flight.segments.length - 1].arrivalTime}</div>
+                            <div class="flight-duration">${flight.totalDuration} • Z przesiadką w Warszawie</div>
+                        </div>
+                        <div class="flight-price">${flight.price} PLN</div>
+                    </div>
+                    <div class="flight-details">
+                        ${segmentsHTML}
+                    </div>
+                    <button class="book-btn" data-flight="${flight.id}">Zarezerwuj</button>
+                `;
+            }
+            
+            return flightElement;
+        }
+        
+        // Funkcja do pokazywania lotów z przesiadką w Warszawie
+        function showConnectingFlights(from, to) {
+            const flightsContainer = document.getElementById('flightsContainer');
+            
+            // Sprawdź czy mamy loty z miasta początkowego do Warszawy
+            const toWarsawFlights = flightData[`${from}-WAW`] || [];
+            
+            // Sprawdź czy mamy loty z Warszawy do miasta docelowego
+            const fromWarsawFlights = flightData[`WAW-${to}`] || [];
+            
+            if (toWarsawFlights.length === 0 || fromWarsawFlights.length === 0) {
+                flightsContainer.innerHTML = '<p>Brak dostępnych połączeń na wybranej trasie.</p>';
+                return;
+            }
+            
+            // Stwórz kombinacje lotów z przesiadką
+            const connectingFlights = [];
+            
+            toWarsawFlights.forEach(firstFlight => {
+                fromWarsawFlights.forEach(secondFlight => {
+                    // Sprawdź czy czas przesiadki jest odpowiedni (min 1h, max 6h)
+                    const firstArrival = convertTimeToMinutes(firstFlight.arrivalTime);
+                    const secondDeparture = convertTimeToMinutes(secondFlight.departureTime);
+                    
+                    if (secondDeparture > firstArrival + 60 && secondDeparture < firstArrival + 360) {
+                        const transferTime = formatDuration(secondDeparture - firstArrival);
+                        const totalDuration = formatDuration((secondDeparture - convertTimeToMinutes(firstFlight.departureTime)) + 60); // + czas lotu drugiego segmentu
+                        
+                        connectingFlights.push({
+                            id: `${firstFlight.id}-${secondFlight.id}`,
+                            segments: [
+                                {
+                                    from: from,
+                                    to: "WAW",
+                                    departureTime: firstFlight.departureTime,
+                                    arrivalTime: firstFlight.arrivalTime,
+                                    flightNumber: "VL" + Math.floor(100 + Math.random() * 900)
+                                },
+                                {
+                                    from: "WAW",
+                                    to: to,
+                                    departureTime: secondFlight.departureTime,
+                                    arrivalTime: secondFlight.arrivalTime,
+                                    flightNumber: "VL" + Math.floor(100 + Math.random() * 900)
+                                }
+                            ],
+                            totalDuration: totalDuration,
+                            transferTime: transferTime,
+                            price: firstFlight.price + secondFlight.price + 100, // Dodajemy 100 PLN za przesiadkę
+                            direct: false
+                        });
+                    }
+                });
+            });
+            
+            if (connectingFlights.length === 0) {
+                flightsContainer.innerHTML = '<p>Brak dostępnych połączeń z odpowiednim czasem przesiadki.</p>';
+                return;
+            }
+            
+            // Wyświetl dostępne loty z przesiadką
+            connectingFlights.forEach(flight => {
+                const flightElement = createFlightElement(flight, from, to);
+                flightsContainer.appendChild(flightElement);
+            });
+        }
+        
+        // Funkcje pomocnicze
+        function getAirportName(code) {
+            const airports = {
+                "WAW": "Warszawa",
+                "GDN": "Gdańsk",
+                "KRK": "Kraków",
+                "WRO": "Wrocław",
+                "BCN": "Barcelona",
+                "CDG": "Paryż",
+                "FRA": "Frankfurt"
+            };
+            return airports[code] || code;
+        }
+        
+        function convertTimeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+        
+        function formatDuration(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours}h ${mins}m`;
+        }
+        
+        // Obsługa formularza wyszukiwania
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            
+            if (!from || !to) {
+                alert('Proszę wybrać lotnisko wylotu i przylotu!');
+                return;
+            }
+            
+            if (from === to) {
+                alert('Lotnisko wylotu i przylotu nie mogą być takie same!');
+                return;
+            }
+            
+            showSearchResults(from, to);
+        });
+        
+        // Przycisk powrotu do wyszukiwania
+        document.getElementById('backToSearch').addEventListener('click', function() {
+            document.getElementById('flightSearch').style.display = 'block';
+            document.getElementById('searchResults').style.display = 'none';
+        });
+        
+        // Delegowane zdarzenie dla przycisków rezerwacji
+        document.getElementById('flightsContainer').addEventListener('click', function(e) {
+            if (e.target.classList.contains('book-btn')) {
+                const flightId = e.target.getAttribute('data-flight');
+                alert(`Rozpoczynasz rezerwację lotu ${flightId}. Ta funkcja będzie dostępna w pełnej wersji systemu.`);
+                // Tutaj możesz przekierować do strony rezerwacji lub otworzyć formularz
             }
         });
     </script>
