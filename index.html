@@ -51,41 +51,48 @@
             color: #4da6ff;
         }
         
-        /* Prawa strona paska (język i logowanie) */
+        /* Prawa strona paska (język, waluta i logowanie) */
         .right-side {
             display: flex;
             align-items: center;
         }
         
-        /* Nowy styl dla selektora języków */
-        .language-selector {
-            margin-right: 2rem;
+        /* Style dla selektorów języka i waluty */
+        .selector-container {
+            margin-right: 1.5rem;
             position: relative;
             cursor: pointer;
         }
         
-        .selected-language {
+        .selected-option {
             display: flex;
             align-items: center;
             padding: 0.3rem 0.5rem;
         }
         
-        .selected-language:hover {
+        .selected-option:hover {
             background-color: rgba(255,255,255,0.1);
             border-radius: 4px;
         }
         
-        .language-flag {
+        .option-icon {
             width: 24px;
             height: 16px;
             margin-right: 8px;
         }
         
-        .language-name {
+        .currency-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .option-name {
             font-size: 0.9rem;
         }
         
-        .language-dropdown {
+        .options-dropdown {
             display: none;
             position: absolute;
             top: 100%;
@@ -95,13 +102,15 @@
             border-radius: 4px;
             min-width: 150px;
             z-index: 100;
+            max-height: 300px;
+            overflow-y: auto;
         }
         
-        .language-dropdown.show {
+        .options-dropdown.show {
             display: block;
         }
         
-        .language-option {
+        .option-item {
             display: flex;
             align-items: center;
             padding: 0.5rem 1rem;
@@ -109,7 +118,7 @@
             text-decoration: none;
         }
         
-        .language-option:hover {
+        .option-item:hover {
             background-color: #f5f5f5;
         }
         
@@ -169,36 +178,94 @@
         </ul>
         
         <div class="right-side">
-            <!-- Nowy selektor języków -->
-            <div class="language-selector" id="languageSelector">
-                <div class="selected-language">
-                    <img src="https://flagcdn.com/16x12/pl.png" class="language-flag" alt="Polska">
-                    <span class="language-name">Polska</span>
+            <!-- Selektor walut -->
+            <div class="selector-container" id="currencySelector">
+                <div class="selected-option">
+                    <span class="currency-icon">PLN</span>
+                    <span class="option-name">PLN</span>
                 </div>
-                <div class="language-dropdown" id="languageDropdown">
-                    <a href="#" class="language-option">
-                        <img src="https://flagcdn.com/16x12/pt.png" class="language-flag" alt="Portugalia">
+                <div class="options-dropdown" id="currencyDropdown">
+                    <a href="#" class="option-item" data-value="PLN">
+                        <span class="currency-icon">PLN</span>
+                        <span>Złoty polski</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="EUR">
+                        <span class="currency-icon">€</span>
+                        <span>Euro</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="USD">
+                        <span class="currency-icon">$</span>
+                        <span>Dolar amerykański</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="GBP">
+                        <span class="currency-icon">£</span>
+                        <span>Funt brytyjski</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="CHF">
+                        <span class="currency-icon">CHF</span>
+                        <span>Frank szwajcarski</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="JPY">
+                        <span class="currency-icon">¥</span>
+                        <span>Jen japoński</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Selektor języków -->
+            <div class="selector-container" id="languageSelector">
+                <div class="selected-option">
+                    <img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska">
+                    <span class="option-name">Polska</span>
+                </div>
+                <div class="options-dropdown" id="languageDropdown">
+                    <a href="#" class="option-item" data-value="pl">
+                        <img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska">
+                        <span>Polska</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="pt">
+                        <img src="https://flagcdn.com/16x12/pt.png" class="option-icon" alt="Portugalia">
                         <span>Portugalia</span>
                     </a>
-                    <a href="#" class="language-option">
-                        <img src="https://flagcdn.com/16x12/ru.png" class="language-flag" alt="Rosja">
+                    <a href="#" class="option-item" data-value="ru">
+                        <img src="https://flagcdn.com/16x12/ru.png" class="option-icon" alt="Rosja">
                         <span>Rosja</span>
                     </a>
-                    <a href="#" class="language-option">
-                        <img src="https://flagcdn.com/16x12/ro.png" class="language-flag" alt="Rumunia">
+                    <a href="#" class="option-item" data-value="ro">
+                        <img src="https://flagcdn.com/16x12/ro.png" class="option-icon" alt="Rumunia">
                         <span>Rumunia</span>
                     </a>
-                    <a href="#" class="language-option">
-                        <img src="https://flagcdn.com/16x12/rs.png" class="language-flag" alt="Serbia">
+                    <a href="#" class="option-item" data-value="rs">
+                        <img src="https://flagcdn.com/16x12/rs.png" class="option-icon" alt="Serbia">
                         <span>Serbia</span>
                     </a>
-                    <a href="#" class="language-option">
-                        <img src="https://flagcdn.com/16x12/sk.png" class="language-flag" alt="Słowacja">
+                    <a href="#" class="option-item" data-value="sk">
+                        <img src="https://flagcdn.com/16x12/sk.png" class="option-icon" alt="Słowacja">
                         <span>Słowacja</span>
                     </a>
-                    <a href="#" class="language-option">
-                        <img src="https://flagcdn.com/16x12/si.png" class="language-flag" alt="Słowenia">
+                    <a href="#" class="option-item" data-value="si">
+                        <img src="https://flagcdn.com/16x12/si.png" class="option-icon" alt="Słowenia">
                         <span>Słowenia</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="us">
+                        <img src="https://flagcdn.com/16x12/us.png" class="option-icon" alt="USA">
+                        <span>USA (English)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="gb">
+                        <img src="https://flagcdn.com/16x12/gb.png" class="option-icon" alt="UK">
+                        <span>UK (English)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="de">
+                        <img src="https://flagcdn.com/16x12/de.png" class="option-icon" alt="Niemcy">
+                        <span>Niemcy</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="fr">
+                        <img src="https://flagcdn.com/16x12/fr.png" class="option-icon" alt="Francja">
+                        <span>Francja</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="es">
+                        <img src="https://flagcdn.com/16x12/es.png" class="option-icon" alt="Hiszpania">
+                        <span>Hiszpania</span>
                     </a>
                 </div>
             </div>
@@ -222,44 +289,59 @@
     </main>
     
     <script>
-        // Skrypt dla rozwijanego menu języków
-        document.getElementById('languageSelector').addEventListener('click', function() {
-            document.getElementById('languageDropdown').classList.toggle('show');
+        // Funkcja do obsługi selektorów
+        function setupSelector(selectorId, dropdownId, updateCallback) {
+            const selector = document.getElementById(selectorId);
+            const dropdown = document.getElementById(dropdownId);
+            
+            selector.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+            
+            document.querySelectorAll(`#${dropdownId} .option-item`).forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    updateCallback(this);
+                    dropdown.classList.remove('show');
+                });
+            });
+        }
+        
+        // Obsługa selektora języków
+        setupSelector('languageSelector', 'languageDropdown', function(selectedOption) {
+            const flag = selectedOption.querySelector('img').src;
+            const name = selectedOption.querySelector('span').textContent;
+            
+            document.querySelector('#languageSelector .option-icon').src = flag;
+            document.querySelector('#languageSelector .option-name').textContent = name;
+            
+            // Tutaj można dodać zmianę języka na stronie
+            console.log('Wybrano język:', selectedOption.dataset.value);
+        });
+        
+        // Obsługa selektora walut
+        setupSelector('currencySelector', 'currencyDropdown', function(selectedOption) {
+            const icon = selectedOption.querySelector('.currency-icon').textContent;
+            const name = selectedOption.querySelector('span:last-child').textContent;
+            
+            document.querySelector('#currencySelector .currency-icon').textContent = icon;
+            document.querySelector('#currencySelector .option-name').textContent = icon;
+            
+            // Tutaj można dodać zmianę waluty na stronie
+            console.log('Wybrano walutę:', selectedOption.dataset.value);
         });
         
         // Skrypt dla rozwijanego menu logowania
-        document.getElementById('loginIcon').addEventListener('click', function() {
+        document.getElementById('loginIcon').addEventListener('click', function(e) {
+            e.stopPropagation();
             document.getElementById('loginDropdown').classList.toggle('show');
         });
         
-        // Zamknij menu jeśli klikniemy gdzie indziej
-        window.addEventListener('click', function(event) {
-            if (!event.target.closest('#languageSelector')) {
-                var dropdown = document.getElementById('languageDropdown');
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            }
-            
-            if (!event.target.matches('#loginIcon')) {
-                var dropdown = document.getElementById('loginDropdown');
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            }
-        });
-        
-        // Zmiana języka po kliknięciu opcji
-        document.querySelectorAll('.language-option').forEach(option => {
-            option.addEventListener('click', function(e) {
-                e.preventDefault();
-                const flag = this.querySelector('img').src;
-                const name = this.querySelector('span').textContent;
-                
-                document.querySelector('.selected-language img').src = flag;
-                document.querySelector('.selected-language .language-name').textContent = name;
-                
-                document.getElementById('languageDropdown').classList.remove('show');
+        // Zamknij wszystkie dropdowny jeśli klikniemy gdzie indziej
+        window.addEventListener('click', function() {
+            document.querySelectorAll('.options-dropdown.show, .login-dropdown.show').forEach(dropdown => {
+                dropdown.classList.remove('show');
             });
         });
     </script>
