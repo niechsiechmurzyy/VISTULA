@@ -57,25 +57,63 @@
             align-items: center;
         }
         
+        /* Nowy styl dla selektora języków */
         .language-selector {
             margin-right: 2rem;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .selected-language {
             display: flex;
             align-items: center;
+            padding: 0.3rem 0.5rem;
+        }
+        
+        .selected-language:hover {
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
         }
         
         .language-flag {
             width: 24px;
             height: 16px;
-            margin: 0 0.3rem;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+            margin-right: 8px;
         }
         
-        .language-flag:hover {
-            opacity: 1;
+        .language-name {
+            font-size: 0.9rem;
         }
         
+        .language-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            min-width: 150px;
+            z-index: 100;
+        }
+        
+        .language-dropdown.show {
+            display: block;
+        }
+        
+        .language-option {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            color: #333;
+            text-decoration: none;
+        }
+        
+        .language-option:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Ikona logowania */
         .login-icon {
             width: 24px;
             height: 24px;
@@ -131,10 +169,38 @@
         </ul>
         
         <div class="right-side">
-            <!-- Wybór języka -->
-            <div class="language-selector">
-                <img src="https://flagcdn.com/16x12/pl.png" class="language-flag" alt="Polski" title="Polski">
-                <img src="https://flagcdn.com/16x12/gb.png" class="language-flag" alt="English" title="English">
+            <!-- Nowy selektor języków -->
+            <div class="language-selector" id="languageSelector">
+                <div class="selected-language">
+                    <img src="https://flagcdn.com/16x12/pl.png" class="language-flag" alt="Polska">
+                    <span class="language-name">Polska</span>
+                </div>
+                <div class="language-dropdown" id="languageDropdown">
+                    <a href="#" class="language-option">
+                        <img src="https://flagcdn.com/16x12/pt.png" class="language-flag" alt="Portugalia">
+                        <span>Portugalia</span>
+                    </a>
+                    <a href="#" class="language-option">
+                        <img src="https://flagcdn.com/16x12/ru.png" class="language-flag" alt="Rosja">
+                        <span>Rosja</span>
+                    </a>
+                    <a href="#" class="language-option">
+                        <img src="https://flagcdn.com/16x12/ro.png" class="language-flag" alt="Rumunia">
+                        <span>Rumunia</span>
+                    </a>
+                    <a href="#" class="language-option">
+                        <img src="https://flagcdn.com/16x12/rs.png" class="language-flag" alt="Serbia">
+                        <span>Serbia</span>
+                    </a>
+                    <a href="#" class="language-option">
+                        <img src="https://flagcdn.com/16x12/sk.png" class="language-flag" alt="Słowacja">
+                        <span>Słowacja</span>
+                    </a>
+                    <a href="#" class="language-option">
+                        <img src="https://flagcdn.com/16x12/si.png" class="language-flag" alt="Słowenia">
+                        <span>Słowenia</span>
+                    </a>
+                </div>
             </div>
             
             <!-- Ikona logowania -->
@@ -156,6 +222,11 @@
     </main>
     
     <script>
+        // Skrypt dla rozwijanego menu języków
+        document.getElementById('languageSelector').addEventListener('click', function() {
+            document.getElementById('languageDropdown').classList.toggle('show');
+        });
+        
         // Skrypt dla rozwijanego menu logowania
         document.getElementById('loginIcon').addEventListener('click', function() {
             document.getElementById('loginDropdown').classList.toggle('show');
@@ -163,12 +234,33 @@
         
         // Zamknij menu jeśli klikniemy gdzie indziej
         window.addEventListener('click', function(event) {
+            if (!event.target.closest('#languageSelector')) {
+                var dropdown = document.getElementById('languageDropdown');
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+            
             if (!event.target.matches('#loginIcon')) {
                 var dropdown = document.getElementById('loginDropdown');
                 if (dropdown.classList.contains('show')) {
                     dropdown.classList.remove('show');
                 }
             }
+        });
+        
+        // Zmiana języka po kliknięciu opcji
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const flag = this.querySelector('img').src;
+                const name = this.querySelector('span').textContent;
+                
+                document.querySelector('.selected-language img').src = flag;
+                document.querySelector('.selected-language .language-name').textContent = name;
+                
+                document.getElementById('languageDropdown').classList.remove('show');
+            });
         });
     </script>
 </body>
