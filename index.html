@@ -155,6 +155,7 @@
             border: 1px solid rgba(255,255,255,0.16);
             padding: 2.5rem 2rem;
             margin: 2.5rem auto;
+            max-width: 800px;
             transition: box-shadow 0.3s;
         }
 
@@ -170,6 +171,13 @@
             display: flex;
             align-items: center;
             gap: 0.8rem;
+        }
+
+        /* Nowy układ pionowy dla formularza */
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
         /* Dodaj klasy ikon */
@@ -201,6 +209,7 @@
             padding: 1.1rem 1rem;
             font-size: 1rem;
             margin-top: 0.3rem;
+            width: 100%;
             box-shadow: 0 1px 4px 0 rgba(31, 38, 135, 0.04);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -237,6 +246,7 @@
             justify-content: center;
             gap: 0.7em;
             transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+            width: 100%;
         }
 
         .stylish-btn:hover, .stylish-btn:focus {
@@ -246,16 +256,18 @@
         }
 
         .flight-search .form-group {
-            margin-bottom: 1.3rem;
+            margin-bottom: 0;
         }
 
         /* Responsywność */
         @media (max-width: 800px) {
             .flight-search.glass-card {
                 padding: 1.4rem 0.8rem;
+                margin: 1.5rem auto;
             }
             .search-title {
-                font-size: 1.3rem;
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
             }
         }
 
@@ -591,14 +603,6 @@
             .calendar-container {
                 flex-direction: column;
             }
-            
-            .search-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .search-button {
-                grid-column: span 1;
-            }
         }
     </style>
     <!-- SVG ikony (możesz dodać do <head> lub za <body>) -->
@@ -861,19 +865,8 @@
             <p>Sprawdź wiek pasażerów w dniu wylotu</p>
             
             <div class="passenger-type">
-                <div>
-                    <div class="passenger-label">Dorośli</div>
-                    <div class="passenger-age">16+ lat</div>
-                </div>
-                <div class="passenger-counter">
-                    <button class="counter-btn minus">-</button>
-                    <span class="counter-value">1</span>
-                    <button class="counter-btn plus">+</button>
-                </div>
-            </div>
-            
-            <div class="passenger-type">
-                <div>
+                
+        <div>
                     <div class="passenger-label">Nastolatkowie</div>
                     <div class="passenger-age">12-15 lat</div>
                 </div>
