@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Rezerwacji</title>
+    <title>System Rezerwacji Lotów</title>
     <style>
         /* Reset i podstawowe style */
         * {
@@ -18,7 +18,7 @@
             color: #333;
         }
         
-        /* Górny pasek nawigacji - NOWY SZARY KOLOR */
+        /* Górny pasek nawigacji */
         .top-bar {
             background-color: #f5f5f5;
             color: black;
@@ -41,41 +41,30 @@
         }
         
         .nav-links a {
-            color: black; /* CZARNE NAPISY */
+            color: black;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: bold; /* POGRUBIONE NAPISY */
             padding: 0.5rem 0;
             transition: all 0.3s;
             position: relative;
         }
         
-        /* PODŚWIETLENIE LINKU Z PODKREŚLENIEM */
-        .nav-links a:hover {
-            color: black;
-        }
-        
-        .nav-links a::after {
+        .nav-links a:hover::after {
             content: '';
             position: absolute;
-            width: 0;
+            width: 100%;
             height: 2px;
             bottom: 0;
             left: 0;
             background-color: black;
-            transition: width 0.3s;
         }
         
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-        
-        /* Prawa strona paska (język, waluta i logowanie) */
+        /* Prawa strona paska */
         .right-side {
             display: flex;
             align-items: center;
         }
         
-        /* Style dla selektorów języka i waluty */
         .selector-container {
             margin-right: 1.5rem;
             position: relative;
@@ -96,13 +85,13 @@
         .option-icon {
             width: 24px;
             height: 16px;
-            margin-right: 12px; /* WIĘKSZY MARGINES MIĘDZY IKONĄ A TEKSTEM */
+            margin-right: 12px;
         }
         
         .currency-icon {
             width: 20px;
             height: 20px;
-            margin-right: 12px; /* WIĘKSZY MARGINES MIĘDZY IKONĄ A TEKSTEM */
+            margin-right: 12px;
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -121,7 +110,7 @@
             background-color: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border-radius: 4px;
-            min-width: 180px; /* SZERSZE MENU DLA WIĘCEJ WALUT */
+            min-width: 180px;
             z-index: 100;
             max-height: 300px;
             overflow-y: auto;
@@ -143,18 +132,117 @@
             background-color: #f5f5f5;
         }
         
-        /* Ikona logowania */
         .login-icon {
             width: 24px;
             height: 24px;
             cursor: pointer;
-            filter: brightness(0); /* CZARNA IKONA */
+            filter: brightness(0);
         }
         
         /* Zawartość strony */
         main {
             padding: 2rem;
             min-height: 80vh;
+        }
+        
+        /* Formularz wyszukiwania lotów */
+        .flight-search {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #003366;
+        }
+        
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-group select, 
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .search-button {
+            grid-column: span 4;
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .search-button:hover {
+            background-color: #002244;
+        }
+        
+        .promo-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .cancel-info {
+            color: #666;
+            font-style: italic;
+        }
+        
+        /* Formularz odprawy */
+        .checkin-form {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none; /* Początkowo ukryty */
+        }
+        
+        .checkin-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #003366;
+        }
+        
+        .checkin-options {
+            margin-bottom: 2rem;
+        }
+        
+        .checkin-option {
+            margin-bottom: 1rem;
+        }
+        
+        .required-field::after {
+            content: '*';
+            color: red;
+            margin-left: 4px;
         }
         
         /* Ukryte menu logowania */
@@ -191,8 +279,8 @@
     <!-- Górny pasek nawigacji -->
     <div class="top-bar">
         <ul class="nav-links">
-            <li><a href="#">Zarezerwuj</a></li>
-            <li><a href="#">Odpraw się</a></li>
+            <li><a href="#" id="reservationTab">Zarezerwuj</a></li>
+            <li><a href="#" id="checkinTab">Odpraw się</a></li>
             <li><a href="#">Zarządzaj rezerwacją</a></li>
             <li><a href="#">Zaplanuj podróż</a></li>
             <li><a href="#">Informacje</a></li>
@@ -227,26 +315,6 @@
                         <span class="currency-icon">CHF</span>
                         <span>Frank szwajcarski (CHF)</span>
                     </a>
-                    <a href="#" class="option-item" data-value="JPY">
-                        <span class="currency-icon">¥</span>
-                        <span>Jen japoński (JPY)</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="CAD">
-                        <span class="currency-icon">C$</span>
-                        <span>Dolar kanadyjski (CAD)</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="AUD">
-                        <span class="currency-icon">A$</span>
-                        <span>Dolar australijski (AUD)</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="CNY">
-                        <span class="currency-icon">¥</span>
-                        <span>Yuan chiński (CNY)</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="HKD">
-                        <span class="currency-icon">HK$</span>
-                        <span>Dolar hongkoński (HKD)</span>
-                    </a>
                 </div>
             </div>
             
@@ -277,41 +345,12 @@
                         <img src="https://flagcdn.com/16x12/rs.png" class="option-icon" alt="Serbia">
                         <span>Serbia</span>
                     </a>
-                    <a href="#" class="option-item" data-value="sk">
-                        <img src="https://flagcdn.com/16x12/sk.png" class="option-icon" alt="Słowacja">
-                        <span>Słowacja</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="si">
-                        <img src="https://flagcdn.com/16x12/si.png" class="option-icon" alt="Słowenia">
-                        <span>Słowenia</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="us">
-                        <img src="https://flagcdn.com/16x12/us.png" class="option-icon" alt="USA">
-                        <span>USA (English)</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="gb">
-                        <img src="https://flagcdn.com/16x12/gb.png" class="option-icon" alt="UK">
-                        <span>UK (English)</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="de">
-                        <img src="https://flagcdn.com/16x12/de.png" class="option-icon" alt="Niemcy">
-                        <span>Niemcy</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="fr">
-                        <img src="https://flagcdn.com/16x12/fr.png" class="option-icon" alt="Francja">
-                        <span>Francja</span>
-                    </a>
-                    <a href="#" class="option-item" data-value="es">
-                        <img src="https://flagcdn.com/16x12/es.png" class="option-icon" alt="Hiszpania">
-                        <span>Hiszpania</span>
-                    </a>
                 </div>
             </div>
             
             <!-- Ikona logowania -->
             <div style="position: relative;">
                 <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" class="login-icon" alt="Logowanie" id="loginIcon">
-                <!-- Menu logowania (początkowo ukryte) -->
                 <div class="login-dropdown" id="loginDropdown">
                     <a href="#">Zaloguj się</a>
                     <a href="#">Zarejestruj się</a>
@@ -322,8 +361,93 @@
     </div>
     
     <main>
-        <h1>Witaj w systemie rezerwacji</h1>
-        <p>Tutaj będzie główna zawartość strony...</p>
+        <!-- Formularz wyszukiwania lotów (domyślnie widoczny) -->
+        <div class="flight-search" id="flightSearch">
+            <h2 class="search-title">Wyszukaj lot</h2>
+            <form class="search-form">
+                <div class="form-group">
+                    <label for="from">Skąd</label>
+                    <select id="from">
+                        <option value="WAW">Warszawa (WAW)</option>
+                        <option value="KRK">Kraków (KRK)</option>
+                        <option value="GDN">Gdańsk (GDN)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="to">Dokąd</label>
+                    <select id="to">
+                        <option value="">Wybierz lotnisko przylotu</option>
+                        <option value="LHR">Londyn (LHR)</option>
+                        <option value="CDG">Paryż (CDG)</option>
+                        <option value="FRA">Frankfurt (FRA)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="departure">Od</label>
+                    <input type="date" id="departure">
+                </div>
+                
+                <div class="form-group">
+                    <label for="return">Do</label>
+                    <input type="date" id="return">
+                </div>
+                
+                <div class="form-group">
+                    <label for="class">Klasa podróży</label>
+                    <select id="class">
+                        <option value="economy">Economy, 1 pasażer</option>
+                        <option value="business">Business</option>
+                        <option value="first">First Class</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="search-button">Szukaj</button>
+                
+                <div class="promo-section">
+                    <div>
+                        <a href="#">+ Mam kod promocyjny</a> | 
+                        <a href="#">+ Mam Kartę Dużej Rodziny</a>
+                    </div>
+                    <div class="cancel-info">24 godziny na anulowanie bez opłat!</div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Formularz odprawy (początkowo ukryty) -->
+        <div class="checkin-form" id="checkinForm">
+            <h2 class="checkin-title">Odprawa online</h2>
+            <p>Odprawa online możliwa jest na 36 godzin przed planowanym odlotem. Wybierz jeden ze sposobów odprawy.</p>
+            
+            <div class="checkin-options">
+                <div class="checkin-option">
+                    <input type="radio" id="checkinPNR" name="checkinMethod" checked>
+                    <label for="checkinPNR">Użyj mojego numeru rezerwacyjnego [PNR]</label>
+                </div>
+                
+                <div class="checkin-option">
+                    <input type="radio" id="checkinTicket" name="checkinMethod">
+                    <label for="checkinTicket">Użyj numeru biletu elektronicznego</label>
+                </div>
+            </div>
+            
+            <form>
+                <div class="form-group">
+                    <label for="bookingNumber" class="required-field">Numer rezerwacji</label>
+                    <input type="text" id="bookingNumber" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName" class="required-field">Nazwisko</label>
+                    <input type="text" id="lastName" required>
+                </div>
+                
+                <button type="submit" class="search-button">Przejdź do odprawy</button>
+                
+                <p style="margin-top: 1rem;"><small>Pola oznaczone gwiazdką są obowiązkowe.</small></p>
+            </form>
+        </div>
     </main>
     
     <script>
@@ -353,9 +477,6 @@
             
             document.querySelector('#languageSelector .option-icon').src = flag;
             document.querySelector('#languageSelector .option-name').textContent = name;
-            
-            // Tutaj można dodać zmianę języka na stronie
-            console.log('Wybrano język:', selectedOption.dataset.value);
         });
         
         // Obsługa selektora walut
@@ -365,9 +486,6 @@
             
             document.querySelector('#currencySelector .currency-icon').textContent = icon;
             document.querySelector('#currencySelector .option-name').textContent = icon;
-            
-            // Tutaj można dodać zmianę waluty na stronie
-            console.log('Wybrano walutę:', selectedOption.dataset.value);
         });
         
         // Skrypt dla rozwijanego menu logowania
@@ -382,6 +500,34 @@
                 dropdown.classList.remove('show');
             });
         });
+        
+        // Przełączanie między formularzami
+        document.getElementById('reservationTab').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('flightSearch').style.display = 'block';
+            document.getElementById('checkinForm').style.display = 'none';
+            
+            // Aktualizacja aktywnej zakładki
+            document.querySelectorAll('.nav-links a').forEach(tab => {
+                tab.style.borderBottom = 'none';
+            });
+            this.style.borderBottom = '2px solid black';
+        });
+        
+        document.getElementById('checkinTab').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('flightSearch').style.display = 'none';
+            document.getElementById('checkinForm').style.display = 'block';
+            
+            // Aktualizacja aktywnej zakładki
+            document.querySelectorAll('.nav-links a').forEach(tab => {
+                tab.style.borderBottom = 'none';
+            });
+            this.style.borderBottom = '2px solid black';
+        });
+        
+        // Domyślnie pokazujemy formularz rezerwacji
+        document.getElementById('reservationTab').style.borderBottom = '2px solid black';
     </script>
 </body>
 </html>
