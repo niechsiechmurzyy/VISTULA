@@ -1,302 +1,3073 @@
 <!DOCTYPE html>
+
 <html lang="pl">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Rezerwacji Lotów</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
-        }
-        
-        body {
-            background-color: white;
-            color: #333;
-        }
-        
-        .top-bar {
-            background-color: #f5f5f5;
-            color: black;
-            padding: 0.8rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-        
-        .nav-links li {
-            margin: 0 1rem;
-            position: relative;
-        }
-        
-        .nav-links a {
-            color: black;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 0.5rem 0;
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .nav-links a:hover::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: black;
-        }
-        
-        .right-side {
-            display: flex;
-            align-items: center;
-        }
-        
-        .selector-container {
-            margin-right: 1.5rem;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .selected-option {
-            display: flex;
-            align-items: center;
-            padding: 0.3rem 0.5rem;
-        }
-        
-        .selected-option:hover {
-            background-color: rgba(0,0,0,0.05);
-            border-radius: 4px;
-        }
-        
-        .option-icon {
-            width: 24px;
-            height: 16px;
-            margin-right: 12px;
-        }
-        
-        .currency-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .option-name {
-            font-size: 0.9rem;
-        }
-        
-        .options-dropdown {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-radius: 4px;
-            min-width: 180px;
-            z-index: 100;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .options-dropdown.show {
-            display: block;
-        }
-        
-        .option-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            color: #333;
-            text-decoration: none;
-        }
-        
-        .option-item:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .login-icon {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            filter: brightness(0);
-        }
-        
-        main {
-            padding: 2rem;
-            min-height: 80vh;
-        }
 
-        .flight-search.glass-card {
-            background: rgba(255, 255, 255, 0.65);
-            box-shadow: 0 4px 32px 0 rgba(31, 38, 135, 0.13);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 1.3rem;
-            border: 1px solid rgba(255,255,255,0.16);
-            padding: 2.5rem 2rem;
-            margin: 2.5rem auto;
-            max-width: 800px;
-            transition: box-shadow 0.3s;
-        }
+<meta charset="UTF-8">
 
-        .flight-search.glass-card:hover, .flight-search.glass-card:focus-within {
-            box-shadow: 0 8px 40px 0 rgba(31, 38, 135, 0.21);
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .search-title {
-            font-size: 2rem;
-            margin-bottom: 2.2rem;
-            letter-spacing: 0.02em;
-            color: #003366;
-            display:极速赛车开奖官网开奖记录        <div class="flight-search.glass-card" id="flightSearch">
-            <h2 class="search-title"><svg width="1.5em" height="1.5em"><use href="#icon-plane"></use></svg> Zarezerwuj lot</h2>
-            <form class="search-form" id="searchForm">
-                <div class="form-group">
-                    <label for="from"><svg width="1.1em" height="1.1em" style="vertical-align:-0.18em;"><use href="#icon-location"></use></svg> Skąd</label>
-                    <select id="from">
-                        <option value="WAW">Warszawa (WAW)</option>
-                        <option value="GDN">Gdańsk (GDN)</option>
-                        <option value="KRK">Kraków (KRK)</option>
-                        <option value="WRO">Wrocław (WRO)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="to"><svg width="极速赛车开奖官网开奖记录        <!-- Wyniki wyszukiwania -->
-        <div class="search-results" id="searchResults">
-            <div class="results-header">
-                <h2>Znalezione loty</h2>
-                <button class="back-to-search" id="backToSearch">← Wróć do wyszukiwania</button>
-            </div>
-            
-            <div id="flightsContainer">
-                <!-- Tutaj będą wstawiane wyniki wyszukiwania -->
-            </div>
-        </div>
-        
-        <!-- Formularz odprawy -->
-        <div class="checkin-form" id="checkinForm">
-            <h2 class="checkin-title">Odprawa online</h2>
-            <p>Odprawa online możliwa jest na 36 godzin przed planowanym odlotem. Wybierz jeden ze sposobów odprawy.</p>
-            
-            <div class="checkin-options">
-                <div class="checkin-option">
-                    <input type="radio" id="checkinPNR" name="checkinMethod" checked>
-                    <label for="checkinPNR">Użyj mojego numeru rezerwacyjnego [PNR]</label>
-                </div>
-                
-                <div class="checkin-option">
-                    <input type="radio" id="checkinTicket" name="checkinMethod">
-                    <label for="checkinTicket">Użyj numeru biletu elektronicznego</label>
-                </div>
-            </div>
-            
-            <form>
-                <div class="form-group">
-                    <label for="bookingNumber" class="required-field">Numer rezerwacji</label>
-                    <input type="text" id="bookingNumber" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="lastName" class="required-field">Nazwisko</label>
-                    <input type="text" id="lastName" required>
-                </div>
-                
-                <button type="submit" class="search-button">Przejdź do odprawy</button>
-                
-                <p style="margin-top: 1rem;"><small>Pola oznaczone gwiazdką są obowiązkowe.</small></p>
-            </form>
-        </div>
-    </main>    <!-- Popup wyboru klasy -->
-    <div class="popup-overlay" id="classPopupOverlay"></div>
-    <div class="travel-class-popup" id="travelClassPopup">
-        <!-- Zawartość popupu klasy -->
-    </div>
+<title>System Rezerwacji Lotów</title>
 
-    <!-- Popup kalendarza -->
-    <div class="popup-overlay" id="datePopupOverlay"></div>
-    <div class="date-picker-popup" id="datePopup">
-        <!-- Zawartość popupu kalendarza -->
-    </div>
+<style>
 
-    <script>
-        // Funkcje JavaScript
-        // ... [tu wstaw cały kod JavaScript z poprzedniej odpowiedzi] ...
-        
-        // Dane lotów
-        const flightData = {
-            "WAW-GDN": [
-                { id: "WAWGDN001", departureTime: "07:00", arrivalTime: "08:00", price: 199, direct: true },
-                { id: "WAWGDN002", departureTime: "19:25", arrivalTime: "20:25", price: 249, direct: true },
-                { id: "WAWGDN003", departureTime: "22:55", arrivalTime: "23:55", price: 179, direct: true }
-            ],
-            "GDN-WAW": [
-                { id: "GDNWAW001", departureTime: "06:00", arrivalTime: "07:00", price: 199, direct: true },
-                { id: "GDNWAW002", departureTime: "08:45", arrivalTime: "09:45", price: 219, direct: true },
-                { id: "GDNWAW003", departureTime: "21:10", arrivalTime: "22:10", price: 179, direct: true }
-            ],
-            "GDN-BCN": [
-                {
-                    id: "GDNBCN001",
-                    segments: [
-                        { from: "GDN", to: "WAW", departureTime: "06:00", arrivalTime: "07:00", flightNumber: "VL101" },
-                        { from: "WAW", to: "BCN", departureTime: "08:30", arrivalTime: "11:30", flightNumber: "VL202" }
-                    ],
-                    totalDuration: "4h 30m",
-                    transferTime: "1h 30m",
-                    price: 599,
-                    direct: false
-                },
-                {
-                    id: "GDNBCN002",
-                    segments: [
-                        { from: "GDN", to: "WAW", departureTime: "08:45", arrivalTime: "09:45", flightNumber: "VL103" },
-                        { from: "WAW", to: "BCN", departureTime: "12:00", arrivalTime: "15:00", flightNumber: "VL204" }
-                    ],
-                    totalDuration: "4h 15m",
-                    transferTime: "2h 15m",
-                    price: 649,
-                    direct: false
-                }
-            ]
-        };
-        
-        // Funkcja do wyświetlania wyników wyszukiwania
-        function showSearchResults(from, to) {
-            // ... [kod funkcji] ...
-        }
-        
-        // Funkcja do tworzenia elementu lotu
-        function createFlightElement(flight, from, to) {
-            // ... [kod funkcji] ...
-        }
-        
-        // Funkcja do pokazywania lotów z przesiadką
-        function showConnectingFlights(from, to) {
-            // ... [kod funkcji] ...
-        }
-        
-        // Obsługa formularza wyszukiwania
-        document.getElementById('searchForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            showSearchResults(from, to);
-        });
-    </script>
+/* Reset i podstawowe style */
+
+* {
+
+margin: 0;
+
+padding: 0;
+
+box-sizing: border-box;
+
+font-family: 'Arial', sans-serif;
+
+}
+
+body {
+
+background-color: white;
+
+color: #333;
+
+}
+
+/* Górny pasek nawigacji */
+
+.top-bar {
+
+background-color: #f5f5f5;
+
+color: black;
+
+padding: 0.8rem 2rem;
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+border-bottom: 1px solid #e0e0e0;
+
+}
+
+.nav-links {
+
+display: flex;
+
+list-style: none;
+
+}
+
+.nav-links li {
+
+margin: 0 1rem;
+
+position: relative;
+
+}
+
+.nav-links a {
+
+color: black;
+
+text-decoration: none;
+
+font-weight: bold;
+
+padding: 0.5rem 0;
+
+transition: all 0.3s;
+
+position: relative;
+
+}
+
+.nav-links a:hover::after {
+
+content: '';
+
+position: absolute;
+
+width: 100%;
+
+height: 2px;
+
+bottom: 0;
+
+left: 0;
+
+background-color: black;
+
+}
+
+/* Prawa strona paska */
+
+.right-side {
+
+display: flex;
+
+align-items: center;
+
+}
+
+.selector-container {
+
+margin-right: 1.5rem;
+
+position: relative;
+
+cursor: pointer;
+
+}
+
+.selected-option {
+
+display: flex;
+
+align-items: center;
+
+padding: 0.3rem 0.5rem;
+
+}
+
+.selected-option:hover {
+
+background-color: rgba(0,0,0,0.05);
+
+border-radius: 4px;
+
+}
+
+.option-icon {
+
+width: 24px;
+
+height: 16px;
+
+margin-right: 12px;
+
+}
+
+.currency-icon {
+
+width: 20px;
+
+height: 20px;
+
+margin-right: 12px;
+
+font-weight: bold;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+}
+
+.option-name {
+
+font-size: 0.9rem;
+
+}
+
+.options-dropdown {
+
+display: none;
+
+position: absolute;
+
+top: 100%;
+
+right: 0;
+
+background-color: white;
+
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+border-radius: 4px;
+
+min-width: 180px;
+
+z-index: 100;
+
+max-height: 300px;
+
+overflow-y: auto;
+
+}
+
+.options-dropdown.show {
+
+display: block;
+
+}
+
+.option-item {
+
+display: flex;
+
+align-items: center;
+
+padding: 0.5rem 1rem;
+
+color: #333;
+
+text-decoration: none;
+
+}
+
+.option-item:hover {
+
+background-color: #f5f5f5;
+
+}
+
+.login-icon {
+
+width: 24px;
+
+height: 24px;
+
+cursor: pointer;
+
+filter: brightness(0);
+
+}
+
+/* Zawartość strony */
+
+main {
+
+padding: 2rem;
+
+min-height: 80vh;
+
+}
+
+/* --- NOWY DESIGN GLASSMORPHISM dla wyszukiwarki lotów --- */
+
+.flight-search.glass-card {
+
+background: rgba(255, 255, 255, 0.65);
+
+box-shadow: 0 4px 32px 0 rgba(31, 38, 135, 0.13);
+
+backdrop-filter: blur(12px);
+
+-webkit-backdrop-filter: blur(12px);
+
+border-radius: 1.3rem;
+
+border: 1px solid rgba(255,255,255,0.16);
+
+padding: 2.5rem 2rem;
+
+margin: 2.5rem auto;
+
+max-width: 800px;
+
+transition: box-shadow 0.3s;
+
+}
+
+.flight-search.glass-card:hover, .flight-search.glass-card:focus-within {
+
+box-shadow: 0 8px 40px 0 rgba(31, 38, 135, 0.21);
+
+}
+
+.search-title {
+
+font-size: 2rem;
+
+margin-bottom: 2.2rem;
+
+letter-spacing: 0.02em;
+
+color: #003366;
+
+display: flex;
+
+align-items: center;
+
+gap: 0.8rem;
+
+}
+
+/* Nowy układ pionowy dla formularza */
+
+.search-form {
+
+display: flex;
+
+flex-direction: column;
+
+gap: 1.5rem;
+
+}
+
+/* Dodaj klasy ikon */
+
+[class^="icon-"], [class*=" icon-"] {
+
+display: inline-block;
+
+width: 1.25em;
+
+height: 1.25em;
+
+vertical-align: -0.18em;
+
+background: none;
+
+fill: currentColor;
+
+}
+
+.icon-plane { background: none; }
+
+.icon-plane::before { content: ''; display: none; }
+
+.icon-location { background: none; }
+
+.icon-calendar { background: none; }
+
+.icon-user { background: none; }
+
+.icon-ticket { background: none; }
+
+.icon-search { background: none; }
+
+[class^="icon-"]:not(:empty):before, [class*=" icon-"]:not(:empty):before {
+
+display: inline-block;
+
+}
+
+/* Lepsze pola */
+
+.flight-search select, .flight-search input, .date-select-trigger, .class-select-trigger {
+
+background: rgba(255,255,255,0.7);
+
+border: 1.5px solid #d2e3f7;
+
+border-radius: 0.8rem;
+
+padding: 1.1rem 1rem;
+
+font-size: 1rem;
+
+margin-top: 0.3rem;
+
+width: 100%;
+
+box-shadow: 0 1px 4px 0 rgba(31, 38, 135, 0.04);
+
+transition: border-color 0.2s, box-shadow 0.2s;
+
+}
+
+.flight-search select:focus, .flight-search input:focus, .date-select-trigger:focus, .class-select-trigger:focus {
+
+border-color: #003366;
+
+outline: none;
+
+box-shadow: 0 1px 8px 0 rgba(31, 38, 135, 0.09);
+
+}
+
+/* Ikony w labelach */
+
+.flight-search label .icon-location,
+
+.flight-search label .icon-calendar,
+
+.flight-search label .icon-ticket {
+
+margin-right: 0.34em;
+
+color: #003366;
+
+font-size: 1.1em;
+
+}
+
+/* Przycisk szukaj w stylu soft-ui */
+
+.stylish-btn {
+
+background: linear-gradient(90deg, #00b6d4 0%, #3e8ed0 100%);
+
+color: #fff;
+
+border: none;
+
+padding: 1.1rem 0;
+
+font-size: 1.2rem;
+
+font-weight: bold;
+
+border-radius: 1.1rem;
+
+margin-top: 1.3rem;
+
+box-shadow: 0 2px 16px 0 rgba(62, 142, 208, 0.16);
+
+letter-spacing: 0.04em;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+gap: 0.7em;
+
+transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+
+width: 100%;
+
+}
+
+.stylish-btn:hover, .stylish-btn:focus {
+
+background: linear-gradient(90deg, #008bb5 0%, #1a5ba6 100%);
+
+box-shadow: 0 6px 32px 0 rgba(62, 142, 208, 0.25);
+
+transform: translateY(-2px) scale(1.015);
+
+}
+
+.flight-search .form-group {
+
+margin-bottom: 0;
+
+}
+
+/* Responsywność */
+
+@media (max-width: 800px) {
+
+.flight-search.glass-card {
+
+padding: 1.4rem 0.8rem;
+
+margin: 1.5rem auto;
+
+}
+
+.search-title {
+
+font-size: 1.5rem;
+
+margin-bottom: 1.5rem;
+
+}
+
+}
+
+/* --- KONIEC NOWEGO DESIGNU --- */
+
+/* Nowy styl dla sekcji promocyjnej */
+
+.promo-section {
+
+display: flex;
+
+flex-wrap: wrap;
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-top: 1.5rem;
+
+padding: 1rem;
+
+background-color: #f0f7ff;
+
+border-radius: 6px;
+
+gap: 1rem;
+
+}
+
+.promo-links {
+
+display: flex;
+
+flex-wrap: wrap;
+
+gap: 1rem;
+
+align-items: center;
+
+}
+
+.promo-links a {
+
+color: #003366;
+
+text-decoration: none;
+
+font-weight: bold;
+
+padding: 0.5rem 0.8rem;
+
+border-radius: 4px;
+
+transition: all 0.3s;
+
+white-space: nowrap;
+
+}
+
+.promo-links a:hover {
+
+background-color: rgba(0, 51, 102, 0.1);
+
+}
+
+.cancel-info {
+
+background-color: #003366;
+
+color: white;
+
+padding: 0.5rem 1rem;
+
+border-radius: 4px;
+
+font-weight: bold;
+
+white-space: nowrap;
+
+}
+
+@media (max-width: 600px) {
+
+.promo-section {
+
+flex-direction: column;
+
+align-items: flex-start;
+
+}
+
+}
+
+/* Formularz odprawy */
+
+.checkin-form {
+
+max-width: 600px;
+
+margin: 2rem auto;
+
+padding: 2rem;
+
+background-color: #f9f9f9;
+
+border-radius: 8px;
+
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+display: none;
+
+}
+
+.checkin-title {
+
+font-size: 1.5rem;
+
+margin-bottom: 1.5rem;
+
+color: #003366;
+
+}
+
+.checkin-options {
+
+margin-bottom: 2rem;
+
+}
+
+.checkin-option {
+
+margin-bottom: 1rem;
+
+}
+
+.required-field::after {
+
+content: '*';
+
+color: red;
+
+margin-left: 4px;
+
+}
+
+/* Ukryte menu logowania */
+
+.login-dropdown {
+
+display: none;
+
+position: absolute;
+
+right: 0;
+
+top: 40px;
+
+background-color: white;
+
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+border-radius: 4px;
+
+padding: 1rem;
+
+width: 200px;
+
+z-index: 100;
+
+}
+
+.login-dropdown.show {
+
+display: block;
+
+}
+
+.login-dropdown a {
+
+display: block;
+
+color: #333;
+
+padding: 0.5rem 0;
+
+text-decoration: none;
+
+}
+
+.login-dropdown a:hover {
+
+color: #003366;
+
+}
+
+/* Nowy styl dla popupu wyboru klasy */
+
+.travel-class-popup {
+
+display: none;
+
+position: fixed;
+
+top: 50%;
+
+left: 50%;
+
+transform: translate(-50%, -50%);
+
+background: white;
+
+padding: 2rem;
+
+border-radius: 8px;
+
+box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+
+z-index: 1000;
+
+max-width: 500px;
+
+width: 90%;
+
+}
+
+/* Nowy styl dla popupu kalendarza */
+
+.date-picker-popup {
+
+display: none;
+
+position: fixed;
+
+top: 50%;
+
+left: 50%;
+
+transform: translate(-50%, -50%);
+
+background: white;
+
+padding: 2rem;
+
+border-radius: 8px;
+
+box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+
+z-index: 1000;
+
+max-width: 700px;
+
+width: 90%;
+
+}
+
+.popup-overlay {
+
+display: none;
+
+position: fixed;
+
+top: 0;
+
+left: 0;
+
+right: 0;
+
+bottom: 0;
+
+background: rgba(0,0,0,0.5);
+
+z-index: 999;
+
+}
+
+.calendar-container {
+
+display: flex;
+
+gap: 2rem;
+
+margin-top: 1rem;
+
+}
+
+.calendar-section {
+
+flex: 1;
+
+}
+
+.calendar-header {
+
+text-align: center;
+
+font-weight: bold;
+
+margin-bottom: 0.5rem;
+
+color: #003366;
+
+}
+
+.month-navigation {
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-bottom: 0.5rem;
+
+}
+
+.month-title {
+
+font-weight: bold;
+
+text-align: center;
+
+}
+
+.weekdays {
+
+display: grid;
+
+grid-template-columns: repeat(7, 1fr);
+
+text-align: center;
+
+font-weight: bold;
+
+margin-bottom: 0.5rem;
+
+}
+
+.days-grid {
+
+display: grid;
+
+grid-template-columns: repeat(7, 1fr);
+
+gap: 0.3rem;
+
+}
+
+.day {
+
+padding: 0.5rem;
+
+text-align: center;
+
+cursor: pointer;
+
+border-radius: 4px;
+
+transition: all 0.2s;
+
+}
+
+.day:hover {
+
+background-color: #f0f0f0;
+
+}
+
+.day.selected {
+
+background-color: #003366;
+
+color: white;
+
+}
+
+.day.disabled {
+
+color: #ccc;
+
+cursor: not-allowed;
+
+}
+
+.day.other-month {
+
+color: #999;
+
+}
+
+.nav-button {
+
+background: none;
+
+border: none;
+
+cursor: pointer;
+
+font-size: 1.2rem;
+
+padding: 0 0.5rem;
+
+}
+
+.confirm-btn {
+
+background-color: #003366;
+
+color: white;
+
+border: none;
+
+padding: 1rem;
+
+width: 100%;
+
+border-radius: 4px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+margin-top: 1rem;
+
+transition: background-color 0.3s;
+
+}
+
+.confirm-btn:hover {
+
+background-color: #002244;
+
+}
+
+.class-options {
+
+margin-bottom: 2rem;
+
+}
+
+.class-option {
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+padding: 1rem;
+
+border: 1px solid #e0e0e0;
+
+border-radius: 4px;
+
+margin-bottom: 0.5rem;
+
+cursor: pointer;
+
+transition: all 0.3s;
+
+}
+
+.class-option:hover {
+
+background-color: #f5f5f5;
+
+border-color: #003366;
+
+}
+
+.class-option.selected {
+
+background-color: #e6f0ff;
+
+border-color: #003366;
+
+}
+
+.class-name {
+
+font-weight: bold;
+
+}
+
+.class-desc {
+
+font-size: 0.9rem;
+
+color: #666;
+
+}
+
+.passenger-selection {
+
+margin-top: 2rem;
+
+}
+
+.passenger-type {
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-bottom: 1rem;
+
+}
+
+.passenger-label {
+
+font-weight: bold;
+
+}
+
+.passenger-age {
+
+font-size: 0.8rem;
+
+color: #666;
+
+}
+
+.passenger-counter {
+
+display: flex;
+
+align-items: center;
+
+}
+
+.counter-btn {
+
+width: 30px;
+
+height: 30px;
+
+border: 1px solid #ddd;
+
+background: #f9f9f9;
+
+border-radius: 4px;
+
+cursor: pointer;
+
+font-size: 1rem;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+}
+
+.counter-value {
+
+margin: 0 1rem;
+
+min-width: 20px;
+
+text-align: center;
+
+}
+
+/* Sekcja wyników wyszukiwania */
+
+.search-results {
+
+display: none;
+
+max-width: 800px;
+
+margin: 2rem auto;
+
+padding: 2rem;
+
+background: rgba(255, 255, 255, 0.85);
+
+border-radius: 1.3rem;
+
+box-shadow: 0 4px 32px rgba(31, 38, 135, 0.13);
+
+backdrop-filter: blur(12px);
+
+}
+
+.results-header {
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-bottom: 1.5rem;
+
+padding-bottom: 1rem;
+
+border-bottom: 1px solid #e0e0e0;
+
+}
+
+.flight-option {
+
+background: white;
+
+border-radius: 0.8rem;
+
+padding: 1.5rem;
+
+margin-bottom: 1.5rem;
+
+box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+transition: transform 0.3s;
+
+}
+
+.flight-option:hover {
+
+transform: translateY(-3px);
+
+box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+}
+
+.flight-header {
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-bottom: 1rem;
+
+}
+
+.flight-time {
+
+font-size: 1.2rem;
+
+font-weight: bold;
+
+color: #003366;
+
+}
+
+.flight-duration {
+
+color: #666;
+
+font-size: 0.9rem;
+
+}
+
+.flight-price {
+
+font-size: 1.5rem;
+
+font-weight: bold;
+
+color: #00b6d4;
+
+}
+
+.flight-details {
+
+display: flex;
+
+justify-content: space-between;
+
+margin-top: 1rem;
+
+padding-top: 1rem;
+
+border-top: 1px dashed #e0e0e0;
+
+}
+
+.flight-segment {
+
+flex: 1;
+
+padding: 0 1rem;
+
+position: relative;
+
+}
+
+.flight-segment:not(:last-child):after {
+
+content: "";
+
+position: absolute;
+
+right: 0;
+
+top: 50%;
+
+transform: translateY(-50%);
+
+width: 20px;
+
+height: 1px;
+
+background: #ccc;
+
+}
+
+.segment-airport {
+
+font-weight: bold;
+
+}
+
+.segment-time {
+
+color: #666;
+
+}
+
+.segment-duration {
+
+font-size: 0.8rem;
+
+color: #999;
+
+}
+
+.book-btn {
+
+background: linear-gradient(90deg, #00b6d4 0%, #3e8ed0 100%);
+
+color: white;
+
+border: none;
+
+padding: 0.8rem 1.5rem;
+
+border-radius: 0.8rem;
+
+font-weight: bold;
+
+cursor: pointer;
+
+transition: all 0.3s;
+
+display: block;
+
+margin-top: 1rem;
+
+width: 100%;
+
+}
+
+.book-btn:hover {
+
+background: linear-gradient(90deg, #008bb5 0%, #1a5ba6 100%);
+
+transform: translateY(-2px);
+
+}
+
+.back-to-search {
+
+background: none;
+
+border: none;
+
+color: #003366;
+
+text-decoration: underline;
+
+cursor: pointer;
+
+font-size: 0.9rem;
+
+}
+
+.transfer-info {
+
+background: #f0f7ff;
+
+padding: 0.5rem;
+
+border-radius: 4px;
+
+margin-top: 0.5rem;
+
+font-size: 0.9rem;
+
+color: #003366;
+
+}
+
+@media (max-width: 768px) {
+
+.calendar-container {
+
+flex-direction: column;
+
+}
+
+.flight-details {
+
+flex-direction: column;
+
+}
+
+.flight-segment {
+
+margin-bottom: 1rem;
+
+}
+
+.flight-segment:after {
+
+display: none;
+
+}
+
+}
+
+</style>
+
+<!-- SVG ikony (możesz dodać do <head> lub za <body>) -->
+
+<svg style="display:none;">
+
+<symbol id="icon-plane" viewBox="0 0 24 24"><path d="M2.5 19l19.5-7L2.5 5v5l15 2-15 2z" fill="currentColor"/></symbol>
+
+<symbol id="icon-location" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z" fill="currentColor"/></symbol>
+
+<symbol id="icon-calendar" viewBox="0 0 24 24"><path d="M7 10h5v5H7z" opacity=".3"/><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zm0-13H5V6h14v1zm-7 7h5v5h-5z" fill="currentColor"/></symbol>
+
+<symbol id="icon-user" viewBox="0 0 24 24"><path d="M12 12c2.67 0 8 1.34 8 4v4H4v-4c0-2.66 5.33-4 8-4zm0-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" fill="currentColor"/></symbol>
+
+<symbol id="icon-ticket" viewBox="0 0 24 24"><path d="M22 10V8c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v2c1.1 0 2 .9 2 2s-.9 2-2 2v2c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-2c-1.1 0-2-.9-2-2s.9-2 2-2z" fill="currentColor"/></symbol>
+
+<symbol id="icon-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16a6.471 6.471 0 0 0 4.23-1.57l.27.28v.79l5 5c.39.39 1.02.39 1.41 0a.9959.9959 0 0 0 0-1.41l-5-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/></symbol>
+
+</svg>
+
+</head>
+
+```
+
+### Część 2: Sekcja `<body>` - górny pasek nawigacji
+
+```html
+
+<body>
+
+<!-- Górny pasek nawigacji -->
+
+<div class="top-bar">
+
+<ul class="nav-links">
+
+<li><a href="#" id="reservationTab">Zarezerwuj</a></li>
+
+<li><a href="#" id="checkinTab">Odpraw się</a></li>
+
+<li><a href="#">Zarządzaj rezerwacją</a></li>
+
+<li><a href="#">Zaplanuj podróż</a></li>
+
+<li><a href="#">Informacje</a></li>
+
+<li><a href="#">Pomoc</a></li>
+
+</ul>
+
+<div class="right-side">
+
+<!-- Selektor walut - rozszerzona wersja -->
+
+<div class="selector-container" id="currencySelector">
+
+<div class="selected-option">
+
+<span class="currency-icon">PLN</span>
+
+<span class="option-name">PLN</span>
+
+</div>
+
+<div class="options-dropdown" id="currencyDropdown">
+
+<a href="#" class="option-item" data-value="PLN">
+
+<span class="currency-icon">PLN</span>
+
+<span>Złoty polski</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="EUR">
+
+<span class="currency-icon">€</span>
+
+<span>Euro (EUR)</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="USD">
+
+<span class="currency-icon">$</span>
+
+<span>Dolar amerykański (USD)</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="GBP">
+
+<span class="currency-icon">£</span>
+
+<span>Funt brytyjski (GBP)</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="CHF">
+
+<span class="currency-icon">CHF</span>
+
+<span>Frank szwajcarski (CHF)</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="JPY">
+
+<span class="currency-icon">¥</span>
+
+<span>Jen japoński (JPY)</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="AUD">
+
+<span class="currency-icon">A$</span>
+
+<span>Dolar australijski (AUD)</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="CAD">
+
+<span class="currency-icon">C$</span>
+
+<span>Dolar kanadyjski (CAD)</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="SEK">
+
+<span class="currency-icon">kr</span>
+
+<span>Korona szwedzka (SEK)</span>
+
+</a>
+
+</div>
+
+</div>
+
+<!-- Selektor języków - rozszerzona wersja -->
+
+<div class="selector-container" id="languageSelector">
+
+<div class="selected-option">
+
+<img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska" loading="lazy">
+
+<span class="option-name">Polski</span>
+
+</div>
+
+<div class="options-dropdown" id="languageDropdown">
+
+<a href="#" class="option-item" data-value="pl" lang="pl">
+
+<img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska" loading="lazy">
+
+<span>Polski</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="en" lang="en">
+
+<img src="https://flagcdn.com/16x12/gb.png" class="option-icon" alt="Angielski" loading="lazy">
+
+<span>English</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="de" lang="de">
+
+<img src="https://flagcdn.com/16x12/de.png" class="option-icon" alt="Niemiecki" loading="lazy">
+
+<span>Deutsch</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="fr" lang="fr">
+
+<img src="https://flagcdn.com/16x12/fr.png" class="option-icon" alt="Francuski" loading="lazy">
+
+<span>Français</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="es" lang="es">
+
+<img src="https://flagcdn.com/16x12/es.png" class="option-icon" alt="Hiszpański" loading="lazy">
+
+<span>Español</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="it" lang="it">
+
+<img src="https://flagcdn.com/16x12/it.png" class="option-icon" alt="Włoski" loading="lazy">
+
+<span>Italiano</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="ru" lang="ru">
+
+<img src="https://flagcdn.com/16x12/ru.png" class="option-icon" alt="Rosyjski" loading="lazy">
+
+<span>Русский</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="uk" lang="uk">
+
+<img src="https://flagcdn.com/16x12/ua.png" class="option-icon" alt="Ukraiński" loading="lazy">
+
+<span>Українська</span>
+
+</a>
+
+<a href="#" class="option-item" data-value="zh" lang="zh">
+
+<img src="https://flagcdn.com/16x12/cn.png" class="option-icon" alt="Chiński" loading="lazy">
+
+<span>中文</span>
+
+</a>
+
+</div>
+
+</div>
+
+<!-- Ikona logowania -->
+
+<div style="position: relative;">
+
+<img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" class="login-icon" alt="Logowanie" id="loginIcon">
+
+<div class="login-dropdown" id="loginDropdown">
+
+<a href="#">Zaloguj się</a>
+
+<a href="#">Zarejestruj się</a>
+
+<a href="#">Konto klienta</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+```
+
+### Część 3: Sekcja główna z formularzami
+
+```html
+
+<main>
+
+<!-- Formularz wyszukiwania lotów -->
+
+<div class="flight-search glass-card" id="flightSearch">
+
+<h2 class="search-title"><svg width="1.5em" height="1.5em"><use href="#icon-plane"></use></svg> Zarezerwuj lot</h2>
+
+<form class="search-form" id="searchForm">
+
+<div class="form-group">
+
+<label for="from"><svg width="1.1em" height="1.1em" style="vertical-align:-0.18em;"><use href="#icon-location"></use></svg> Skąd</label>
+
+<select id="from">
+
+<option value="WAW">Warszawa (WAW)</option>
+
+<option value="GDN">Gdańsk (GDN)</option>
+
+<option value="KRK">Kraków (KRK)</option>
+
+<option value="WRO">Wrocław (WRO)</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label for="to"><svg width="1.1em" height="1.1em" style="vertical-align:-0.18em;"><use href="#icon-location"></use></svg> Dokąd</label>
+
+<select id="to">
+
+<option value="">Wybierz lotnisko przylotu</option>
+
+<option value="WAW">Warszawa (WAW)</option>
+
+<option value="GDN">Gdańsk (GDN)</option>
+
+<option value="BCN">Barcelona (BCN)</option>
+
+<option value="CDG">Paryż (CDG)</option>
+
+<option value="FRA">Frankfurt (FRA)</option>
+
+</select>
+
+</div>
+
+<div class="form-group">
+
+<label><svg width="1.1em" height="1.1em" style="vertical-align:-0.18em;"><use href="#icon-calendar"></use></svg> Data podróży</label>
+
+<button type="button" class="date-select-trigger" id="openDatePopup">
+
+<svg width="1.1em" height="1.1em" style="vertical-align:-0.18em; margin-right:0.2em;"><use href="#icon-calendar"></use></svg> Wybierz daty podróży
+
+</button>
+
+<input type="hidden" id="departure" name="departure">
+
+<input type="hidden" id="return" name="return">
+
+</div>
+
+<div class="form-group">
+
+<label for="class"><svg width="1.1em" height="1.1em" style="vertical-align:-0.18em;"><use href="#icon-ticket"></use></svg> Klasa podróży</label>
+
+<button type="button" class="class-select-trigger" id="openClassPopup">
+
+<svg width="1.1em" height="1.1em" style="vertical-align:-0.18em; margin-right:0.2em;"><use href="#icon-user"></use></svg> Vistula Economy Class, 1 pasażer
+
+</button>
+
+<input type="hidden" id="selectedClass" value="economy">
+
+<input type="hidden" id="passengerCount" value="1">
+
+</div>
+
+<button type="submit" class="search-button stylish-btn">
+
+<svg width="1.1em" height="1.1em" style="vertical-align:-0.18em; margin-right:0.2em;"><use href="#icon-search"></use></svg> Szukaj
+
+</button>
+
+<!-- Sekcja promocyjna -->
+
+<div class="promo-section">
+
+<div class="promo-links">
+
+<a href="#" class="promo-code">
+
+<span>+</span> Mam kod promocyjny
+
+</a>
+
+<a href="#" class="family-card">
+
+<span>+</span> Mam Kartę Dużej Rodziny
+
+</a>
+
+</div>
+
+<div class="cancel-info">
+
+24 godziny na anulowanie bez opłat!
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+<!-- Wyniki wyszukiwania -->
+
+<div class="search-results" id="searchResults">
+
+<div class="results-header">
+
+<h2>Znalezione loty</h2>
+
+<button class="back-to-search" id="backToSearch">← Wróć do wyszukiwania</button>
+
+</div>
+
+<div id="flightsContainer">
+
+<!-- Tutaj będą wstawiane wyniki wyszukiwania -->
+
+</div>
+
+</div>
+
+<!-- Formularz odprawy (początkowo ukryty) -->
+
+<div class="checkin-form" id="checkinForm">
+
+<h2 class="checkin-title">Odprawa online</h2>
+
+<p>Odprawa online możliwa jest na 36 godzin przed planowanym odlotem. Wybierz jeden ze sposobów odprawy.</p>
+
+<div class="checkin-options">
+
+<div class="checkin-option">
+
+<input type="radio" id="checkinPNR" name="checkinMethod" checked>
+
+<label for="checkinPNR">Użyj mojego numeru rezerwacyjnego [PNR]</label>
+
+</div>
+
+<div class="checkin-option">
+
+<input type="radio" id="checkinTicket" name="checkinMethod">
+
+<label for="checkinTicket">Użyj numeru biletu elektronicznego</label>
+
+</div>
+
+</div>
+
+<form>
+
+<div class="form-group">
+
+<label for="bookingNumber" class="required-field">Numer rezerwacji</label>
+
+<input type="text" id="bookingNumber" required>
+
+</div>
+
+<div class="form-group">
+
+<label for="lastName" class="required-field">Nazwisko</label>
+
+<input type="text" id="lastName" required>
+
+</div>
+
+<button type="submit" class="search-button">Przejdź do odprawy</button>
+
+<p style="margin-top: 1rem;"><small>Pola oznaczone gwiazdką są obowiązkowe.</small></p>
+
+</form>
+
+</div>
+
+</main>
+
+```
+
+### Część 4: Popupy i sekcja JavaScript
+
+```html
+
+<!-- Popup wyboru klasy -->
+
+<div class="popup-overlay" id="classPopupOverlay"></div>
+
+<div class="travel-class-popup" id="travelClassPopup">
+
+<h2>Wybierz klasę podróży</h2>
+
+<div class="class-options">
+
+<div class="class-option" data-class="economy">
+
+<div>
+
+<div class="class-name">Vistula Economy Class</div>
+
+<div class="class-desc">Standardowa klasa ekonomiczna</div>
+
+</div>
+
+</div>
+
+<极速赛车开奖官网开奖记录
+
+```html
+
+<div class="class-option" data-class="premium">
+
+<div>
+
+<div class="class-name">Vistula Premium Economy</div>
+
+<div class="class-desc">Więcej przestrzeni i udogodnień</div>
+
+</div>
+
+</div>
+
+<div class="class-option" data-class="business">
+
+<div>
+
+<div class="class-name">Vistula Business Class</div>
+
+<div class="class-desc">Luksusowe podróżowanie</div>
+
+</极速赛车开奖官网开奖记录
+
+```html
+
+</div>
+
+</div>
+
+<div class="class-option" data-class="first">
+
+<div>
+
+<div class="class-name">Vistula Pierwsza Klasa</div>
+
+<div class="class-desc">Najwyższy komfort podróży</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="passenger-selection">
+
+<h3>Dodaj pasażerów</h3>
+
+<p>Sprawdź wiek pasażerów w dniu wylotu</p>
+
+<div class="passenger-type">
+
+<div>
+
+<div class="passenger-label">Dorośli</div>
+
+<div class="passenger-age">16+ lat</div>
+
+</div>
+
+<div class="passenger-counter">
+
+<button class="counter-btn minus">-</button>
+
+<span class="counter-value">1</span>
+
+<button class="counter-btn plus">+</button>
+
+</div>
+
+</div>
+
+<div class="passenger-type">
+
+<div>
+
+<div class="passenger-label">Nastolatkowie</div>
+
+<div class="passenger-age">12-15 lat</div>
+
+</div>
+
+<div class="passenger-counter">
+
+<button class="counter-btn minus">-</button>
+
+<span class="counter-value">0</极速赛车开奖官网开奖记录
+
+```html
+
+<span class="counter-value">0</span>
+
+<button class="counter-btn plus">+</button>
+
+</div>
+
+</div>
+
+<div class="passenger-type">
+
+<div>
+
+<div class="passenger-label">Dzieci</div>
+
+<div class="passenger-age">2-11 lat</div>
+
+</div>
+
+<div class="passenger-counter">
+
+<button class="counter-btn minus">-</button>
+
+<span class="counter-value">0</span>
+
+<button class="counter-btn plus">+</button>
+
+</div>
+
+</div>
+
+<div class="passenger-type">
+
+<div>
+
+<div class="passenger-label">Niemowlęta</div>
+
+<div class="passenger-age">0-24 miesięcy</div>
+
+</div>
+
+<div class="passenger-counter">
+
+<button class="counter-btn minus">-</button>
+
+<span class="counter-value">0</span>
+
+<button class="counter-btn plus">+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<button class="confirm-btn" id="confirmClass">Potwierdź</button>
+
+</div>
+
+<!-- Popup kalendarza -->
+
+<div class="popup-overlay" id="datePopupOverlay"></div>
+
+<div class="date-picker-popup" id="datePopup">
+
+<h2>Wybierz daty podróży</h2>
+
+<div class="calendar-container">
+
+<div class="calendar-section">
+
+<div class="calendar-header">Wylot</div>
+
+<div id="departureCalendar"></div>
+
+</div>
+
+<div class="calendar-section">
+
+<div class="calendar-header">Powrót</div>
+
+<div id="returnCalendar"></div>
+
+</div>
+
+</div>
+
+<button class="confirm-btn" id="confirmDates">Potwierdź</button>
+
+</div>
+
+<script>
+
+// Funkcja do obsługi selektorów
+
+function setupSelector(selectorId, dropdownId, updateCallback) {
+
+const selector = document.getElementById(selectorId);
+
+const dropdown = document.getElementById(dropdownId);
+
+selector.addEventListener('click', function(e) {
+
+e.stopPropagation();
+
+dropdown.classList.toggle('show');
+
+});
+
+document.querySelectorAll(`#${dropdownId} .option-item`).forEach(option => {
+
+option.addEventListener('click', function(e) {
+
+e.preventDefault();
+
+updateCallback(this);
+
+dropdown.classList.remove('show');
+
+});
+
+});
+
+}
+
+// Obsługa selektora języków
+
+setupSelector('languageSelector', 'languageDropdown', function(selectedOption) {
+
+const flag = selectedOption.querySelector('img').src;
+
+const name = selectedOption.querySelector('span').textContent;
+
+document.querySelector('#languageSelector .option-icon').src = flag;
+
+document.querySelector('#languageSelector .option-name').textContent = name;
+
+});
+
+// Obsługa selektora walut
+
+setupSelector('currencySelector', 'currencyDropdown', function(selectedOption) {
+
+const icon = selectedOption.querySelector('.currency-icon').textContent;
+
+const name = selectedOption.querySelector('span:last-child').textContent;
+
+document.querySelector('#currencySelector .currency-icon').textContent = icon;
+
+document.querySelector('#currencySelector .option-name').textContent = icon;
+
+});
+
+// Skrypt dla rozwijanego menu logowania
+
+document.getElementById('loginIcon').addEventListener('click', function(e) {
+
+e.stopPropagation();
+
+document.getElementById('loginDropdown').class极速赛车开奖官网开奖记录
+
+```html
+
+e.stopPropagation();
+
+document.getElementById('loginDropdown').classList.toggle('show');
+
+});
+
+// Zamknij wszystkie dropdowny jeśli klikniemy gdzie indziej
+
+window.addEventListener('click', function() {
+
+document.querySelectorAll('.options-dropdown.show, .login-dropdown.show').forEach(dropdown => {
+
+dropdown.classList.remove('show');
+
+});
+
+});
+
+// Przełączanie między formularzami
+
+document.getElementById('reservationTab').addEventListener('click', function(e) {
+
+e.preventDefault();
+
+document.getElementById('flightSearch').style.display = 'block';
+
+document.getElementById('searchResults').style.display = 'none';
+
+document.getElementById('checkinForm').style.display = 'none';
+
+document.querySelectorAll('.nav-links a').forEach(tab => {
+
+tab.style.borderBottom = 'none';
+
+});
+
+this.style.borderBottom = '2px solid black';
+
+});
+
+document.getElementById('checkinTab').addEventListener('click', function(e) {
+
+e.preventDefault();
+
+document.getElementById('flightSearch').style.display = 'none';
+
+document.getElementById('searchResults').style.display = 'none';
+
+document.getElementById('checkinForm').style.display = 'block';
+
+document.querySelectorAll('.nav-links a').forEach(tab => {
+
+tab.style.borderBottom = 'none';
+
+});
+
+this.style.borderBottom = '2px solid black';
+
+});
+
+// Domyślnie pokazujemy formularz rezerwacji
+
+document.getElementById('reservationTab').style.borderBottom = '2px solid black';
+
+// Klasa do obsługi kalendarza
+
+class FlightCalendar {
+
+constructor(containerId, type) {
+
+this.container = document.getElementById(containerId);
+
+this.type = type;
+
+this.currentDate = new Date();
+
+this.selectedDate = null;
+
+this.minDate = type === 'return' ? null : new Date();
+
+this.maxDate = new Date();
+
+this.maxDate.setFullYear(this.maxDate.getFullYear() + 1);
+
+this.render();
+
+}
+
+render() {
+
+const monthNames = ["STYCZEŃ", "LUTY", "MARZEC", "KWIECIEŃ", "MAJ", "CZERWIEC",
+
+"LIPIEC", "SIERPIEŃ", "WRZESIEŃ", "PAŹDZIERNIK", "LISTOPAD", "GRUDZIEŃ"];
+
+const weekdayShort = ["P", "W", "Ś", "C", "P", "S", "N"];
+
+const monthStart = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
+
+const monthEnd = new Date(this.currentDate.getFullYear(), this.current极速赛车开奖官网开奖记录
+
+```html
+
+const monthEnd = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth() + 1, 0);
+
+const startDay = monthStart.getDay();
+
+const today = new Date();
+
+let html = `
+
+<div class="month-navigation">
+
+<button class="nav-button prev-month">‹</button>
+
+<div class="month-title">${monthNames[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}</div>
+
+<button class="nav-button next-month">›</button>
+
+</div>
+
+<div class="weekdays">
+
+${weekdayShort.map(day => `<div>${day}</div>`).join('')}
+
+</div>
+
+<div class="days-grid">
+
+`;
+
+// Puste komórki przed pierwszym dniem miesiąca
+
+for (let i = 0; i < (startDay === 0 ? 6 : startDay - 1); i++) {
+
+html += `<div class="day other-month"></div>`;
+
+}
+
+// Dni miesiąca
+
+for (let day = 1; day <= monthEnd.getDate(); day++) {
+
+const date = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day);
+
+let isDisabled = false;
+
+if (this.type === 'departure') {
+
+isDisabled = date < today || date > this.maxDate;
+
+} else if (this.type === 'return') {
+
+isDisabled = (this.minDate && date < this.minDate) || date > this.maxDate;
+
+}
+
+const isSelected = this.selectedDate &&
+
+date.toDateString() === this.selectedDate.toDateString();
+
+html += `
+
+<div class="day
+
+${isDisabled ? 'disabled' : ''}
+
+${isSelected ? 'selected' : ''}"
+
+data-date="${date.toISOString()}">
+
+${day}
+
+</div>
+
+`;
+
+}
+
+html += `</div>`;
+
+this.container.innerHTML = html;
+
+// Event listeners
+
+this.container.querySelectorAll('.day:not(.disabled)').forEach(day => {
+
+day.addEventListener('click', () => this.selectDate(new Date(day.dataset.date)));
+
+});
+
+this.container.querySelector('.prev-month').addEventListener('click', () => {
+
+this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+
+this.render();
+
+});
+
+this.container.querySelector('.next-month').addEventListener('click', () => {
+
+this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+
+this.render();
+
+});
+
+}
+
+selectDate(date) {
+
+this.selectedDate = date;
+
+this.render();
+
+if (this.type === 'departure' && returnCalendar) {
+
+returnCalendar.setMinDate(date);
+
+}
+
+}
+
+setMinDate(date) {
+
+const newDate = new Date(date);
+
+newDate.setDate(newDate.getDate() + 1);
+
+this.minDate = newDate;
+
+if (this.selectedDate && this.selectedDate < newDate) {
+
+this.selectedDate = null;
+
+}
+
+this.render();
+
+}
+
+}
+
+// Inicjalizacja kalendarzy
+
+let departureCalendar, returnCalendar;
+
+document.getElementById('openDatePopup').addEventListener('click', function() {
+
+document.getElementById('datePopup').style.display = 'block';
+
+document.getElementById('datePopupOverlay').style.display = 'block';
+
+// Inicjalizacja kalendarzy przy pierwszym otwarciu
+
+if (!departureCalendar) {
+
+departureCalendar = new FlightCalendar('departureCalendar', 'departure');
+
+returnCalendar = new FlightCalendar('returnCalendar', 'return');
+
+}
+
+});
+
+document.getElementById('datePopupOverlay').addEventListener('click', function() {
+
+document.getElementById('datePopup').style.display = 'none';
+
+document.getElementById('datePopupOverlay').style.display = 'none';
+
+});
+
+document.getElementById('confirmDates').addEventListener('click', function() {
+
+if (departureCalendar.selectedDate) {
+
+const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+
+const departureStr = departureCalendar.selectedDate.toLocaleDateString('pl-PL', options);
+
+const returnStr = returnCalendar.selectedDate
+
+? returnCalendar.selectedDate.toLocaleDateString('pl-PL', options)
+
+: 'Brak';
+
+document.getElementById('openDatePopup').textContent =
+
+`Wylot: ${departureStr} | Powrót: ${returnStr}`;
+
+// Zapisz daty w ukrytych polach formularza
+
+document.getElementById('departure').value =
+
+departureCalendar.selectedDate.toISOString().split('T')[0];
+
+document.getElementById('return').value =
+
+returnCalendar.selectedDate ? returnCalendar.selectedDate.toISOString().split('T')[0] : '';
+
+// Zamknij popup
+
+document.getElementById('datePopup').style.display = 'none';
+
+document.getElementById('datePopupOverlay').style.display = 'none';
+
+} else {
+
+alert('Proszę wybrać przynajmniej datę wylotu!');
+
+}
+
+});
+
+// Obsługa popupu wyboru klasy
+
+document.getElementById('openClassPopup').addEventListener('click', function() {
+
+document.getElementById('travelClassPopup').style.display = 'block';
+
+document.getElementById('classPopupOverlay').style.display = 'block';
+
+});
+
+document.getElementById('classPopupOverlay').addEventListener('click', function() {
+
+document.getElementById('travelClassPopup').style.display = 'none';
+
+document.getElementById('classPopupOverlay').style.display = 'none';
+
+});
+
+// Wybór klasy
+
+const classOptions = document.querySelectorAll('.class-option');
+
+classOptions.forEach(option => {
+
+option.addEventListener('click', function() {
+
+classOptions.forEach(opt => opt.classList.remove('selected'));
+
+this.classList.add('selected');
+
+});
+
+});
+
+// Liczniki pasażerów
+
+document.querySelectorAll('.passenger-counter').forEach(counter => {
+
+const minusBtn = counter.querySelector('.minus');
+
+const plusBtn = counter.querySelector('.plus');
+
+const valueEl = counter.querySelector('.counter-value');
+
+let value = parseInt(valueEl.textContent);
+
+minusBtn.addEventListener('click', function() {
+
+if (value > 0) {
+
+value--;
+
+valueEl.textContent = value;
+
+}
+
+});
+
+plusBtn.addEventListener('click', function() {
+
+value++;
+
+valueEl.textContent = value;
+
+});
+
+});
+
+// Potwierdzenie wyboru klasy
+
+document.getElementById('confirmClass').addEventListener('click', function() {
+
+const selectedClass = document.querySelector('.class-option.selected');
+
+if (selectedClass) {
+
+const className = selectedClass.querySelector('.class-name').textContent;
+
+const adults = parseInt(document.querySelectorAll('.counter-value')[0].textContent);
+
+// Aktualizacja przycisku
+
+document.getElementById('openClassPopup').textContent =
+
+`${className}, ${adults} pasażer${adults !== 1 ? 'ów' : ''}`;
+
+// Zapisz dane w ukrytych polach formularza
+
+document.getElementById('selectedClass').value = selectedClass.dataset.class;
+
+document.getElementById('passengerCount').value = adults;
+
+// Zamknij popup
+
+document.getElementById('travelClassPopup').style.display = 'none';
+
+document.getElementById('classPopupOverlay').style.display = 'none';
+
+} else {
+
+alert('Proszę wybrać klasę podróży!');
+
+}
+
+});
+
+// Dane lotów
+
+const flightData = {
+
+// Loty bezpośrednie Warszawa-Gdańsk
+
+"WAW-GDN": [
+
+{
+
+id: "WAWGDN001",
+
+departureTime: "07:00",
+
+arrivalTime: "08:00",
+
+price: 199,
+
+direct: true
+
+},
+
+{
+
+id: "WAWGDN002",
+
+departureTime: "19:25",
+
+arrivalTime: "20:25",
+
+price: 249,
+
+direct: true
+
+},
+
+{
+
+id: "WAWGDN003",
+
+departureTime: "22:55",
+
+arrivalTime: "23:55",
+
+price: 179,
+
+direct: true
+
+}
+
+],
+
+// Loty bezpośrednie Gdańsk-Warszawa
+
+"GDN-WAW": [
+
+{
+
+id: "GDNWAW001",
+
+departureTime: "06:00",
+
+arrivalTime: "07:00",
+
+price: 199,
+
+direct: true
+
+},
+
+{
+
+id: "GDNWAW002",
+
+departureTime: "08:45",
+
+arrivalTime: "09:45",
+
+price: 219,
+
+direct: true
+
+},
+
+{
+
+id: "GDNWAW003",
+
+departureTime: "21:10",
+
+arrivalTime极速赛车开奖官网开奖记录
+
+```html
+
+arrivalTime: "22:10",
+
+price: 179,
+
+direct: true
+
+}
+
+],
+
+// Loty z przesiadką w Warszawie (np. Gdańsk-Barcelona)
+
+"GDN-BCN": [
+
+{
+
+id: "GDNBCN001",
+
+segments: [
+
+{
+
+from: "GDN",
+
+to: "WAW",
+
+departureTime: "06:00",
+
+arrivalTime: "07:00",
+
+flightNumber: "VL101"
+
+},
+
+{
+
+from: "WAW",
+
+to: "BCN",
+
+departureTime: "08:30",
+
+arrivalTime: "11:30",
+
+flightNumber: "VL202"
+
+}
+
+],
+
+totalDuration: "4h 30m",
+
+transferTime: "1h 30m",
+
+price: 599,
+
+direct: false
+
+},
+
+{
+
+id: "GDNBCN002",
+
+segments: [
+
+{
+
+from: "GDN",
+
+to: "WAW",
+
+departureTime: "08:45",
+
+arrivalTime: "09:45",
+
+flightNumber: "VL103"
+
+},
+
+{
+
+from: "WAW",
+
+to: "BCN",
+
+departureTime: "12:00",
+
+arrivalTime: "15:00",
+
+flightNumber: "VL204"
+
+极速赛车开奖官网开奖记录
+
+```html
+
+flightNumber: "VL204"
+
+}
+
+],
+
+totalDuration: "4h 15m",
+
+transferTime: "2h 15m",
+
+price: 649,
+
+direct: false
+
+}
+
+]
+
+};
+
+// Funkcja do wyświetlania wyników wyszukiwania
+
+function showSearchResults(from, to) {
+
+const flightSearch = document.getElementById('flightSearch');
+
+const searchResults = document.getElementById('searchResults');
+
+const flightsContainer = document.getElementById('flightsContainer');
+
+flightSearch.style.display = 'none';
+
+searchResults.style.display = 'block';
+
+flightsContainer.innerHTML = '';
+
+// Znajdź odpowiednie loty
+
+const routeKey = `${from}-${to}`;
+
+const flights = flightData[route极速赛车开奖官网开奖记录
+
+```html
+
+const flights = flightData[routeKey] || [];
+
+if (flights.length === 0) {
+
+// Jeśli nie ma bezpośrednich lotów, pokaż loty z przesiadką w Warszawie
+
+if (from !== 'WAW' && to !== 'WAW') {
+
+showConnectingFlights(from, to);
+
+return;
+
+} else {
+
+flightsContainer.innerHTML = '<p>Brak dostępnych lotów na wybranej trasie.</p>';
+
+return;
+
+}
+
+}
+
+// Wyświetl dostępne loty
+
+flights.forEach(flight => {
+
+const flightElement = createFlightElement(flight, from, to);
+
+flightsContainer.appendChild(flightElement);
+
+});
+
+}
+
+// Funkcja do tworzenia elementu lotu
+
+function createFlightElement(flight, from, to) {
+
+const flightElement = document.createElement('div');
+
+flightElement.className = 'flight-option';
+
+if (flight.direct) {
+
+// Lot bezpośredni
+
+flightElement.innerHTML = `
+
+<div class="flight-header">
+
+<div>
+
+<div class="flight-time">${flight.departureTime} - ${flight.arrivalTime}</div>
+
+<div class="flight-duration">1h 00m • Lot bezpośredni</div>
+
+</div>
+
+<div class="flight-price">${flight.price} PLN</div>
+
+</div>
+
+<div class="flight-details">
+
+<div class="flight-segment">
+
+<div class="segment-airport">${getAirportName(from)} (${from})</div>
+
+<div class="segment-time">${flight.departureTime}</div>
+
+</div>
+
+<div class="flight-segment">
+
+<div class="segment-airport">${getAirportName(to)} (${to})</div>
+
+<div class="segment-time">${flight.arrivalTime}</div>
+
+</div>
+
+</div>
+
+<button class="book-btn" data-flight="${flight.id}">Zarezerwuj</button>
+
+`;
+
+} else {
+
+// Lot z przesiadką
+
+let segmentsHTML = '';
+
+flight.segments.forEach((segment, index) => {
+
+segmentsHTML += `
+
+<div class="flight-segment">
+
+<div class="segment-airport">${getAirportName(segment.from)} (${segment.from})</div>
+
+<div class="segment-time">${segment.departureTime}</div>
+
+<div class="segment-duration">Numer lotu: ${segment.flightNumber}</div>
+
+</div>
+
+`;
+
+if (index < flight.segments.length - 1) {
+
+segmentsHTML += `
+
+<div class="flight-segment">
+
+<div class="transfer-info">
+
+Przesiadka w ${getAirportName(segment.to)}: ${flight.transferTime}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+});
+
+flightElement.innerHTML = `
+
+<div class="flight-header">
+
+<div>
+
+<div class="flight-time">${flight.segments[0].departureTime} - ${flight.segments[flight.segments.length - 1].arrivalTime}</div>
+
+<div class="flight-duration">${flight.totalDuration} • Z przesiadką w Warszawie</div>
+
+</div>
+
+<div class="flight-price">${flight.price} PLN</div>
+
+</div>
+
+<div class="flight-details">
+
+${segmentsHTML}
+
+</div>
+
+<button class="book-btn" data-flight="${flight.id}">Zarezerwuj</button>
+
+`;
+
+}
+
+return flightElement;
+
+}
+
+// Funkcja do pokazywania lotów z przesiadką w Warszawie
+
+function showConnectingFlights(from, to) {
+
+const flightsContainer = document.getElementById('flightsContainer');
+
+// Sprawdź czy mamy loty z miasta początkowego do Warszawy
+
+const toWarsawFlights = flightData[`${from}-WAW`] || [];
+
+// Sprawdź czy mamy loty z Warszawy do miasta docelowego
+
+const fromWarsawFlights = flightData[`WAW-${to}`] || [];
+
+if (toWarsawFlights.length === 0 || fromWarsawFlights.length === 0) {
+
+flightsContainer.innerHTML = '<p>Brak dostępnych połączeń na wybranej trasie.</p>';
+
+return;
+
+}
+
+// Stwórz kombinacje lotów z przesiadką
+
+const connectingFlights = [];
+
+toWarsawFlights.forEach(firstFlight => {
+
+fromWarsawFlights.forEach(secondFlight => {
+
+// Sprawdź czy czas przesiadki jest odpowiedni (min 1h, max 6h)
+
+const firstArrival = convertTimeToMinutes(firstFlight.arrivalTime);
+
+const secondDeparture = convertTimeToMinutes(secondFlight.departureTime);
+
+if (secondDeparture > firstArrival + 60 && secondDeparture < firstArrival + 360) {
+
+const transferTime = formatDuration(secondDeparture - firstArrival);
+
+const totalDuration = formatDuration((secondDeparture - convertTimeToMinutes(firstFlight.departureTime)) + 60); // + czas lotu drugiego segmentu
+
+connectingFlights.push({
+
+id: `${firstFlight.id}-${secondFlight.id}`,
+
+segments: [
+
+{
+
+from: from,
+
+to: "WAW",
+
+departureTime: firstFlight.departureTime,
+
+arrivalTime: firstFlight.arrivalTime,
+
+flightNumber: "VL" + Math.floor(100 + Math.random() * 900)
+
+},
+
+{
+
+from: "WAW",
+
+to: to,
+
+departureTime: secondFlight.departureTime,
+
+arrivalTime: secondFlight.arrivalTime,
+
+flightNumber: "VL" + Math.floor(100 + Math.random() * 900)
+
+}
+
+],
+
+totalDuration: totalDuration,
+
+transferTime: transferTime,
+
+price: firstFlight.price + secondFlight.price + 100, // Dodajemy 100 PLN za przesiadkę
+
+direct: false
+
+});
+
+}
+
+});
+
+});
+
+if (connectingFlights.length === 0) {
+
+flightsContainer.innerHTML = '<p>Brak dostępnych połączeń z odpowiednim czasem przesiadki.</p>';
+
+return;
+
+}
+
+// Wyświetl dostępne loty z przesiadką
+
+connectingFlights.forEach(flight => {
+
+const flightElement = createFlightElement(flight, from, to);
+
+flightsContainer.appendChild(flightElement);
+
+});
+
+}
+
+// Funkcje pomocnicze
+
+function getAirportName(code) {
+
+const airports = {
+
+"WAW": "Warszawa",
+
+"GDN": "Gdańsk",
+
+"KRK": "Kraków",
+
+"WRO": "Wrocław",
+
+"BCN": "Barcelona",
+
+"CDG": "Paryż",
+
+"FRA": "Frankfurt"
+
+};
+
+return airports[code] || code;
+
+}
+
+function convertTimeToMinutes(timeStr) {
+
+const [hours, minutes] = timeStr.split(':').map(Number);
+
+return hours * 60 + minutes;
+
+}
+
+function formatDuration(minutes) {
+
+const hours = Math.floor(minutes / 60);
+
+const mins = minutes % 60;
+
+return `${hours}h ${mins}m`;
+
+}
+
+// Obsługa formularza wyszukiwania
+
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+
+e.preventDefault();
+
+const from = document.getElementById('from').value;
+
+const to = document.getElementById('to').value;
+
+if (!from || !to) {
+
+alert('Proszę wybrać lotnisko wylotu i przylotu!');
+
+return;
+
+}
+
+if (from === to) {
+
+alert('Lotnisko wylotu i przylotu nie mogą być takie same!');
+
+return;
+
+}
+
+showSearchResults(from, to);
+
+});
+
+// Przycisk powrotu do wyszukiwania
+
+document.getElementById('backToSearch').addEventListener('click', function() {
+
+document.getElementById('flightSearch').style.display = 'block';
+
+document.getElementById('searchResults').style.display = 'none';
+
+});
+
+// Delegowane zdarzenie dla przycisków rezerwacji
+
+document.getElementById('flightsContainer').addEventListener('click', function(e) {
+
+if (e.target.classList.contains('book-btn')) {
+
+const flightId = e.target.getAttribute('data-flight');
+
+alert(`Rozpoczynasz rezerwację lotu ${flightId}. Ta funkcja będzie dostępna w pełnej wersji systemu.`);
+
+// Tutaj możesz przekierować do strony rezerwacji lub otworzyć formularz
+
+}
+
+});
+
+</script>
+
 </body>
+
 </html>
