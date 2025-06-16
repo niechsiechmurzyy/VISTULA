@@ -18,15 +18,16 @@
             color: #333;
         }
         
-        /* Górny pasek nawigacji */
+        /* Górny pasek nawigacji - NOWY SZARY KOLOR */
         .top-bar {
-            background-color: #003366;
-            color: white;
+            background-color: #f5f5f5;
+            color: black;
             padding: 0.8rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e0e0e0;
         }
         
         .nav-links {
@@ -40,15 +41,32 @@
         }
         
         .nav-links a {
-            color: white;
+            color: black; /* CZARNE NAPISY */
             text-decoration: none;
             font-weight: 500;
             padding: 0.5rem 0;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            position: relative;
         }
         
+        /* PODŚWIETLENIE LINKU Z PODKREŚLENIEM */
         .nav-links a:hover {
-            color: #4da6ff;
+            color: black;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: black;
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
         }
         
         /* Prawa strona paska (język, waluta i logowanie) */
@@ -71,21 +89,24 @@
         }
         
         .selected-option:hover {
-            background-color: rgba(255,255,255,0.1);
+            background-color: rgba(0,0,0,0.05);
             border-radius: 4px;
         }
         
         .option-icon {
             width: 24px;
             height: 16px;
-            margin-right: 8px;
+            margin-right: 12px; /* WIĘKSZY MARGINES MIĘDZY IKONĄ A TEKSTEM */
         }
         
         .currency-icon {
-            width: 16px;
-            height: 16px;
-            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+            margin-right: 12px; /* WIĘKSZY MARGINES MIĘDZY IKONĄ A TEKSTEM */
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .option-name {
@@ -100,7 +121,7 @@
             background-color: white;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border-radius: 4px;
-            min-width: 150px;
+            min-width: 180px; /* SZERSZE MENU DLA WIĘCEJ WALUT */
             z-index: 100;
             max-height: 300px;
             overflow-y: auto;
@@ -127,6 +148,7 @@
             width: 24px;
             height: 24px;
             cursor: pointer;
+            filter: brightness(0); /* CZARNA IKONA */
         }
         
         /* Zawartość strony */
@@ -191,23 +213,39 @@
                     </a>
                     <a href="#" class="option-item" data-value="EUR">
                         <span class="currency-icon">€</span>
-                        <span>Euro</span>
+                        <span>Euro (EUR)</span>
                     </a>
                     <a href="#" class="option-item" data-value="USD">
                         <span class="currency-icon">$</span>
-                        <span>Dolar amerykański</span>
+                        <span>Dolar amerykański (USD)</span>
                     </a>
                     <a href="#" class="option-item" data-value="GBP">
                         <span class="currency-icon">£</span>
-                        <span>Funt brytyjski</span>
+                        <span>Funt brytyjski (GBP)</span>
                     </a>
                     <a href="#" class="option-item" data-value="CHF">
                         <span class="currency-icon">CHF</span>
-                        <span>Frank szwajcarski</span>
+                        <span>Frank szwajcarski (CHF)</span>
                     </a>
                     <a href="#" class="option-item" data-value="JPY">
                         <span class="currency-icon">¥</span>
-                        <span>Jen japoński</span>
+                        <span>Jen japoński (JPY)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="CAD">
+                        <span class="currency-icon">C$</span>
+                        <span>Dolar kanadyjski (CAD)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="AUD">
+                        <span class="currency-icon">A$</span>
+                        <span>Dolar australijski (AUD)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="CNY">
+                        <span class="currency-icon">¥</span>
+                        <span>Yuan chiński (CNY)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="HKD">
+                        <span class="currency-icon">HK$</span>
+                        <span>Dolar hongkoński (HKD)</span>
                     </a>
                 </div>
             </div>
