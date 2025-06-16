@@ -43,7 +43,7 @@
         .nav-links a {
             color: black;
             text-decoration: none;
-            font-weight: bold; /* POGRUBIONE NAPISY */
+            font-weight: bold;
             padding: 0.5rem 0;
             transition: all 0.3s;
             position: relative;
@@ -185,6 +185,17 @@
             border-radius: 4px;
         }
         
+        /* Nowy styl dla przycisku wyboru klasy */
+        .class-select-trigger {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+        }
+        
         .search-button {
             grid-column: span 4;
             background-color: #003366;
@@ -222,7 +233,7 @@
             background-color: #f9f9f9;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: none; /* Początkowo ukryty */
+            display: none;
         }
         
         .checkin-title {
@@ -272,6 +283,129 @@
         
         .login-dropdown a:hover {
             color: #003366;
+        }
+        
+        /* Nowy styl dla popupu wyboru klasy */
+        .travel-class-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .class-options {
+            margin-bottom: 2rem;
+        }
+        
+        .class-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .class-option:hover {
+            background-color: #f5f5f5;
+            border-color: #003366;
+        }
+        
+        .class-option.selected {
+            background-color: #e6f0ff;
+            border-color: #003366;
+        }
+        
+        .class-name {
+            font-weight: bold;
+        }
+        
+        .class-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .passenger-selection {
+            margin-top: 2rem;
+        }
+        
+        .passenger-type {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .passenger-label {
+            font-weight: bold;
+        }
+        
+        .passenger-age {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .passenger-counter {
+            display: flex;
+            align-items: center;
+        }
+        
+        .counter-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .counter-value {
+            margin: 0 1rem;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .confirm-btn {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 1rem;
+            width: 100%;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .confirm-btn:hover {
+            background-color: #002244;
         }
     </style>
 </head>
@@ -394,13 +528,14 @@
                     <input type="date" id="return">
                 </div>
                 
+                <!-- ZMIANA: Nowy przycisk wyboru klasy zamiast selecta -->
                 <div class="form-group">
                     <label for="class">Klasa podróży</label>
-                    <select id="class">
-                        <option value="economy">Economy, 1 pasażer</option>
-                        <option value="business">Business</option>
-                        <option value="first">First Class</option>
-                    </select>
+                    <button type="button" class="class-select-trigger" id="openClassPopup">
+                        Vistula Economy Class, 1 pasażer
+                    </button>
+                    <input type="hidden" id="selectedClass" value="economy">
+                    <input type="hidden" id="passengerCount" value="1">
                 </div>
                 
                 <button type="submit" class="search-button">Szukaj</button>
@@ -450,6 +585,109 @@
         </div>
     </main>
     
+    <!-- Nowy popup wyboru klasy -->
+    <div class="popup-overlay" id="classPopupOverlay"></div>
+    <div class="travel-class-popup" id="travelClassPopup">
+        <h2>Wybierz klasę podróży</h2>
+        
+        <div class="class-options">
+            <div class="class-option" data-class="economy">
+                <div>
+                    <div class="class-name">Vistula Economy Class</div>
+                    <div class="class-desc">Standardowa klasa ekonomiczna</div>
+                </div>
+            </div>
+            
+            <div class="class-option" data-class="premium">
+                <div>
+                    <div class="class-name">Vistula Premium Economy</div>
+                    <div class="class-desc">Więcej przestrzeni i udogodnień</div>
+                </div>
+            </div>
+            
+            <div class="class-option" data-class="business">
+                <div>
+                    <div class="class-name">Vistula Business Class</div>
+                    <div class="class-desc">Luksusowe podróżowanie</div>
+                </div>
+            </div>
+            
+            <div class="class-option" data-class="first">
+                <div>
+                    <div class="class-name">Vistula Pierwsza Klasa</div>
+                    <div class="class-desc">Najwyższy komfort podróży</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="passenger-selection">
+            <h3>Dodaj pasażerów</h3>
+            <p>Sprawdź wiek pasażerów w dniu wylotu</p>
+            
+            <div class="passenger-type">
+                <div>
+                    <div class="passenger-label">Dorośli</div>
+                    <div class="passenger-age">16+ lat</div>
+                </div>
+                <div class="passenger-counter">
+                    <button class="counter-btn minus">-</button>
+                    <span class="counter-value">1</span>
+                    <button class="counter-btn plus">+</button>
+                </div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>
+                    <div class="passenger-label">Nastolatkowie</div>
+                    <div class="passenger-age">12-15 lat</div>
+                </div>
+                <div class="passenger-counter">
+                    <button class="counter-btn minus">-</button>
+                    <span class="counter-value">0</span>
+                    <button class="counter-btn plus">+</button>
+                </div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>
+                    <div class="passenger-label">Dzieci</div>
+                    <div class="passenger-age">2-11 lat</div>
+                </div>
+                <div class="passenger-counter">
+                    <button class="counter-btn minus">-</button>
+                    <span class="counter-value">0</span>
+                    <button class="counter-btn plus">+</button>
+                </div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>
+                    <div class="passenger-label">Niemowlęta [z miejscem]</div>
+                    <div class="passenger-age">0-24 miesięcy</div>
+                </div>
+                <div class="passenger-counter">
+                    <button class="counter-btn minus">-</button>
+                    <span class="counter-value">0</span>
+                    <button class="counter-btn plus">+</button>
+                </div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>
+                    <div class="passenger-label">Niemowlęta</div>
+                    <div class="passenger-age">0-24 miesięcy</div>
+                </div>
+                <div class="passenger-counter">
+                    <button class="counter-btn minus">-</button>
+                    <span class="counter-value">0</span>
+                    <button class="counter-btn plus">+</button>
+                </div>
+            </div>
+        </div>
+        
+        <button class="confirm-btn" id="confirmClass">Potwierdź</button>
+    </div>
+
     <script>
         // Funkcja do obsługi selektorów
         function setupSelector(selectorId, dropdownId, updateCallback) {
@@ -507,7 +745,6 @@
             document.getElementById('flightSearch').style.display = 'block';
             document.getElementById('checkinForm').style.display = 'none';
             
-            // Aktualizacja aktywnej zakładki
             document.querySelectorAll('.nav-links a').forEach(tab => {
                 tab.style.borderBottom = 'none';
             });
@@ -519,7 +756,6 @@
             document.getElementById('flightSearch').style.display = 'none';
             document.getElementById('checkinForm').style.display = 'block';
             
-            // Aktualizacja aktywnej zakładki
             document.querySelectorAll('.nav-links a').forEach(tab => {
                 tab.style.borderBottom = 'none';
             });
@@ -528,6 +764,70 @@
         
         // Domyślnie pokazujemy formularz rezerwacji
         document.getElementById('reservationTab').style.borderBottom = '2px solid black';
+
+        // NOWY KOD: Obsługa popupu wyboru klasy
+        document.getElementById('openClassPopup').addEventListener('click', function() {
+            document.getElementById('travelClassPopup').style.display = 'block';
+            document.getElementById('classPopupOverlay').style.display = 'block';
+        });
+
+        document.getElementById('classPopupOverlay').addEventListener('click', function() {
+            document.getElementById('travelClassPopup').style.display = 'none';
+            document.getElementById('classPopupOverlay').style.display = 'none';
+        });
+
+        // Wybór klasy
+        const classOptions = document.querySelectorAll('.class-option');
+        classOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                classOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Liczniki pasażerów
+        document.querySelectorAll('.passenger-counter').forEach(counter => {
+            const minusBtn = counter.querySelector('.minus');
+            const plusBtn = counter.querySelector('.plus');
+            const valueEl = counter.querySelector('.counter-value');
+            
+            let value = parseInt(valueEl.textContent);
+            
+            minusBtn.addEventListener('click', function() {
+                if (value > 0) {
+                    value--;
+                    valueEl.textContent = value;
+                }
+            });
+            
+            plusBtn.addEventListener('click', function() {
+                value++;
+                valueEl.textContent = value;
+            });
+        });
+
+        // Potwierdzenie wyboru
+        document.getElementById('confirmClass').addEventListener('click', function() {
+            const selectedClass = document.querySelector('.class-option.selected');
+            if (selectedClass) {
+                const className = selectedClass.querySelector('.class-name').textContent;
+                const adults = parseInt(document.querySelectorAll('.counter-value')[0].textContent);
+                
+                // Aktualizacja przycisku
+                document.getElementById('openClassPopup').textContent = 
+                    `${className}, ${adults} pasażer${adults !== 1 ? 'ów' : ''}`;
+                
+                // Zapisz dane w ukrytych polach formularza
+                document.getElementById('selectedClass').value = selectedClass.dataset.class;
+                document.getElementById('passengerCount').value = adults;
+                
+                // Zamknij popup
+                document.getElementById('travelClassPopup').style.display = 'none';
+                document.getElementById('classPopupOverlay').style.display = 'none';
+            } else {
+                alert('Proszę wybrać klasę podróży!');
+            }
+        });
     </script>
 </body>
 </html>
