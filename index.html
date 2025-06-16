@@ -45,24 +45,31 @@
         }
 
         .class-title {
-            font-weight: bold;
+            font-size: 1.2rem;
             margin-bottom: 1rem;
-            font-size: 1.1rem;
+            font-weight: bold;
         }
 
         .class-option {
             padding: 0.8rem 0;
-            border-bottom: 1px solid #eee;
             cursor: pointer;
             font-weight: bold;
         }
 
-        .class-option:last-child {
-            border-bottom: none;
+        .class-option.premium {
+            font-weight: normal;
+            font-size: 0.9rem;
         }
 
-        .class-option:hover {
-            color: #003366;
+        .class-option.business {
+            font-weight: bold;
+        }
+
+        .class-option.first {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ddd;
+            font-weight: bold;
         }
 
         .divider {
@@ -71,37 +78,44 @@
         }
 
         .passenger-title {
+            font-size: 1rem;
             font-weight: bold;
-            margin: 1.5rem 0 0.5rem 0;
-            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem 0;
         }
 
         .passenger-subtitle {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #666;
             margin-bottom: 1rem;
         }
 
-        .passenger-row {
-            display: flex;
-            align-items: center;
+        .passenger-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 1rem;
+        }
+
+        .passenger-table td {
+            padding: 0.5rem 0;
+            vertical-align: middle;
         }
 
         .passenger-name {
-            flex: 1;
+            font-weight: bold;
+            width: 40%;
         }
 
         .passenger-age {
-            flex: 1;
-            font-size: 0.9rem;
             color: #666;
+            width: 30%;
         }
 
         .passenger-controls {
             display: flex;
             align-items: center;
+            justify-content: flex-end;
             gap: 0.5rem;
+            width: 30%;
         }
 
         .passenger-count {
@@ -120,6 +134,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1rem;
         }
 
         .passenger-button:hover {
@@ -127,7 +142,7 @@
         }
 
         .confirm-button {
-            margin-top: 1.5rem;
+            margin-top: 1rem;
             width: 100%;
             padding: 0.8rem;
             background-color: #003366;
@@ -161,13 +176,14 @@
                         <div class="class-option" data-value="economy" data-text="LOT Economy Class, 1 pasażer">
                             LOT Economy Class
                         </div>
-                        <div class="class-option" data-value="premium" data-text="LOT Premium Economy, 1 pasażer">
+                        <div class="class-option premium" data-value="premium" data-text="LOT Premium Economy, 1 pasażer">
                             LOT Premium Economy
                         </div>
-                        <div class="class-option" data-value="business" data-text="LOT Business Class, 1 pasażer">
+                        <div class="class-option business" data-value="business" data-text="LOT Business Class, 1 pasażer">
                             LOT Business Class
                         </div>
-                        <div class="class-option" data-value="first" data-text="First Class, 1 pasażer">
+                        
+                        <div class="class-option first" data-value="first" data-text="First Class, 1 pasażer">
                             First Class
                         </div>
                         
@@ -176,55 +192,53 @@
                         <div class="passenger-title">Dodaj pasażerów</div>
                         <div class="passenger-subtitle">Sprawdź wiek pasażerów w dniu wylotu</div>
                         
-                        <div class="passenger-row">
-                            <div class="passenger-name">Dorośli</div>
-                            <div class="passenger-age">16+ lat</div>
-                            <div class="passenger-controls">
-                                <button type="button" class="passenger-button minus">-</button>
-                                <span class="passenger-count">1</span>
-                                <button type="button" class="passenger-button plus">+</button>
-                            </div>
-                        </div>
-                        
-                        <div class="passenger-row">
-                            <div class="passenger-name">Nastolatkowie</div>
-                            <div class="passenger-age">12-15 lat</div>
-                            <div class="passenger-controls">
-                                <button type="button" class="passenger-button minus">-</button>
-                                <span class="passenger-count">0</span>
-                                <button type="button" class="passenger-button plus">+</button>
-                            </div>
-                        </div>
-                        
-                        <div class="passenger-row">
-                            <div class="passenger-name">Dzieci</div>
-                            <div class="passenger-age">2-11 lat</div>
-                            <div class="passenger-controls">
-                                <button type="button" class="passenger-button minus">-</button>
-                                <span class="passenger-count">0</span>
-                                <button type="button" class="passenger-button plus">+</button>
-                            </div>
-                        </div>
-                        
-                        <div class="passenger-row">
-                            <div class="passenger-name">Niemowlęta (z miejscem)</div>
-                            <div class="passenger-age">0-24 miesięcy</div>
-                            <div class="passenger-controls">
-                                <button type="button" class="passenger-button minus">-</button>
-                                <span class="passenger-count">0</span>
-                                <button type="button" class="passenger-button plus">+</button>
-                            </div>
-                        </div>
-                        
-                        <div class="passenger-row">
-                            <div class="passenger-name">Niemowlęta</div>
-                            <div class="passenger-age">0-24 miesięcy</div>
-                            <div class="passenger-controls">
-                                <button type="button" class="passenger-button minus">-</button>
-                                <span class="passenger-count">0</span>
-                                <button type="button" class="passenger-button plus">+</button>
-                            </div>
-                        </div>
+                        <table class="passenger-table">
+                            <tr>
+                                <td class="passenger-name">Dorośli</td>
+                                <td class="passenger-age">16+ lat</td>
+                                <td class="passenger-controls">
+                                    <button type="button" class="passenger-button minus">-</button>
+                                    <span class="passenger-count">1</span>
+                                    <button type="button" class="passenger-button plus">+</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="passenger-name">Nastolatkowie</td>
+                                <td class="passenger-age">12-15 lat</td>
+                                <td class="passenger-controls">
+                                    <button type="button" class="passenger-button minus">-</button>
+                                    <span class="passenger-count">0</span>
+                                    <button type="button" class="passenger-button plus">+</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="passenger-name">Dzieci</td>
+                                <td class="passenger-age">2-11 lat</td>
+                                <td class="passenger-controls">
+                                    <button type="button" class="passenger-button minus">-</button>
+                                    <span class="passenger-count">0</span>
+                                    <button type="button" class="passenger-button plus">+</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="passenger-name">Niemowlęta (z miejscem)</td>
+                                <td class="passenger-age">0-24 miesięcy</td>
+                                <td class="passenger-controls">
+                                    <button type="button" class="passenger-button minus">-</button>
+                                    <span class="passenger-count">0</span>
+                                    <button type="button" class="passenger-button plus">+</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="passenger-name">Niemowlęta</td>
+                                <td class="passenger-age">0-24 miesięcy</td>
+                                <td class="passenger-controls">
+                                    <button type="button" class="passenger-button minus">-</button>
+                                    <span class="passenger-count">0</span>
+                                    <button type="button" class="passenger-button plus">+</button>
+                                </td>
+                            </tr>
+                        </table>
                         
                         <button type="button" class="confirm-button">Potwierdź</button>
                     </div>
@@ -260,14 +274,13 @@
                 const value = this.getAttribute('data-value');
                 const text = this.getAttribute('data-text');
                 document.getElementById('classButton').innerHTML = `<span>${text}</span><span>▼</span>`;
-                document.getElementById('classDropdown').classList.remove('show');
             });
         });
 
         // Obsługa przycisków pasażerów
         document.querySelectorAll('.passenger-button').forEach(button => {
             button.addEventListener('click', function() {
-                const row = this.closest('.passenger-row');
+                const row = this.closest('tr');
                 const countElement = row.querySelector('.passenger-count');
                 let count = parseInt(countElement.textContent);
                 
@@ -283,12 +296,25 @@
 
         // Potwierdzenie wyboru
         document.querySelector('.confirm-button').addEventListener('click', function() {
+            // Aktualizacja przycisku głównego z sumą pasażerów
+            const totalPassengers = Array.from(document.querySelectorAll('.passenger-count'))
+                .reduce((sum, el) => sum + parseInt(el.textContent), 0);
+            
+            const selectedClass = document.querySelector('.class-option:hover') || 
+                                document.querySelector('.class-option[data-value="economy"]');
+            const classText = selectedClass.getAttribute('data-text').split(',')[0];
+            
+            document.getElementById('classButton').innerHTML = 
+                `<span>${classText}, ${totalPassengers} pasażer${totalPassengers !== 1 ? 'ów' : ''}</span><span>▼</span>`;
+            
             document.getElementById('classDropdown').classList.remove('show');
         });
 
         // Zamknięcie dropdowna po kliknięciu gdzie indziej
-        window.addEventListener('click', function() {
-            document.getElementById('classDropdown').classList.remove('show');
+        window.addEventListener('click', function(e) {
+            if (!e.target.closest('.travel-class-selector')) {
+                document.getElementById('classDropdown').classList.remove('show');
+            }
         });
     </script>
 </body>
