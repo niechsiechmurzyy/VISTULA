@@ -433,6 +433,85 @@
             background-color: #002244;
         }
         
+        .class-options {
+            margin-bottom: 2rem;
+        }
+        
+        .class-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .class-option:hover {
+            background-color: #f5f5f5;
+            border-color: #003366;
+        }
+        
+        .class-option.selected {
+            background-color: #e6f0ff;
+            border-color: #003366;
+        }
+        
+        .class-name {
+            font-weight: bold;
+        }
+        
+        .class-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .passenger-selection {
+            margin-top: 2rem;
+        }
+        
+        .passenger-type {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .passenger-label {
+            font-weight: bold;
+        }
+        
+        .passenger-age {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .passenger-counter {
+            display: flex;
+            align-items: center;
+        }
+        
+        .counter-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .counter-value {
+            margin: 0 1rem;
+            min-width: 20px;
+            text-align: center;
+        }
+        
         /* Responsywność */
         @media (max-width: 768px) {
             .calendar-container {
@@ -568,7 +647,7 @@
                     <input type="hidden" id="return" name="return">
                 </div>
                 
-                <!-- Nowy przycisk wyboru klasy -->
+                <!-- Przycisk wyboru klasy -->
                 <div class="form-group">
                     <label for="class">Klasa podróży</label>
                     <button type="button" class="class-select-trigger" id="openClassPopup">
