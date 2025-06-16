@@ -224,16 +224,54 @@
             background-color: #002244;
         }
         
+        /* Nowy styl dla sekcji promocyjnej */
         .promo-section {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
-            margin-top: 1rem;
-            font-size: 0.9rem;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: #f0f7ff;
+            border-radius: 6px;
+            gap: 1rem;
         }
-        
+
+        .promo-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .promo-links a {
+            color: #003366;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .promo-links a:hover {
+            background-color: rgba(0, 51, 102, 0.1);
+        }
+
         .cancel-info {
-            color: #666;
-            font-style: italic;
+            background-color: #003366;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+            .promo-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
         
         /* Formularz odprawy */
@@ -541,7 +579,7 @@
         </ul>
         
         <div class="right-side">
-            <!-- Selektor walut -->
+            <!-- Selektor walut - rozszerzona wersja -->
             <div class="selector-container" id="currencySelector">
                 <div class="selected-option">
                     <span class="currency-icon">PLN</span>
@@ -568,35 +606,67 @@
                         <span class="currency-icon">CHF</span>
                         <span>Frank szwajcarski (CHF)</span>
                     </a>
+                    <a href="#" class="option-item" data-value="JPY">
+                        <span class="currency-icon">¥</span>
+                        <span>Jen japoński (JPY)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="AUD">
+                        <span class="currency-icon">A$</span>
+                        <span>Dolar australijski (AUD)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="CAD">
+                        <span class="currency-icon">C$</span>
+                        <span>Dolar kanadyjski (CAD)</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="SEK">
+                        <span class="currency-icon">kr</span>
+                        <span>Korona szwedzka (SEK)</span>
+                    </a>
                 </div>
             </div>
             
-            <!-- Selektor języków -->
+            <!-- Selektor języków - rozszerzona wersja -->
             <div class="selector-container" id="languageSelector">
                 <div class="selected-option">
-                    <img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska">
-                    <span class="option-name">Polska</span>
+                    <img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska" loading="lazy">
+                    <span class="option-name">Polski</span>
                 </div>
                 <div class="options-dropdown" id="languageDropdown">
-                    <a href="#" class="option-item" data-value="pl">
-                        <img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska">
-                        <span>Polska</span>
+                    <a href="#" class="option-item" data-value="pl" lang="pl">
+                        <img src="https://flagcdn.com/16x12/pl.png" class="option-icon" alt="Polska" loading="lazy">
+                        <span>Polski</span>
                     </a>
-                    <a href="#" class="option-item" data-value="pt">
-                        <img src="https://flagcdn.com/16x12/pt.png" class="option-icon" alt="Portugalia">
-                        <span>Portugalia</span>
+                    <a href="#" class="option-item" data-value="en" lang="en">
+                        <img src="https://flagcdn.com/16x12/gb.png" class="option-icon" alt="Angielski" loading="lazy">
+                        <span>English</span>
                     </a>
-                    <a href="#" class="option-item" data-value="ru">
-                        <img src="https://flagcdn.com/16x12/ru.png" class="option-icon" alt="Rosja">
-                        <span>Rosja</span>
+                    <a href="#" class="option-item" data-value="de" lang="de">
+                        <img src="https://flagcdn.com/16x12/de.png" class="option-icon" alt="Niemiecki" loading="lazy">
+                        <span>Deutsch</span>
                     </a>
-                    <a href="#" class="option-item" data-value="ro">
-                        <img src="https://flagcdn.com/16x12/ro.png" class="option-icon" alt="Rumunia">
-                        <span>Rumunia</span>
+                    <a href="#" class="option-item" data-value="fr" lang="fr">
+                        <img src="https://flagcdn.com/16x12/fr.png" class="option-icon" alt="Francuski" loading="lazy">
+                        <span>Français</span>
                     </a>
-                    <a href="#" class="option-item" data-value="rs">
-                        <img src="https://flagcdn.com/16x12/rs.png" class="option-icon" alt="Serbia">
-                        <span>Serbia</span>
+                    <a href="#" class="option-item" data-value="es" lang="es">
+                        <img src="https://flagcdn.com/16x12/es.png" class="option-icon" alt="Hiszpański" loading="lazy">
+                        <span>Español</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="it" lang="it">
+                        <img src="https://flagcdn.com/16x12/it.png" class="option-icon" alt="Włoski" loading="lazy">
+                        <span>Italiano</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="ru" lang="ru">
+                        <img src="https://flagcdn.com/16x12/ru.png" class="option-icon" alt="Rosyjski" loading="lazy">
+                        <span>Русский</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="uk" lang="uk">
+                        <img src="https://flagcdn.com/16x12/ua.png" class="option-icon" alt="Ukraiński" loading="lazy">
+                        <span>Українська</span>
+                    </a>
+                    <a href="#" class="option-item" data-value="zh" lang="zh">
+                        <img src="https://flagcdn.com/16x12/cn.png" class="option-icon" alt="Chiński" loading="lazy">
+                        <span>中文</span>
                     </a>
                 </div>
             </div>
@@ -659,12 +729,19 @@
                 
                 <button type="submit" class="search-button">Szukaj</button>
                 
+                <!-- Zmodyfikowana sekcja promocyjna -->
                 <div class="promo-section">
-                    <div>
-                        <a href="#">+ Mam kod promocyjny</a> | 
-                        <a href="#">+ Mam Kartę Dużej Rodziny</a>
+                    <div class="promo-links">
+                        <a href="#" class="promo-code">
+                            <span>+</span> Mam kod promocyjny
+                        </a>
+                        <a href="#" class="family-card">
+                            <span>+</span> Mam Kartę Dużej Rodziny
+                        </a>
                     </div>
-                    <div class="cancel-info">24 godziny na anulowanie bez opłat!</div>
+                    <div class="cancel-info">
+                        24 godziny na anulowanie bez opłat!
+                    </div>
                 </div>
             </form>
         </div>
