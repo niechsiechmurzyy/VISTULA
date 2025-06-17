@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistula Airlines - Rezerwacja lotów</title>
+    <title>Vistula Airlines</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Pasek nawigacyjny -->
     <nav class="navbar">
-        <!-- Logo + nazwa linii (środek) -->
-        <div class="navbar-brand">
-            <span class="logo">VIS</span>
-            <span class="airline-name">Vistula Airlines</span>
-        </div>
+        <!-- Logo VIS (środek) -->
+        <div class="navbar-brand">VIS</div>
 
         <!-- Główne linki -->
         <ul class="navbar-links">
@@ -42,15 +39,14 @@
             <!-- Flaga i waluta -->
             <div class="language-currency">
                 <div class="dropdown">
-                    <button class="flag-btn">
+                    <button class="flag-btn" id="languageBtn">
                         <img src="https://flagcdn.com/w20/pl.png" alt="Polska" class="flag-icon">
-                        <span>PLN</span>
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <div class="dropdown-content">
+                    <div class="dropdown-content" id="languageDropdown">
+                        <a href="#"><img src="https://flagcdn.com/w20/pl.png" alt="Polski"> Polski (PLN)</a>
                         <a href="#"><img src="https://flagcdn.com/w20/gb.png" alt="English"> English (GBP)</a>
                         <a href="#"><img src="https://flagcdn.com/w20/de.png" alt="Deutsch"> Deutsch (EUR)</a>
-                        <a href="#"><img src="https://flagcdn.com/w20/us.png" alt="English"> English (USD)</a>
                     </div>
                 </div>
             </div>
@@ -81,33 +77,25 @@ body {
     background-color: #0066cc; /* Intensywny błękit */
     color: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-/* Logo i nazwa linii */
+/* Logo VIS (środek) */
 .navbar-brand {
-    display: flex;
-    align-items: center;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-}
-
-.logo {
     font-size: 28px;
     font-weight: 800;
-    margin-right: 10px;
-}
-
-.airline-name {
-    font-size: 20px;
-    font-weight: 600;
 }
 
 /* Główne linki */
 .navbar-links {
     display: flex;
     list-style: none;
+    margin-left: auto; /* Przyklej do lewej */
 }
 
 .navbar-links li {
@@ -183,7 +171,7 @@ body {
 .flag-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
     background: rgba(255, 255, 255, 0.2);
     border: none;
     color: white;
@@ -199,17 +187,33 @@ body {
     border-radius: 2px;
 }
 
-/* Pokazuj dropdown po najechaniu */
-.login-dropdown:hover .dropdown-content,
-.language-currency .dropdown:hover .dropdown-content {
-    display: block;
+/* Aktywne dropdowny */
+.show {
+    display: block !important;
 }
-// Symulacja zalogowanego użytkownika (do testów)
-let isLoggedIn = false; // Zmień na true, aby zobaczyć "Moje konto"
+// Menu językowe (toggle na kliknięcie)
+document.getElementById('languageBtn').addEventListener('click', function() {
+    document.getElementById('languageDropdown').classList.toggle('show');
+});
 
+// Menu logowania (toggle na kliknięcie)
+document.getElementById('loginBtn').addEventListener('click', function() {
+    document.getElementById('loginDropdown').classList.toggle('show');
+});
+
+// Zamknij dropdowny po kliknięciu poza nimi
+window.addEventListener('click', function(event) {
+    if (!event.target.matches('.flag-btn') && !event.target.matches('.login-icon')) {
+        const dropdowns = document.querySelectorAll('.dropdown-content');
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+    }
+});
+
+// Symulacja zalogowanego użytkownika (opcjonalne)
+let isLoggedIn = false; // Zmień na true, aby zobaczyć "Moje konto"
 const loginDropdown = document.getElementById('loginDropdown');
-const loginLink = document.getElementById('loginLink');
-const registerLink = document.getElementById('registerLink');
 
 if (isLoggedIn) {
     loginDropdown.innerHTML = `
