@@ -21,16 +21,29 @@
             font-family: 'Segoe UI', Arial, sans-serif;
         }
         
+        body {
+            padding-top: 60px;
+        }
+        
         .top-bar {
             background-color: var(--marine-blue);
             color: var(--white);
-            padding: 12px 5%;
+            padding: 0 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            position: relative;
+            position: fixed;
+            width: 100%;
+            top: 0;
             z-index: 1000;
+            height: 60px;
+        }
+        
+        .nav-main {
+            display: flex;
+            align-items: center;
+            gap: 25px;
         }
         
         .logo {
@@ -39,6 +52,36 @@
             letter-spacing: 1.5px;
             color: var(--white);
             text-transform: uppercase;
+            margin-right: 30px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 20px 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--light-blue);
+        }
+        
+        .nav-link:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--light-blue);
         }
         
         .nav-controls {
@@ -49,7 +92,6 @@
         
         .control-group {
             position: relative;
-            display: inline-block;
         }
         
         .control-btn {
@@ -85,6 +127,12 @@
         
         .dropdown.show {
             display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .dropdown-item {
@@ -126,7 +174,17 @@
 </head>
 <body>
     <div class="top-bar">
-        <div class="logo">VIS</div>
+        <div class="nav-main">
+            <div class="logo">VIS</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Zarezerwuj lot</a>
+                <a href="#" class="nav-link">Odpraw się</a>
+                <a href="#" class="nav-link">Zarządzaj rezerwacją</a>
+                <a href="#" class="nav-link">Informacje</a>
+                <a href="#" class="nav-link">Zainspiruj się</a>
+                <a href="#" class="nav-link">Pomoc</a>
+            </div>
+        </div>
         
         <div class="nav-controls">
             <div class="control-group">
@@ -136,15 +194,15 @@
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="dropdown" id="language-dropdown">
-                    <a href="#" class="dropdown-item">
+                    <a href="#" class="dropdown-item" data-lang="en">
                         <img src="https://flagcdn.com/w20/gb.png" class="flag-icon" alt="EN">
                         <span>English</span>
                     </a>
-                    <a href="#" class="dropdown-item">
+                    <a href="#" class="dropdown-item" data-lang="de">
                         <img src="https://flagcdn.com/w20/de.png" class="flag-icon" alt="DE">
                         <span>Deutsch</span>
                     </a>
-                    <a href="#" class="dropdown-item">
+                    <a href="#" class="dropdown-item" data-lang="fr">
                         <img src="https://flagcdn.com/w20/fr.png" class="flag-icon" alt="FR">
                         <span>Français</span>
                     </a>
@@ -157,9 +215,10 @@
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="dropdown" id="currency-dropdown">
-                    <a href="#" class="dropdown-item">EUR</a>
-                    <a href="#" class="dropdown-item">USD</a>
-                    <a href="#" class="dropdown-item">GBP</a>
+                    <a href="#" class="dropdown-item" data-currency="PLN">PLN (zł)</a>
+                    <a href="#" class="dropdown-item" data-currency="EUR">EUR (€)</a>
+                    <a href="#" class="dropdown-item" data-currency="USD">USD ($)</a>
+                    <a href="#" class="dropdown-item" data-currency="GBP">GBP (£)</a>
                 </div>
             </div>
             
@@ -183,27 +242,62 @@
     </div>
 
     <script>
-        // Funkcje do otwierania dropdownów
-        document.getElementById('language-btn').addEventListener('click', function() {
-            document.getElementById('language-dropdown').classList.toggle('show');
+        // Działające dropdowny
+        function setupDropdown(buttonId, dropdownId) {
+            const btn = document.getElementById(buttonId);
+            const dropdown = document.getElementById(dropdownId);
+            
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+            
+            // Zamknij po kliknięciu na element dropdown
+            dropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+        
+        setupDropdown('language-btn', 'language-dropdown');
+        setupDropdown('currency-btn', 'currency-dropdown');
+        setupDropdown('account-btn', 'account-dropdown');
+        
+        // Zamknij wszystkie dropdowny po kliknięciu poza nimi
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
         });
         
-        document.getElementById('currency-btn').addEventListener('click', function() {
-            document.getElementById('currency-dropdown').classList.toggle('show');
+        // Zmiana języka
+        document.querySelectorAll('#language-dropdown .dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const lang = this.getAttribute('data-lang');
+                const flag = this.querySelector('img').src;
+                const text = this.querySelector('span').textContent;
+                
+                document.getElementById('language-btn').innerHTML = `
+                    <img src="${flag}" class="flag-icon" alt="${lang}">
+                    <span>${text}</span>
+                    <i class="fas fa-chevron-down"></i>
+                `;
+                
+                document.getElementById('language-dropdown').classList.remove('show');
+                console.log('Zmieniono język na:', lang);
+            });
         });
         
-        document.getElementById('account-btn').addEventListener('click', function() {
-            document.getElementById('account-dropdown').classList.toggle('show');
-        });
-        
-        // Zamknij dropdowny po kliknięciu poza nimi
-        window.addEventListener('click', function(event) {
-            if (!event.target.matches('.control-btn') && !event.target.matches('.account-btn')) {
-                const dropdowns = document.getElementsByClassName('dropdown');
-                for (let i = 0; i < dropdowns.length; i++) {
-                    dropdowns[i].classList.remove('show');
-                }
-            }
+        // Zmiana waluty
+        document.querySelectorAll('#currency-dropdown .dropdown-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const currency = this.getAttribute('data-currency');
+                document.getElementById('currency-btn').innerHTML = `
+                    <span>${currency}</span>
+                    <i class="fas fa-chevron-down"></i>
+                `;
+                document.getElementById('currency-dropdown').classList.remove('show');
+                console.log('Zmieniono walutę na:', currency);
+            });
         });
     </script>
 </body>
