@@ -5,15 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vistula Airlines</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: white;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background-color: #0066cc;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar-brand {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            font-weight: 800;
+        }
+        .navbar-links {
+            display: flex;
+            list-style: none;
+            margin-left: auto;
+        }
+        .navbar-links li {
+            margin: 0 12px;
+        }
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: opacity 0.3s;
+        }
+        .navbar-links a:hover {
+            opacity: 0.8;
+        }
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .login-dropdown, .language-currency .dropdown {
+            position: relative;
+        }
+        .login-icon, .flag-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .login-icon {
+            font-size: 20px;
+        }
+        .login-icon:hover {
+            transform: scale(1.1);
+        }
+        .flag-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .flag-icon {
+            width: 20px;
+            height: auto;
+            border-radius: 2px;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 14px;
+        }
+        .dropdown-content a:hover {
+            background-color: #f5f5f5;
+        }
+        .show {
+            display: block !important;
+        }
+    </style>
 </head>
 <body>
-    <!-- Pasek nawigacyjny -->
     <nav class="navbar">
-        <!-- Logo VIS (środek) -->
         <div class="navbar-brand">VIS</div>
-
-        <!-- Główne linki -->
         <ul class="navbar-links">
             <li><a href="#">Zarezerwuj lot</a></li>
             <li><a href="#">Odpraw się</a></li>
@@ -22,21 +124,14 @@
             <li><a href="#">Informacje</a></li>
             <li><a href="#">Pomoc</a></li>
         </ul>
-
-        <!-- Ikona logowania + flagi/waluty (prawa strona) -->
         <div class="navbar-actions">
-            <!-- Menu logowania -->
             <div class="login-dropdown">
-                <button class="login-icon" id="loginBtn">
-                    <i class="fas fa-user"></i>
-                </button>
+                <button class="login-icon" id="loginBtn"><i class="fas fa-user"></i></button>
                 <div class="dropdown-content" id="loginDropdown">
                     <a href="#" id="loginLink">Zaloguj się</a>
                     <a href="#" id="registerLink">Zarejestruj</a>
                 </div>
             </div>
-
-            <!-- Flaga i waluta -->
             <div class="language-currency">
                 <div class="dropdown">
                     <button class="flag-btn" id="languageBtn">
@@ -53,171 +148,34 @@
         </div>
     </nav>
 
-    <script src="script.js"></script>
+    <script>
+        // Menu językowe
+        document.getElementById('languageBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('languageDropdown').classList.toggle('show');
+        });
+
+        // Menu logowania
+        document.getElementById('loginBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('loginDropdown').classList.toggle('show');
+        });
+
+        // Zamknij dropdowny po kliknięciu poza nimi
+        window.addEventListener('click', function() {
+            document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        });
+
+        // Symulacja logowania (zmień na true, aby zobaczyć "Moje konto")
+        let isLoggedIn = false;
+        if (isLoggedIn) {
+            document.getElementById('loginDropdown').innerHTML = `
+                <a href="#">Moje konto</a>
+                <a href="#">Wyloguj się</a>
+            `;
+        }
+    </script>
 </body>
 </html>
-/* Reset i podstawy */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-body {
-    background-color: white;
-}
-
-/* Pasek nawigacyjny */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 5%;
-    background-color: #0066cc; /* Intensywny błękit */
-    color: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-/* Logo VIS (środek) */
-.navbar-brand {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 28px;
-    font-weight: 800;
-}
-
-/* Główne linki */
-.navbar-links {
-    display: flex;
-    list-style: none;
-    margin-left: auto; /* Przyklej do lewej */
-}
-
-.navbar-links li {
-    margin: 0 12px;
-}
-
-.navbar-links a {
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 16px;
-    transition: opacity 0.3s;
-}
-
-.navbar-links a:hover {
-    opacity: 0.8;
-}
-
-/* Ikony po prawej */
-.navbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-/* Menu logowania */
-.login-dropdown {
-    position: relative;
-}
-
-.login-icon {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    transition: transform 0.3s;
-}
-
-.login-icon:hover {
-    transform: scale(1.1);
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: white;
-    min-width: 160px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    z-index: 1;
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.dropdown-content a {
-    color: #333;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    font-size: 14px;
-}
-
-.dropdown-content a:hover {
-    background-color: #f5f5f5;
-}
-
-/* Flaga i waluta */
-.language-currency .dropdown {
-    position: relative;
-}
-
-.flag-btn {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.flag-icon {
-    width: 20px;
-    height: auto;
-    border-radius: 2px;
-}
-
-/* Aktywne dropdowny */
-.show {
-    display: block !important;
-}
-// Menu językowe (toggle na kliknięcie)
-document.getElementById('languageBtn').addEventListener('click', function() {
-    document.getElementById('languageDropdown').classList.toggle('show');
-});
-
-// Menu logowania (toggle na kliknięcie)
-document.getElementById('loginBtn').addEventListener('click', function() {
-    document.getElementById('loginDropdown').classList.toggle('show');
-});
-
-// Zamknij dropdowny po kliknięciu poza nimi
-window.addEventListener('click', function(event) {
-    if (!event.target.matches('.flag-btn') && !event.target.matches('.login-icon')) {
-        const dropdowns = document.querySelectorAll('.dropdown-content');
-        dropdowns.forEach(dropdown => {
-            dropdown.classList.remove('show');
-        });
-    }
-});
-
-// Symulacja zalogowanego użytkownika (opcjonalne)
-let isLoggedIn = false; // Zmień na true, aby zobaczyć "Moje konto"
-const loginDropdown = document.getElementById('loginDropdown');
-
-if (isLoggedIn) {
-    loginDropdown.innerHTML = `
-        <a href="#">Moje konto</a>
-        <a href="#">Wyloguj się</a>
-    `;
-}
