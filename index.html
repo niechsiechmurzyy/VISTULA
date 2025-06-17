@@ -3,352 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistula Airlines</title>
+    <title>VIS - Modern Airline</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ... (pozostałe style pozostają bez zmian) ... */
-
-        /* Dodatkowe style dla modalu pasażerów */
-        .passenger-modal {
-            padding: 20px;
+        :root {
+            --marine-blue: #006994;
+            --dark-blue: #003366;
+            --light-blue: #4da6ff;
+            --white: #ffffff;
+            --gray: #f5f5f5;
         }
-
-        .passenger-row {
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        .top-bar {
+            background-color: var(--marine-blue);
+            color: var(--white);
+            padding: 12px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1000;
         }
-
-        .passenger-type {
-            font-weight: 600;
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: var(--white);
+            text-transform: uppercase;
         }
-
-        .passenger-controls {
+        
+        .nav-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 25px;
         }
-
-        .passenger-count {
-            min-width: 30px;
-            text-align: center;
+        
+        .control-group {
+            position: relative;
+            display: inline-block;
         }
-
-        .passenger-btn {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: white;
+        
+        .control-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
+            gap: 5px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
         }
-
-        .passenger-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        
+        .control-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
-
-        .travel-class {
-            margin-top: 25px;
+        
+        .dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: var(--white);
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            z-index: 1;
+            display: none;
+            padding: 10px 0;
         }
-
-        .class-options {
+        
+        .dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            color: var(--dark-blue);
+            padding: 10px 16px;
+            text-decoration: none;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
         }
-
-        .class-option {
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
+        
+        .dropdown-item:hover {
+            background-color: var(--gray);
         }
-
-        .class-option:hover {
-            border-color: var(--secondary);
-            background: #f5fbff;
+        
+        .flag-icon {
+            width: 20px;
+            height: 15px;
+            object-fit: cover;
+            border-radius: 2px;
         }
-
-        .class-option.selected {
-            border-color: var(--secondary);
-            background: rgba(0, 160, 225, 0.1);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 30px;
-            gap: 15px;
-        }
-
-        .modal-btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .modal-btn.cancel {
-            background: white;
-            border: 1px solid var(--border);
-        }
-
-        .modal-btn.cancel:hover {
-            background: #f5f5f5;
-        }
-
-        .modal-btn.confirm {
-            background: var(--secondary);
+        
+        .account-btn {
+            background-color: var(--light-blue);
+            border: none;
             color: white;
-            border: 1px solid var(--secondary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-
-        .modal-btn.confirm:hover {
-            background: var(--primary);
+        
+        .account-btn:hover {
+            background-color: var(--dark-blue);
         }
     </style>
 </head>
 <body>
-    <!-- ... (pozostała część HTML pozostaje bez zmian) ... -->
-
-    <!-- Modal pasażerów i klasy -->
-    <div class="modal" id="passengerModal">
-        <div class="modal-content passenger-modal">
-            <h2>Pasażerowie i klasa podróży</h2>
-            
-            <div class="passenger-controls">
-                <div class="passenger-row">
-                    <div class="passenger-type">Dorośli (12+ lat)</div>
-                    <div class="passenger-controls">
-                        <button class="passenger-btn" id="decreaseAdult">-</button>
-                        <span class="passenger-count" id="adultCount">1</span>
-                        <button class="passenger-btn" id="increaseAdult">+</button>
-                    </div>
-                </div>
-                
-                <div class="passenger-row">
-                    <div class="passenger-type">Dzieci (2-11 lat)</div>
-                    <div class="passenger-controls">
-                        <button class="passenger-btn" id="decreaseChild">-</button>
-                        <span class="passenger-count" id="childCount">0</span>
-                        <button class="passenger-btn" id="increaseChild">+</button>
-                    </div>
-                </div>
-                
-                <div class="passenger-row">
-                    <div class="passenger-type">Niemowlęta (0-1 lat)</div>
-                    <div class="passenger-controls">
-                        <button class="passenger-btn" id="decreaseInfant">-</button>
-                        <span class="passenger-count" id="infantCount">0</span>
-                        <button class="passenger-btn" id="increaseInfant">+</button>
-                    </div>
+    <div class="top-bar">
+        <div class="logo">VIS</div>
+        
+        <div class="nav-controls">
+            <div class="control-group">
+                <button class="control-btn" id="language-btn">
+                    <img src="https://flagcdn.com/w20/pl.png" class="flag-icon" alt="PL">
+                    <span>Polski</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown" id="language-dropdown">
+                    <a href="#" class="dropdown-item">
+                        <img src="https://flagcdn.com/w20/gb.png" class="flag-icon" alt="EN">
+                        <span>English</span>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <img src="https://flagcdn.com/w20/de.png" class="flag-icon" alt="DE">
+                        <span>Deutsch</span>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <img src="https://flagcdn.com/w20/fr.png" class="flag-icon" alt="FR">
+                        <span>Français</span>
+                    </a>
                 </div>
             </div>
             
-            <div class="travel-class">
-                <h3>Klasa podróży</h3>
-                <div class="class-options">
-                    <div class="class-option selected" data-class="economy">
-                        <strong>Economy</strong>
-                        <p>Standardowe miejsce, wyżywienie na pokładzie</p>
-                    </div>
-                    <div class="class-option" data-class="premium">
-                        <strong>Premium Economy</strong>
-                        <p>Więcej przestrzeni, lepsze menu</p>
-                    </div>
-                    <div class="class-option" data-class="business">
-                        <strong>Business</strong>
-                        <p>Miejsca z pełnym rozkładem, premium service</p>
-                    </div>
-                    <div class="class-option" data-class="first">
-                        <strong>First Class</strong>
-                        <p>Najwyższy komfort podróży</p>
-                    </div>
+            <div class="control-group">
+                <button class="control-btn" id="currency-btn">
+                    <span>PLN</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="dropdown" id="currency-dropdown">
+                    <a href="#" class="dropdown-item">EUR</a>
+                    <a href="#" class="dropdown-item">USD</a>
+                    <a href="#" class="dropdown-item">GBP</a>
                 </div>
             </div>
             
-            <div class="modal-actions">
-                <button class="modal-btn cancel" id="cancelPassenger">Anuluj</button>
-                <button class="modal-btn confirm" id="confirmPassenger">Zastosuj</button>
+            <div class="control-group">
+                <button class="account-btn" id="account-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Moje konto</span>
+                </button>
+                <div class="dropdown" id="account-dropdown">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Zaloguj się</span>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Zarejestruj się</span>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Menu hamburger
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
+        // Funkcje do otwierania dropdownów
+        document.getElementById('language-btn').addEventListener('click', function() {
+            document.getElementById('language-dropdown').classList.toggle('show');
+        });
         
-        hamburgerBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('active');
+        document.getElementById('currency-btn').addEventListener('click', function() {
+            document.getElementById('currency-dropdown').classList.toggle('show');
         });
-
-        // Dropdowny
-        document.getElementById('languageBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            document.getElementById('languageDropdown').classList.toggle('show');
-            document.getElementById('currencyDropdown').classList.remove('show');
+        
+        document.getElementById('account-btn').addEventListener('click', function() {
+            document.getElementById('account-dropdown').classList.toggle('show');
         });
-
-        document.getElementById('currencyBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            document.getElementById('currencyDropdown').classList.toggle('show');
-            document.getElementById('languageDropdown').classList.remove('show');
-        });
-
+        
         // Zamknij dropdowny po kliknięciu poza nimi
-        window.addEventListener('click', function() {
-            document.getElementById('languageDropdown').classList.remove('show');
-            document.getElementById('currencyDropdown').classList.remove('show');
-        });
-
-        // Kalendarz i wybór klasy podróży
-        function initCalendar() {
-            const departureDate = document.getElementById('departureDate');
-            const returnDate = document.getElementById('returnDate');
-            const passengerTrigger = document.getElementById('passengerTrigger');
-            const passengerModal = document.getElementById('passengerModal');
-            const passengerSummary = document.getElementById('passengerSummary');
-            
-            // Zmienne dla pasażerów i klasy
-            let adultCount = 1;
-            let childCount = 0;
-            let infantCount = 0;
-            let selectedClass = 'economy';
-            
-            // Otwórz modal pasażerów
-            passengerTrigger.addEventListener('click', function() {
-                passengerModal.style.display = 'flex';
-            });
-            
-            // Zamknij modal pasażerów
-            document.getElementById('cancelPassenger').addEventListener('click', function() {
-                passengerModal.style.display = 'none';
-            });
-            
-            // Zastosuj wybór pasażerów
-            document.getElementById('confirmPassenger').addEventListener('click', function() {
-                updatePassengerSummary();
-                passengerModal.style.display = 'none';
-            });
-            
-            // Zarządzanie liczbą pasażerów
-            document.getElementById('increaseAdult').addEventListener('click', function() {
-                if (adultCount < 9) adultCount++;
-                updatePassengerCounts();
-            });
-            
-            document.getElementById('decreaseAdult').addEventListener('click', function() {
-                if (adultCount > 1) adultCount--;
-                updatePassengerCounts();
-            });
-            
-            document.getElementById('increaseChild').addEventListener('click', function() {
-                if (childCount < 8) childCount++;
-                updatePassengerCounts();
-            });
-            
-            document.getElementById('decreaseChild').addEventListener('click', function() {
-                if (childCount > 0) childCount--;
-                updatePassengerCounts();
-            });
-            
-            document.getElementById('increaseInfant').addEventListener('click', function() {
-                if (infantCount < adultCount) infantCount++;
-                updatePassengerCounts();
-            });
-            
-            document.getElementById('decreaseInfant').addEventListener('click', function() {
-                if (infantCount > 0) infantCount--;
-                updatePassengerCounts();
-            });
-            
-            // Wybór klasy podróży
-            const classOptions = document.querySelectorAll('.class-option');
-            classOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    classOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    selectedClass = this.getAttribute('data-class');
-                });
-            });
-            
-            // Aktualizacja liczników pasażerów
-            function updatePassengerCounts() {
-                document.getElementById('adultCount').textContent = adultCount;
-                document.getElementById('childCount').textContent = childCount;
-                document.getElementById('infantCount').textContent = infantCount;
-                
-                // Niemowlęta nie mogą przekraczać liczby dorosłych
-                document.getElementById('increaseInfant').disabled = infantCount >= adultCount;
-                document.getElementById('decreaseInfant').disabled = infantCount <= 0;
-                document.getElementById('decreaseAdult').disabled = adultCount <= 1;
-                document.getElementById('increaseAdult').disabled = adultCount >= 9;
-                document.getElementById('decreaseChild').disabled = childCount <= 0;
-                document.getElementById('increaseChild').disabled = childCount >= 8;
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.control-btn') && !event.target.matches('.account-btn')) {
+                const dropdowns = document.getElementsByClassName('dropdown');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
             }
-            
-            // Aktualizacja podsumowania pasażerów
-            function updatePassengerSummary() {
-                let summary = '';
-                
-                if (adultCount > 0) {
-                    summary += adultCount + ' ' + (adultCount === 1 ? 'dorosły' : 'dorosłych');
-                }
-                
-                if (childCount > 0) {
-                    if (summary) summary += ', ';
-                    summary += childCount + ' ' + (childCount === 1 ? 'dziecko' : 'dzieci');
-                }
-                
-                if (infantCount > 0) {
-                    if (summary) summary += ', ';
-                    summary += infantCount + ' ' + (infantCount === 1 ? 'niemowlę' : 'niemowląt');
-                }
-                
-                // Dodaj klasę podróży
-                let classText = '';
-                switch(selectedClass) {
-                    case 'economy': classText = 'Economy'; break;
-                    case 'premium': classText = 'Premium Economy'; break;
-                    case 'business': classText = 'Business'; break;
-                    case 'first': classText = 'First Class'; break;
-                }
-                
-                summary += ', ' + classText;
-                passengerSummary.textContent = summary;
-            }
-            
-            // Inicjalizacja kalendarza (uproszczona wersja)
-            departureDate.addEventListener('click', function() {
-                alert('Kalendarz wylotu - tutaj można dodać pełną implementację');
-                // W prawdziwej aplikacji można użyć biblioteki jak Flatpickr
-            });
-            
-            returnDate.addEventListener('click', function() {
-                alert('Kalendarz powrotu - tutaj można dodać pełną implementację');
-            });
-            
-            // Zamknij modal po kliknięciu poza nim
-            window.addEventListener('click', function(event) {
-                if (event.target === passengerModal) {
-                    passengerModal.style.display = 'none';
-                }
-            });
-        }
-
-        // Inicjalizacja po załadowaniu strony
-        window.addEventListener('DOMContentLoaded', function() {
-            initCalendar();
         });
     </script>
 </body>
