@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistula Airlines</title>
+    <title>Vistula Airlines - Rezerwacja</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -12,6 +12,7 @@
             --accent: #7fd1ff;
             --text-light: #ffffff;
             --text-dark: #333333;
+            --border: #e0e0e0;
         }
         
         * {
@@ -22,8 +23,14 @@
         }
         
         body {
-            background-color: #f8f9fa;
-            overflow-x: hidden;
+            background-color: #f5f7fa;
+            color: var(--text-dark);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
         
         /* Pasek nawigacyjny */
@@ -38,211 +45,370 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            height: 80px;
         }
         
         .navbar-brand {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 800;
             background: linear-gradient(to right, var(--accent), var(--text-light));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            letter-spacing: 1px;
         }
         
-        /* Główne linki (widoczne tylko na desktop) */
-        .navbar-links {
-            display: flex;
-            list-style: none;
-        }
-        
-        .navbar-links li {
-            margin: 0 15px;
-        }
-        
-        .navbar-links a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-            transition: opacity 0.3s;
-        }
-        
-        /* Ikony po prawej (zawsze widoczne) */
         .navbar-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
         
-        /* Przyciski języka/waluty */
-        .dropdown-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .action-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
             color: var(--text-light);
             padding: 8px 15px;
             border-radius: 20px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Formularz rezerwacji */
+        .booking-form {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-top: 30px;
+        }
+        
+        .form-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        /* Selektor klasy podróży */
+        .travel-class-selector {
+            margin: 30px 0;
+        }
+        
+        .class-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .class-option {
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .class-option:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+        
+        .class-option.selected {
+            border-color: var(--secondary);
+            background: rgba(0, 160, 225, 0.05);
+        }
+        
+        .class-option h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .class-option p {
+            color: #666;
             font-size: 14px;
         }
         
-        /* Ikona użytkownika */
-        .login-icon {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--text-light);
-            width: 40px;
-            height: 40px;
+        /* Selektor pasażerów */
+        .passenger-selector {
+            margin: 30px 0;
+        }
+        
+        .passenger-type {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .passenger-info {
+            flex: 1;
+        }
+        
+        .passenger-info h4 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .passenger-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .passenger-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .counter-btn {
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
+            border: 1px solid var(--border);
+            background: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-weight: bold;
         }
         
-        /* Przycisk hamburger (tylko mobile) */
-        .hamburger {
-            display: none;
-            background: none;
+        .counter-value {
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        /* Przycisk potwierdzenia */
+        .confirm-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
             border: none;
-            color: var(--text-light);
-            font-size: 24px;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-        }
-        
-        /* Menu mobilne (szuflada) */
-        .mobile-menu {
-            position: fixed;
-            top: 80px;
-            left: 0;
-            width: 100%;
-            background: white;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            z-index: 999;
-            padding: 20px;
-        }
-        
-        .mobile-menu.active {
-            transform: translateX(0);
-        }
-        
-        .mobile-links {
-            list-style: none;
-        }
-        
-        .mobile-links li {
-            margin: 15px 0;
-        }
-        
-        .mobile-links a {
-            color: var(--text-dark);
-            text-decoration: none;
-            font-size: 18px;
             display: block;
-            padding: 10px;
-            border-radius: 5px;
+            margin: 40px auto 0;
+            transition: transform 0.3s;
         }
         
-        .mobile-links a:hover {
-            background-color: #f0f8ff;
-        }
-        
-        /* Responsywność - przełączanie na hamburger */
-        @media (max-width: 992px) {
-            .navbar-links {
-                display: none;
-            }
-            
-            .hamburger {
-                display: block;
-            }
-            
-            .navbar-brand {
-                position: static;
-                transform: none;
-            }
-        }
-        
-        @media (min-width: 993px) {
-            .mobile-menu {
-                display: none;
-            }
+        .confirm-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
+    <!-- Pasek nawigacyjny -->
     <nav class="navbar">
-        <button class="hamburger" id="hamburgerBtn">
-            <i class="fas fa-bars"></i>
-        </button>
-        
         <div class="navbar-brand">VIS</div>
-        
-        <ul class="navbar-links">
-            <li><a href="#">Zarezerwuj lot</a></li>
-            <li><a href="#">Odpraw się</a></li>
-            <li><a href="#">Zarządzaj rezerwacją</a></li>
-            <li><a href="#">Zaplanuj podróż</a></li>
-            <li><a href="#">Informacje</a></li>
-            <li><a href="#">Pomoc</a></li>
-        </ul>
-        
         <div class="navbar-actions">
-            <div class="login-dropdown">
-                <button class="login-icon" id="loginBtn">
-                    <i class="fas fa-user"></i>
-                </button>
-            </div>
-            
-            <div class="dropdown">
-                <button class="dropdown-btn" id="languageBtn">
-                    <img src="https://flagcdn.com/w20/pl.png" alt="Polski" class="flag-icon">
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
-            
-            <div class="dropdown">
-                <button class="dropdown-btn" id="currencyBtn">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-            </div>
+            <button class="action-btn" id="loginBtn">
+                <i class="fas fa-user"></i>
+                <span>Zaloguj się</span>
+            </button>
+            <button class="action-btn" id="languageBtn">
+                <img src="https://flagcdn.com/w20/pl.png" alt="Polski" style="width: 20px; border-radius: 2px;">
+                <span>Polski</span>
+            </button>
+            <button class="action-btn" id="currencyBtn">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>PLN</span>
+            </button>
         </div>
     </nav>
-    
-    <!-- Menu mobilne (szuflada) -->
-    <div class="mobile-menu" id="mobileMenu">
-        <ul class="mobile-links">
-            <li><a href="#">Zarezerwuj lot</a></li>
-            <li><a href="#">Odpraw się</a></li>
-            <li><a href="#">Zarządzaj rezerwacją</a></li>
-            <li><a href="#">Zaplanuj podróż</a></li>
-            <li><a href="#">Informacje</a></li>
-            <li><a href="#">Pomoc</a></li>
-        </ul>
+
+    <!-- Główna zawartość -->
+    <div class="container">
+        <div class="booking-form">
+            <h2 class="form-title">Rezerwacja lotu</h2>
+            
+            <!-- Formularz wyszukiwania -->
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="from">Skąd</label>
+                    <input type="text" id="from" class="form-control" placeholder="Warszawa (WAW)">
+                </div>
+                <div class="form-group">
+                    <label for="to">Dokąd</label>
+                    <input type="text" id="to" class="form-control" placeholder="Nowy Jork (JFK)">
+                </div>
+                <div class="form-group">
+                    <label for="departure">Wylot</label>
+                    <input type="date" id="departure" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="return">Powrót (opcjonalnie)</label>
+                    <input type="date" id="return" class="form-control">
+                </div>
+            </div>
+            
+            <!-- Wybór klasy podróży -->
+            <div class="travel-class-selector">
+                <h3>Wybierz klasę podróży</h3>
+                <div class="class-options">
+                    <div class="class-option" data-class="economy">
+                        <h3>Economy Class</h3>
+                        <p>Podstawowa klasa z wygodnymi fotelami</p>
+                    </div>
+                    <div class="class-option" data-class="premium">
+                        <h3>Premium Economy</h3>
+                        <p>Więcej przestrzeni i udogodnień</p>
+                    </div>
+                    <div class="class-option" data-class="business">
+                        <h3>Business Class</h3>
+                        <p>Luksusowe fotele i premium serwis</p>
+                    </div>
+                    <div class="class-option" data-class="first">
+                        <h3>Pierwsza Klasa</h3>
+                        <p>Najwyższy komfort podróży</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Wybór pasażerów -->
+            <div class="passenger-selector">
+                <h3>Dodaj pasażerów</h3>
+                <p style="color: #666; margin-bottom: 15px;">Sprawdź wiek pasażerów w dniu wylotu</p>
+                
+                <div class="passenger-type">
+                    <div class="passenger-info">
+                        <h4>Dorośli</h4>
+                        <p>16+ lat</p>
+                    </div>
+                    <div class="passenger-counter">
+                        <button class="counter-btn minus">-</button>
+                        <span class="counter-value">1</span>
+                        <button class="counter-btn plus">+</button>
+                    </div>
+                </div>
+                
+                <div class="passenger-type">
+                    <div class="passenger-info">
+                        <h4>Nastolatkowie</h4>
+                        <p>12-15 lat</p>
+                    </div>
+                    <div class="passenger-counter">
+                        <button class="counter-btn minus">-</button>
+                        <span class="counter-value">0</span>
+                        <button class="counter-btn plus">+</button>
+                    </div>
+                </div>
+                
+                <div class="passenger-type">
+                    <div class="passenger-info">
+                        <h4>Dzieci</h4>
+                        <p>2-11 lat</p>
+                    </div>
+                    <div class="passenger-counter">
+                        <button class="counter-btn minus">-</button>
+                        <span class="counter-value">0</span>
+                        <button class="counter-btn plus">+</button>
+                    </div>
+                </div>
+                
+                <div class="passenger-type">
+                    <div class="passenger-info">
+                        <h4>Niemowlęta (z miejscem)</h4>
+                        <p>0-24 miesięcy</p>
+                    </div>
+                    <div class="passenger-counter">
+                        <button class="counter-btn minus">-</button>
+                        <span class="counter-value">0</span>
+                        <button class="counter-btn plus">+</button>
+                    </div>
+                </div>
+                
+                <div class="passenger-type">
+                    <div class="passenger-info">
+                        <h4>Niemowlęta (na kolanach)</h4>
+                        <p>0-24 miesięcy</p>
+                    </div>
+                    <div class="passenger-counter">
+                        <button class="counter-btn minus">-</button>
+                        <span class="counter-value">0</span>
+                        <button class="counter-btn plus">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="confirm-btn">Potwierdź i wyszukaj loty</button>
+        </div>
     </div>
 
     <script>
-        // Menu hamburger
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        
-        hamburgerBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('active');
+        // Wybór klasy podróży
+        const classOptions = document.querySelectorAll('.class-option');
+        classOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                classOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+            });
         });
         
-        // Zamknij menu po kliknięciu gdziekolwiek indziej
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.navbar') && !event.target.closest('.mobile-menu')) {
-                mobileMenu.classList.remove('active');
-            }
+        // Licznik pasażerów
+        document.querySelectorAll('.counter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const counter = this.parentElement.querySelector('.counter-value');
+                let value = parseInt(counter.textContent);
+                
+                if (this.classList.contains('plus')) {
+                    value++;
+                } else if (value > 0) {
+                    value--;
+                }
+                
+                counter.textContent = value;
+            });
+        });
+        
+        // Menu logowania/waluty/języka (symulacja)
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            alert('Panel logowania - do implementacji');
+        });
+        
+        document.getElementById('languageBtn').addEventListener('click', () => {
+            alert('Wybierz język: Polski, English, Deutsch');
+        });
+        
+        document.getElementById('currencyBtn').addEventListener('click', () => {
+            alert('Wybierz walutę: PLN, USD, EUR, GBP');
         });
     </script>
 </body>
