@@ -111,6 +111,48 @@
         .show {
             display: block !important;
         }
+
+        /* Responsywność - wersja mobilna */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-wrap: wrap;
+                padding: 10px 5%;
+            }
+            .navbar-brand {
+                position: static;
+                transform: none;
+                order: 1;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 10px;
+            }
+            .navbar-links {
+                order: 3;
+                width: 100%;
+                justify-content: space-around;
+                margin: 10px 0;
+                flex-wrap: wrap;
+            }
+            .navbar-links li {
+                margin: 5px 0;
+            }
+            .navbar-actions {
+                order: 2;
+                margin-left: auto;
+            }
+            .dropdown-content {
+                right: -50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-links a {
+                font-size: 14px;
+            }
+            .flag-btn {
+                padding: 6px 8px;
+            }
+        }
     </style>
 </head>
 <body>
