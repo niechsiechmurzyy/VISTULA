@@ -34,7 +34,7 @@
         .top-bar {
             background: linear-gradient(135deg, var(--marine-primary), var(--marine-dark));
             color: var(--pure-white);
-            padding: 0 7%;
+            padding: 0 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -48,35 +48,26 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
         
-        .nav-main {
-            display: flex;
-            align-items: center;
-            gap: 45px;
-        }
-        
         .logo {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 800;
-            letter-spacing: 1.2px;
+            letter-spacing: 1px;
             color: var(--pure-white);
             display: flex;
             align-items: center;
-            gap: 10px;
-            transition: all var(--transition-speed);
-        }
-        
-        .logo:hover {
-            color: var(--marine-accent);
+            gap: 8px;
+            z-index: 1001;
         }
         
         .logo-icon {
-            font-size: 30px;
+            font-size: 24px;
             color: var(--marine-accent);
         }
         
+        /* Menu główne - desktop */
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 25px;
         }
         
         .nav-link {
@@ -110,10 +101,11 @@
             width: 100%;
         }
         
+        /* Kontrolki (język, waluta, konto) */
         .nav-controls {
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 15px;
         }
         
         .control-group {
@@ -124,12 +116,12 @@
             background: none;
             border: none;
             color: var(--pure-white);
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 15px;
+            gap: 6px;
+            padding: 8px 12px;
             border-radius: var(--border-radius);
             transition: all var(--transition-speed);
             opacity: 0.9;
@@ -140,6 +132,27 @@
             opacity: 1;
         }
         
+        .account-btn {
+            background-color: var(--marine-accent);
+            border: none;
+            color: var(--pure-white);
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .account-btn:hover {
+            background-color: var(--marine-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 116, 217, 0.2);
+        }
+        
+        /* Dropdowny */
         .dropdown {
             position: absolute;
             right: 0;
@@ -165,11 +178,11 @@
         
         .dropdown-item {
             color: var(--marine-dark);
-            padding: 12px 20px;
+            padding: 10px 16px;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             transition: all 0.2s;
         }
         
@@ -178,31 +191,52 @@
         }
         
         .flag-icon {
-            width: 24px;
-            height: 18px;
+            width: 20px;
+            height: 15px;
             object-fit: cover;
-            border-radius: 3px;
+            border-radius: 2px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
-        .account-btn {
-            background-color: var(--marine-accent);
+        /* Przycisk hamburger menu */
+        .hamburger {
+            display: none;
+            background: none;
             border: none;
             color: var(--pure-white);
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            font-weight: 600;
+            font-size: 24px;
             cursor: pointer;
-            transition: all var(--transition-speed);
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            padding: 10px;
+            z-index: 1001;
         }
         
-        .account-btn:hover {
-            background-color: var(--marine-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 116, 217, 0.2);
+        /* Mobile menu */
+        .mobile-menu {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 100%;
+            background: var(--marine-dark);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+            transform: translateY(-150%);
+            transition: transform 0.4s ease;
+            padding: 20px 5%;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .mobile-menu.show {
+            transform: translateY(0);
+        }
+        
+        .mobile-link {
+            color: var(--pure-white);
+            text-decoration: none;
+            font-size: 18px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         /* Panel rezerwacji lotów */
@@ -221,6 +255,12 @@
             margin-bottom: 30px;
             border-bottom: 1px solid #eee;
             padding-bottom: 15px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        
+        .booking-header::-webkit-scrollbar {
+            display: none;
         }
         
         .booking-tab {
@@ -230,6 +270,7 @@
             color: #666;
             border-radius: var(--border-radius) var(--border-radius) 0 0;
             transition: all var(--transition-speed);
+            white-space: nowrap;
         }
         
         .booking-tab.active {
@@ -305,7 +346,8 @@
         /* Dropdown klasy podróży */
         .travel-class-dropdown {
             position: absolute;
-            width: 350px;
+            width: 100%;
+            max-width: 350px;
             background: var(--pure-white);
             box-shadow: var(--box-shadow);
             border-radius: var(--border-radius);
@@ -396,9 +438,15 @@
         /* Sekcja promocyjna */
         .promo-section {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 15px;
             margin-top: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .promo-section {
+                grid-template-columns: 1fr 1fr;
+            }
         }
         
         .promo-card {
@@ -445,48 +493,134 @@
             gap: 10px;
             color: var(--marine-dark);
         }
+        
+        /* Responsywność */
+        @media (max-width: 1024px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hamburger {
+                display: block;
+                margin-left: auto;
+                margin-right: 15px;
+            }
+            
+            .mobile-menu {
+                display: flex;
+            }
+            
+            .logo {
+                font-size: 24px;
+            }
+            
+            .booking-form {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .form-group.double-width {
+                grid-column: span 2;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .top-bar {
+                padding: 0 15px;
+            }
+            
+            .control-btn span {
+                display: none;
+            }
+            
+            .account-btn span {
+                display: none;
+            }
+            
+            .control-btn {
+                padding: 8px;
+            }
+            
+            .account-btn {
+                padding: 8px 12px;
+            }
+            
+            .booking-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.double-width {
+                grid-column: span 1;
+            }
+            
+            .travel-class-dropdown {
+                width: calc(100% - 30px);
+                left: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 20px;
+            }
+            
+            .logo-icon {
+                font-size: 20px;
+            }
+            
+            .booking-header {
+                gap: 10px;
+                padding-bottom: 10px;
+            }
+            
+            .booking-tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="top-bar">
-        <div class="nav-main">
-            <div class="logo">
-                <i class="fas fa-plane logo-icon"></i>
-                VIS
-            </div>
-            <div class="nav-links">
-                <a href="#" class="nav-link">Zarezerwuj lot</a>
-                <a href="#" class="nav-link">Odpraw się</a>
-                <a href="#" class="nav-link">Zarządzaj rezerwacją</a>
-                <a href="#" class="nav-link">Informacje</a>
-                <a href="#" class="nav-link">Zainspiruj się</a>
-                <a href="#" class="nav-link">Pomoc</a>
-            </div>
+        <div class="logo">
+            <i class="fas fa-plane logo-icon"></i>
+            VIS
         </div>
         
+        <!-- Menu desktop -->
+        <nav class="nav-links">
+            <a href="#" class="nav-link">Zarezerwuj lot</a>
+            <a href="#" class="nav-link">Odpraw się</a>
+            <a href="#" class="nav-link">Zarządzaj rezerwacją</a>
+            <a href="#" class="nav-link">Informacje</a>
+            <a href="#" class="nav-link">Zainspiruj się</a>
+            <a href="#" class="nav-link">Pomoc</a>
+        </nav>
+        
+        <!-- Przycisk hamburger -->
+        <button class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Kontrolki (zawsze widoczne) -->
         <div class="nav-controls">
             <div class="control-group">
                 <button class="control-btn" id="language-btn">
-                    <img src="https://flagcdn.com/w24/pl.png" class="flag-icon" alt="PL" id="current-flag">
-                    <span id="current-language">Polski</span>
+                    <img src="https://flagcdn.com/w20/pl.png" class="flag-icon" alt="PL" id="current-flag">
+                    <span id="current-language">PL</span>
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <div class="dropdown" id="language-dropdown">
-                    <a href="#" class="dropdown-item" data-lang="pl" data-flag="https://flagcdn.com/w24/pl.png">
-                        <img src="https://flagcdn.com/w24/pl.png" class="flag-icon" alt="PL">
+                    <a href="#" class="dropdown-item" data-lang="pl" data-flag="https://flagcdn.com/w20/pl.png">
+                        <img src="https://flagcdn.com/w20/pl.png" class="flag-icon" alt="PL">
                         <span>Polski</span>
                     </a>
-                    <a href="#" class="dropdown-item" data-lang="en" data-flag="https://flagcdn.com/w24/gb.png">
-                        <img src="https://flagcdn.com/w24/gb.png" class="flag-icon" alt="EN">
+                    <a href="#" class="dropdown-item" data-lang="en" data-flag="https://flagcdn.com/w20/gb.png">
+                        <img src="https://flagcdn.com/w20/gb.png" class="flag-icon" alt="EN">
                         <span>English</span>
                     </a>
-                    <a href="#" class="dropdown-item" data-lang="de" data-flag="https://flagcdn.com/w24/de.png">
-                        <img src="https://flagcdn.com/w24/de.png" class="flag-icon" alt="DE">
+                    <a href="#" class="dropdown-item" data-lang="de" data-flag="https://flagcdn.com/w20/de.png">
+                        <img src="https://flagcdn.com/w20/de.png" class="flag-icon" alt="DE">
                         <span>Deutsch</span>
-                    </a>
-                    <a href="#" class="dropdown-item" data-lang="fr" data-flag="https://flagcdn.com/w24/fr.png">
-                        <img src="https://flagcdn.com/w24/fr.png" class="flag-icon" alt="FR">
-                        <span>Français</span>
                     </a>
                 </div>
             </div>
@@ -500,14 +634,13 @@
                     <a href="#" class="dropdown-item" data-currency="PLN">PLN (zł)</a>
                     <a href="#" class="dropdown-item" data-currency="EUR">EUR (€)</a>
                     <a href="#" class="dropdown-item" data-currency="USD">USD ($)</a>
-                    <a href="#" class="dropdown-item" data-currency="GBP">GBP (£)</a>
                 </div>
             </div>
             
             <div class="control-group">
                 <button class="account-btn" id="account-btn">
-                    <i class="fas fa-user account-icon"></i>
-                    <span>Moje konto</span>
+                    <i class="fas fa-user"></i>
+                    <span>Konto</span>
                 </button>
                 <div class="dropdown" id="account-dropdown">
                     <a href="#" class="dropdown-item">
@@ -522,7 +655,18 @@
             </div>
         </div>
     </div>
+    
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="#" class="mobile-link">Zarezerwuj lot</a>
+        <a href="#" class="mobile-link">Odpraw się</a>
+        <a href="#" class="mobile-link">Zarządzaj rezerwacją</a>
+        <a href="#" class="mobile-link">Informacje</a>
+        <a href="#" class="mobile-link">Zainspiruj się</a>
+        <a href="#" class="mobile-link">Pomoc</a>
+    </div>
 
+    <!-- Panel rezerwacji lotów -->
     <div class="booking-panel">
         <div class="booking-header">
             <div class="booking-tab active" id="round-trip">Lot w obie strony</div>
@@ -732,8 +876,7 @@
                 const text = this.querySelector('span').textContent;
                 
                 document.getElementById('current-flag').src = flag;
-                document.getElementById('current-language').textContent = text;
-                
+                document.getElementById('current-language').textContent = lang === 'pl' ? 'PL' : lang.toUpperCase();
                 document.getElementById('language-dropdown').classList.remove('show');
             });
         });
@@ -745,6 +888,21 @@
                 const currency = this.getAttribute('data-currency');
                 document.getElementById('current-currency').textContent = currency;
                 document.getElementById('currency-dropdown').classList.remove('show');
+            });
+        });
+        
+        // Mobile menu toggle
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('show');
+            this.innerHTML = document.getElementById('mobile-menu').classList.contains('show') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Zamknij mobile menu po kliknięciu na link
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.remove('show');
+                document.getElementById('hamburger').innerHTML = '<i class="fas fa-bars"></i>';
             });
         });
         
