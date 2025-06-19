@@ -7,11 +7,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --marine-blue: #1a6f8b;
-      --marine-light: #4da8b4;
+      --marine-primary: #1a6f8b;
+      --marine-secondary: #4da8b4;
       --marine-dark: #0d4b63;
-      --gold-accent: #e8c547;
-      --text-light: #f8f9fa;
+      --text-light: #ffffff;
+      --text-dark: #333333;
     }
     
     * {
@@ -23,7 +23,7 @@
     body {
       font-family: 'Montserrat', sans-serif;
       background-color: white;
-      color: #333;
+      color: var(--text-dark);
     }
     
     /* Nowoczesny pasek nawigacyjny */
@@ -31,86 +31,55 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem 5%;
-      background: linear-gradient(135deg, var(--marine-blue), var(--marine-dark));
+      padding: 1.2rem 5%;
+      background-color: var(--marine-primary);
       color: var(--text-light);
       position: relative;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     }
     
     .logo {
       font-size: 1.8rem;
       font-weight: 700;
       letter-spacing: 1px;
+    }
+    
+    /* Nawigacja desktopowa (widoczna tylko na dużych ekranach) */
+    .desktop-nav {
       display: flex;
-      align-items: center;
+      gap: 2rem;
     }
     
-    .logo-icon {
-      color: var(--gold-accent);
-      margin-right: 0.5rem;
-      font-weight: 800;
-    }
-    
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-    
-    .dropdown-btn {
-      background: none;
-      border: none;
+    .desktop-nav a {
       color: var(--text-light);
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.5rem 0.8rem;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-    }
-    
-    .dropdown-btn:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      background-color: white;
-      min-width: 160px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      z-index: 1;
-      border-radius: 6px;
-      overflow: hidden;
-    }
-    
-    .dropdown:hover .dropdown-content {
-      display: block;
-    }
-    
-    .dropdown-item {
-      color: var(--marine-dark);
-      padding: 0.8rem 1rem;
       text-decoration: none;
-      display: block;
-      font-size: 0.9rem;
-      transition: all 0.2s;
+      font-weight: 500;
+      font-size: 0.95rem;
+      padding: 0.5rem 0;
+      position: relative;
+      transition: color 0.3s;
     }
     
-    .dropdown-item:hover {
-      background-color: #f1f1f1;
+    .desktop-nav a:hover {
+      color: var(--marine-secondary);
     }
     
+    .desktop-nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--marine-secondary);
+      transition: width 0.3s;
+    }
+    
+    .desktop-nav a:hover::after {
+      width: 100%;
+    }
+    
+    /* Przyciski autoryzacji */
     .auth-buttons {
       display: flex;
       gap: 1rem;
@@ -136,122 +105,108 @@
     }
     
     .register-btn {
-      background: var(--gold-accent);
+      background: var(--marine-dark);
       border: none;
-      color: var(--marine-dark);
+      color: var(--text-light);
     }
     
     .register-btn:hover {
-      background: #e0b83a;
+      background: var(--marine-secondary);
     }
     
-    /* Hamburger menu dla mobile */
-    .menu-toggle {
+    /* Mobile menu */
+    .mobile-menu-btn {
       display: none;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 1.5rem;
       cursor: pointer;
     }
     
+    .mobile-nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background-color: var(--marine-dark);
+      z-index: 1000;
+      padding: 1rem 0;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .mobile-nav.active {
+      display: block;
+    }
+    
+    .mobile-nav a {
+      display: block;
+      color: var(--text-light);
+      text-decoration: none;
+      padding: 0.8rem 5%;
+      font-weight: 500;
+      transition: background-color 0.3s;
+    }
+    
+    .mobile-nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
     /* Responsywność */
-    @media (max-width: 768px) {
-      .navbar {
-        flex-wrap: wrap;
-        padding: 1rem;
+    @media (max-width: 992px) {
+      .desktop-nav {
+        display: none;
       }
       
-      .menu-toggle {
+      .mobile-menu-btn {
         display: block;
       }
       
-      .nav-actions {
-        display: none;
-        width: 100%;
-        flex-direction: column;
-        gap: 1rem;
-        padding: 1rem 0;
-      }
-      
-      .nav-actions.active {
-        display: flex;
-      }
-      
       .auth-buttons {
-        width: 100%;
-        flex-direction: column;
-      }
-      
-      .auth-btn {
-        width: 100%;
-        text-align: center;
-      }
-      
-      .dropdown-content {
-        position: static;
-        box-shadow: none;
-        width: 100%;
+        display: none;
       }
     }
   </style>
 </head>
 <body>
   <nav class="navbar">
-    <div class="logo">
-      <span class="logo-icon">VIS</span>
-      <span>Vistula Airlines</span>
+    <div class="logo">VIS</div>
+    
+    <!-- Nawigacja desktopowa -->
+    <div class="desktop-nav">
+      <a href="#">Zarezerwuj lot</a>
+      <a href="#">Odpraw się</a>
+      <a href="#">Zainspiruj się</a>
+      <a href="#">Pomoc</a>
+      <a href="#">Informacje</a>
     </div>
     
-    <div class="menu-toggle" id="mobile-menu">
-      ☰
+    <!-- Przyciski logowania/rejestracji (desktop) -->
+    <div class="auth-buttons">
+      <button class="auth-btn login-btn">Zaloguj się</button>
+      <button class="auth-btn register-btn">Zarejestruj</button>
     </div>
     
-    <div class="nav-actions" id="nav-actions">
-      <div class="dropdown">
-        <button class="dropdown-btn">
-          <span>PLN</span>
-          <span>▼</span>
-        </button>
-        <div class="dropdown-content">
-          <a href="#" class="dropdown-item">PLN - Złoty</a>
-          <a href="#" class="dropdown-item">EUR - Euro</a>
-          <a href="#" class="dropdown-item">USD - Dolar</a>
-          <a href="#" class="dropdown-item">GBP - Funt</a>
-        </div>
-      </div>
-      
-      <div class="dropdown">
-        <button class="dropdown-btn">
-          <span>Polski</span>
-          <span>▼</span>
-        </button>
-        <div class="dropdown-content">
-          <a href="#" class="dropdown-item">Polski</a>
-          <a href="#" class="dropdown-item">English</a>
-          <a href="#" class="dropdown-item">Deutsch</a>
-          <a href="#" class="dropdown-item">Español</a>
-        </div>
-      </div>
-      
-      <div class="auth-buttons">
-        <button class="auth-btn login-btn">Zaloguj się</button>
-        <button class="auth-btn register-btn">Zarejestruj</button>
-      </div>
+    <!-- Przycisk menu mobilnego -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+    
+    <!-- Nawigacja mobilna -->
+    <div class="mobile-nav" id="mobile-nav">
+      <a href="#">Zarezerwuj lot</a>
+      <a href="#">Odpraw się</a>
+      <a href="#">Zainspiruj się</a>
+      <a href="#">Pomoc</a>
+      <a href="#">Informacje</a>
+      <a href="#">Zaloguj się</a>
+      <a href="#">Zarejestruj</a>
     </div>
   </nav>
 
   <script>
     // Obsługa menu mobilnego
-    document.getElementById('mobile-menu').addEventListener('click', function() {
-      const navActions = document.getElementById('nav-actions');
-      navActions.classList.toggle('active');
-    });
-    
-    // Symulacja zmiany języka/waluty
-    document.querySelectorAll('.dropdown-item').forEach(item => {
-      item.addEventListener('click', function(e) {
-        e.preventDefault();
-        const dropdown = this.closest('.dropdown');
-        const btn = dropdown.querySelector('.dropdown-btn span:first-child');
-        btn.textContent = this.textContent.split(' - ')[0];
-      });
+    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+      document.getElementById('mobile-nav').classList.toggle('active');
     });
   </script>
 </body>
