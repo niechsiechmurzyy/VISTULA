@@ -32,10 +32,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.2rem 5%;
+      padding: 1rem 5%;
       background-color: var(--marine-primary);
       color: var(--text-light);
-      position: relative;
       box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     }
     
@@ -45,13 +44,13 @@
       letter-spacing: 1px;
     }
     
-    /* Nawigacja desktopowa */
-    .desktop-nav {
+    /* Główne menu */
+    .nav-main {
       display: flex;
       gap: 2rem;
     }
     
-    .desktop-nav a {
+    .nav-main a {
       color: var(--text-light);
       text-decoration: none;
       font-weight: 500;
@@ -61,11 +60,11 @@
       transition: color 0.3s;
     }
     
-    .desktop-nav a:hover {
+    .nav-main a:hover {
       color: var(--marine-secondary);
     }
     
-    .desktop-nav a::after {
+    .nav-main a::after {
       content: '';
       position: absolute;
       bottom: 0;
@@ -76,70 +75,68 @@
       transition: width 0.3s;
     }
     
-    .desktop-nav a:hover::after {
+    .nav-main a:hover::after {
       width: 100%;
     }
     
-    /* Ikony i dropdowny */
-    .nav-icons {
+    /* Sekcja z ustawieniami */
+    .nav-settings {
       display: flex;
       align-items: center;
       gap: 1.5rem;
     }
     
-    .nav-icon {
-      font-size: 1.2rem;
-      cursor: pointer;
-      position: relative;
-    }
-    
-    .dropdown-container {
-      position: relative;
-    }
-    
-    .dropdown-box {
-      display: none;
-      position: absolute;
-      right: 0;
-      top: 100%;
-      background-color: white;
-      min-width: 180px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-      z-index: 100;
-      border-radius: 6px;
-      padding: 1rem;
-      margin-top: 0.5rem;
-    }
-    
-    .dropdown-box.active {
-      display: block;
-    }
-    
-    .dropdown-item {
+    /* Wybór języka i waluty */
+    .setting-option {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.5rem 0;
-      color: var(--text-dark);
-      text-decoration: none;
-      transition: color 0.2s;
+      cursor: pointer;
     }
     
-    .dropdown-item:hover {
-      color: var(--marine-primary);
-    }
-    
-    .dropdown-item img {
+    .setting-option img {
       width: 20px;
       height: auto;
+      border-radius: 2px;
     }
     
-    .dropdown-title {
+    .setting-option span {
+      font-size: 0.9rem;
+    }
+    
+    /* Przyciski logowania */
+    .auth-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .auth-btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
       font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--marine-dark);
-      border-bottom: 1px solid #eee;
-      padding-bottom: 0.5rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .login-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: var(--text-light);
+    }
+    
+    .login-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .register-btn {
+      background: var(--marine-dark);
+      border: none;
+      color: var(--text-light);
+    }
+    
+    .register-btn:hover {
+      background: var(--marine-secondary);
     }
     
     /* Mobile menu */
@@ -152,38 +149,19 @@
       cursor: pointer;
     }
     
-    .mobile-nav {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      width: 100%;
-      background-color: var(--marine-dark);
-      z-index: 1000;
-      padding: 1rem 0;
-      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    .mobile-nav.active {
-      display: block;
-    }
-    
-    .mobile-nav a {
-      display: block;
-      color: var(--text-light);
-      text-decoration: none;
-      padding: 0.8rem 5%;
-      font-weight: 500;
-      transition: background-color 0.3s;
-    }
-    
-    .mobile-nav a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-    
     /* Responsywność */
+    @media (max-width: 1200px) {
+      .nav-main {
+        gap: 1.5rem;
+      }
+      
+      .nav-settings {
+        gap: 1rem;
+      }
+    }
+    
     @media (max-width: 992px) {
-      .desktop-nav, .nav-icons {
+      .nav-main, .nav-settings, .auth-buttons {
         display: none;
       }
       
@@ -197,8 +175,8 @@
   <nav class="navbar">
     <div class="logo">VIS</div>
     
-    <!-- Nawigacja desktopowa -->
-    <div class="desktop-nav">
+    <!-- Główne menu -->
+    <div class="nav-main">
       <a href="#">Zarezerwuj lot</a>
       <a href="#">Odpraw się</a>
       <a href="#">Zainspiruj się</a>
@@ -206,125 +184,37 @@
       <a href="#">Informacje</a>
     </div>
     
-    <!-- Ikony i dropdowny -->
-    <div class="nav-icons">
-      <div class="dropdown-container">
-        <div class="nav-icon" id="language-icon">
-          <i class="fas fa-flag"></i>
-        </div>
-        <div class="dropdown-box" id="language-dropdown">
-          <div class="dropdown-title">Wybierz język</div>
-          <a href="#" class="dropdown-item">
-            <img src="https://flagcdn.com/w20/pl.png" alt="Polski">
-            Polski
-          </a>
-          <a href="#" class="dropdown-item">
-            <img src="https://flagcdn.com/w20/gb.png" alt="English">
-            English
-          </a>
-          <a href="#" class="dropdown-item">
-            <img src="https://flagcdn.com/w20/de.png" alt="Deutsch">
-            Deutsch
-          </a>
-          <a href="#" class="dropdown-item">
-            <img src="https://flagcdn.com/w20/es.png" alt="Español">
-            Español
-          </a>
-        </div>
+    <!-- Ustawienia i logowanie -->
+    <div class="nav-settings">
+      <!-- Wybór języka -->
+      <div class="setting-option">
+        <img src="https://flagcdn.com/w20/pl.png" alt="Język">
+        <span>PL</span>
       </div>
       
-      <div class="dropdown-container">
-        <div class="nav-icon" id="currency-icon">
-          <i class="fas fa-money-bill-wave"></i>
-        </div>
-        <div class="dropdown-box" id="currency-dropdown">
-          <div class="dropdown-title">Wybierz walutę</div>
-          <a href="#" class="dropdown-item">PLN - Złoty polski</a>
-          <a href="#" class="dropdown-item">EUR - Euro</a>
-          <a href="#" class="dropdown-item">USD - Dolar amerykański</a>
-          <a href="#" class="dropdown-item">GBP - Funt brytyjski</a>
-        </div>
+      <!-- Wybór waluty -->
+      <div class="setting-option">
+        <i class="fas fa-money-bill-wave"></i>
+        <span>PLN</span>
       </div>
       
-      <div class="dropdown-container">
-        <div class="nav-icon" id="user-icon">
-          <i class="fas fa-user-circle"></i>
-        </div>
-        <div class="dropdown-box" id="user-dropdown">
-          <div class="dropdown-title">Moje konto</div>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-sign-in-alt"></i>
-            Zaloguj się
-          </a>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-user-plus"></i>
-            Zarejestruj się
-          </a>
-          <a href="#" class="dropdown-item">
-            <i class="fas fa-suitcase"></i>
-            Moje rezerwacje
-          </a>
-        </div>
+      <!-- Przyciski logowania -->
+      <div class="auth-buttons">
+        <button class="auth-btn login-btn">Zaloguj się</button>
+        <button class="auth-btn register-btn">Zarejestruj</button>
       </div>
     </div>
     
     <!-- Przycisk menu mobilnego -->
     <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
-    
-    <!-- Nawigacja mobilna -->
-    <div class="mobile-nav" id="mobile-nav">
-      <a href="#">Zarezerwuj lot</a>
-      <a href="#">Odpraw się</a>
-      <a href="#">Zainspiruj się</a>
-      <a href="#">Pomoc</a>
-      <a href="#">Informacje</a>
-      <a href="#">
-        <i class="fas fa-flag"></i> Język
-      </a>
-      <a href="#">
-        <i class="fas fa-money-bill-wave"></i> Waluta
-      </a>
-      <a href="#">
-        <i class="fas fa-sign-in-alt"></i> Zaloguj się
-      </a>
-      <a href="#">
-        <i class="fas fa-user-plus"></i> Zarejestruj się
-      </a>
-    </div>
   </nav>
 
   <script>
-    // Obsługa menu mobilnego
-    document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-      document.getElementById('mobile-nav').classList.toggle('active');
-    });
-    
-    // Obsługa dropdownów
-    const dropdowns = {
-      'language-icon': 'language-dropdown',
-      'currency-icon': 'currency-dropdown',
-      'user-icon': 'user-dropdown'
-    };
-    
-    Object.entries(dropdowns).forEach(([iconId, dropdownId]) => {
-      const icon = document.getElementById(iconId);
-      const dropdown = document.getElementById(dropdownId);
-      
-      icon.addEventListener('click', function(e) {
-        e.stopPropagation();
-        // Zamknij wszystkie dropdowny
-        document.querySelectorAll('.dropdown-box').forEach(box => {
-          if (box.id !== dropdownId) box.classList.remove('active');
-        });
-        // Otwórz/zamknij aktualny
-        dropdown.classList.toggle('active');
-      });
-    });
-    
-    // Zamknij dropdowny po kliknięciu gdzie indziej
-    document.addEventListener('click', function() {
-      document.querySelectorAll('.dropdown-box').forEach(box => {
-        box.classList.remove('active');
+    // Tutaj możesz dodać skrypty do obsługi zmiany języka/waluty
+    document.querySelectorAll('.setting-option').forEach(option => {
+      option.addEventListener('click', function() {
+        // Tutaj logika otwierania modala do zmiany ustawień
+        console.log('Zmiana ustawień');
       });
     });
   </script>
