@@ -1,222 +1,245 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vistula Airlines</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --marine-primary: #1a6f8b;
-      --marine-secondary: #4da8b4;
-      --marine-dark: #0d4b63;
-      --text-light: #ffffff;
-      --text-dark: #333333;
-    }
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background-color: white;
-      color: var(--text-dark);
-    }
-    
-    /* Nowoczesny pasek nawigacyjny */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 5%;
-      background-color: var(--marine-primary);
-      color: var(--text-light);
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .logo {
-      font-size: 1.8rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    
-    /* Główne menu */
-    .nav-main {
-      display: flex;
-      gap: 2rem;
-    }
-    
-    .nav-main a {
-      color: var(--text-light);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.95rem;
-      padding: 0.5rem 0;
-      position: relative;
-      transition: color 0.3s;
-    }
-    
-    .nav-main a:hover {
-      color: var(--marine-secondary);
-    }
-    
-    .nav-main a::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background-color: var(--marine-secondary);
-      transition: width 0.3s;
-    }
-    
-    .nav-main a:hover::after {
-      width: 100%;
-    }
-    
-    /* Sekcja z ustawieniami */
-    .nav-settings {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    
-    /* Wybór języka i waluty */
-    .setting-option {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-    }
-    
-    .setting-option img {
-      width: 20px;
-      height: auto;
-      border-radius: 2px;
-    }
-    
-    .setting-option span {
-      font-size: 0.9rem;
-    }
-    
-    /* Przyciski logowania */
-    .auth-buttons {
-      display: flex;
-      gap: 1rem;
-    }
-    
-    .auth-btn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 4px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .login-btn {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: var(--text-light);
-    }
-    
-    .login-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-    
-    .register-btn {
-      background: var(--marine-dark);
-      border: none;
-      color: var(--text-light);
-    }
-    
-    .register-btn:hover {
-      background: var(--marine-secondary);
-    }
-    
-    /* Mobile menu */
-    .mobile-menu-btn {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text-light);
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-    
-    /* Responsywność */
-    @media (max-width: 1200px) {
-      .nav-main {
-        gap: 1.5rem;
-      }
-      
-      .nav-settings {
-        gap: 1rem;
-      }
-    }
-    
-    @media (max-width: 992px) {
-      .nav-main, .nav-settings, .auth-buttons {
-        display: none;
-      }
-      
-      .mobile-menu-btn {
-        display: block;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vistula Airlines</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: white;
+        }
+        
+        .top-bar {
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            flex-grow: 1;
+            text-align: center;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            opacity: 0.8;
+        }
+        
+        .right-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .language-currency {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: 4px;
+        }
+        
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .account-icon, .language-icon, .currency-icon {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .account-icon i, .language-icon i, .currency-icon i {
+            font-size: 20px;
+        }
+        
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background-color: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 20px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        .mobile-menu a {
+            display: block;
+            padding: 15px 0;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .logo {
+                flex-grow: 0;
+                margin: 0 auto;
+            }
+            
+            .language-currency {
+                display: none;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <nav class="navbar">
-    <div class="logo">VIS</div>
-    
-    <!-- Główne menu -->
-    <div class="nav-main">
-      <a href="#">Zarezerwuj lot</a>
-      <a href="#">Odpraw się</a>
-      <a href="#">Zainspiruj się</a>
-      <a href="#">Pomoc</a>
-      <a href="#">Informacje</a>
+    <div class="top-bar">
+        <div class="mobile-menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#">Odpraw się</a>
+            <a href="#">Zarządzaj rezerwacją</a>
+            <a href="#">Zarezerwuj lot</a>
+            <a href="#">Informacje</a>
+            <a href="#">Pomoc</a>
+        </div>
+        
+        <div class="logo">VIS</div>
+        
+        <div class="right-icons">
+            <div class="language-currency">
+                <div class="dropdown language-icon">
+                    <span><i class="fas fa-flag"></i> PL</span>
+                    <div class="dropdown-content">
+                        <a href="#">Polski (PL)</a>
+                        <a href="#">English (EN)</a>
+                        <a href="#">Deutsch (DE)</a>
+                        <a href="#">Español (ES)</a>
+                    </div>
+                </div>
+                
+                <div class="dropdown currency-icon">
+                    <span><i class="fas fa-money-bill-wave"></i> PLN</span>
+                    <div class="dropdown-content">
+                        <a href="#">PLN (zł)</a>
+                        <a href="#">EUR (€)</a>
+                        <a href="#">USD ($)</a>
+                        <a href="#">GBP (£)</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dropdown account-icon">
+                <span><i class="fas fa-user-circle"></i></span>
+                <div class="dropdown-content">
+                    <a href="#">Zaloguj się</a>
+                    <a href="#">Zarejestruj</a>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <!-- Ustawienia i logowanie -->
-    <div class="nav-settings">
-      <!-- Wybór języka -->
-      <div class="setting-option">
-        <img src="https://flagcdn.com/w20/pl.png" alt="Język">
-        <span>PL</span>
-      </div>
-      
-      <!-- Wybór waluty -->
-      <div class="setting-option">
-        <i class="fas fa-money-bill-wave"></i>
-        <span>PLN</span>
-      </div>
-      
-      <!-- Przyciski logowania -->
-      <div class="auth-buttons">
-        <button class="auth-btn login-btn">Zaloguj się</button>
-        <button class="auth-btn register-btn">Zarejestruj</button>
-      </div>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#">Odpraw się</a>
+        <a href="#">Zarządzaj rezerwacją</a>
+        <a href="#">Zarezerwuj lot</a>
+        <a href="#">Informacje</a>
+        <a href="#">Pomoc</a>
+        <div class="language-currency-mobile">
+            <div class="dropdown language-icon">
+                <span><i class="fas fa-flag"></i> PL</span>
+                <div class="dropdown-content">
+                    <a href="#">Polski (PL)</a>
+                    <a href="#">English (EN)</a>
+                    <a href="#">Deutsch (DE)</a>
+                    <a href="#">Español (ES)</a>
+                </div>
+            </div>
+            
+            <div class="dropdown currency-icon">
+                <span><i class="fas fa-money-bill-wave"></i> PLN</span>
+                <div class="dropdown-content">
+                    <a href="#">PLN (zł)</a>
+                    <a href="#">EUR (€)</a>
+                    <a href="#">USD ($)</a>
+                    <a href="#">GBP (£)</a>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <!-- Przycisk menu mobilnego -->
-    <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
-  </nav>
-
-  <script>
-    // Tutaj możesz dodać skrypty do obsługi zmiany języka/waluty
-    document.querySelectorAll('.setting-option').forEach(option => {
-      option.addEventListener('click', function() {
-        // Tutaj logika otwierania modala do zmiany ustawień
-        console.log('Zmiana ustawień');
-      });
-    });
-  </script>
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
