@@ -15,8 +15,10 @@
         body {
             background-color: white;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
+        /* Top Bar Styles */
         .top-bar {
             background: linear-gradient(135deg, #1e88e5, #0d47a1);
             color: white;
@@ -94,7 +96,7 @@
             padding: 10px 0;
         }
         
-        .dropdown:hover .dropdown-content {
+        .dropdown.active .dropdown-content {
             display: block;
         }
         
@@ -118,6 +120,7 @@
             padding: 5px 10px;
             border-radius: 4px;
             transition: all 0.3s ease;
+            position: relative;
         }
         
         .account-icon:hover, .language-icon:hover, .currency-icon:hover {
@@ -128,6 +131,7 @@
             font-size: 18px;
         }
         
+        /* Mobile Menu Styles */
         .mobile-menu {
             display: none;
             position: fixed;
@@ -214,6 +218,217 @@
             display: block;
         }
         
+        /* Main Content Styles */
+        .main-content {
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .search-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .search-title {
+            font-size: 24px;
+            color: #0d47a1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .search-button {
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            grid-column: 1 / -1;
+            transition: all 0.3s ease;
+        }
+        
+        .search-button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        
+        /* Offers Section */
+        .offers-section {
+            margin-top: 40px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            color: #0d47a1;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .offers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .offer-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .offer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .offer-image {
+            height: 180px;
+            background-color: #f0f0f0;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .offer-details {
+            padding: 20px;
+        }
+        
+        .offer-city {
+            font-size: 20px;
+            color: #0d47a1;
+            margin-bottom: 10px;
+        }
+        
+        .offer-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .offer-info {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .book-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .book-button:hover {
+            opacity: 0.9;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background-color: white;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-column ul li a:hover {
+            opacity: 0.8;
+            padding-left: 5px;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            color: white;
+            font-size: 20px;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Responsive Styles */
         @media (max-width: 992px) {
             .nav-links {
                 gap: 10px;
@@ -242,59 +457,69 @@
             .language-currency {
                 display: none;
             }
+            
+            .search-form {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Top Navigation Bar -->
     <div class="top-bar">
         <div class="mobile-menu-btn">
             <i class="fas fa-bars"></i>
         </div>
         
         <div class="nav-links">
-            <a href="#">Odpraw się</a>
-            <a href="#">Zarządzaj rezerwacją</a>
-            <a href="#">Zarezerwuj lot</a>
-            <a href="#">Informacje</a>
-            <a href="#">Pomoc</a>
+            <a href="#"><i class="fas fa-ticket-alt"></i> Odpraw się</a>
+            <a href="#"><i class="fas fa-calendar-alt"></i> Zarządzaj rezerwacją</a>
+            <a href="#"><i class="fas fa-plane"></i> Zarezerwuj lot</a>
+            <a href="#"><i class="fas fa-info-circle"></i> Informacje</a>
+            <a href="#"><i class="fas fa-question-circle"></i> Pomoc</a>
         </div>
         
         <div class="logo">VIS</div>
         
         <div class="right-icons">
             <div class="language-currency">
-                <div class="dropdown language-icon">
+                <div class="dropdown language-icon" id="desktopLanguage">
                     <span><i class="fas fa-flag"></i> PL</span>
-                    <div class="dropdown-content">
-                        <a href="#"><i class="fas fa-check"></i> Polski (PL)</a>
-                        <a href="#">English (EN)</a>
-                        <a href="#">Deutsch (DE)</a>
-                        <a href="#">Español (ES)</a>
-                    </div>
                 </div>
                 
-                <div class="dropdown currency-icon">
+                <div class="dropdown currency-icon" id="desktopCurrency">
                     <span><i class="fas fa-money-bill-wave"></i> PLN</span>
-                    <div class="dropdown-content">
-                        <a href="#"><i class="fas fa-check"></i> PLN (zł)</a>
-                        <a href="#">EUR (€)</a>
-                        <a href="#">USD ($)</a>
-                        <a href="#">GBP (£)</a>
-                    </div>
                 </div>
             </div>
             
-            <div class="dropdown account-icon">
+            <div class="dropdown account-icon" id="accountDropdown">
                 <span><i class="fas fa-user-circle"></i></span>
-                <div class="dropdown-content">
-                    <a href="#"><i class="fas fa-sign-in-alt"></i> Zaloguj się</a>
-                    <a href="#"><i class="fas fa-user-plus"></i> Zarejestruj</a>
-                </div>
             </div>
         </div>
     </div>
     
+    <!-- Dropdown Contents (hidden by default) -->
+    <div class="dropdown-content" id="languageDropdown">
+        <a href="#" class="language-option" data-lang="pl"><i class="fas fa-check"></i> Polski (PL)</a>
+        <a href="#" class="language-option" data-lang="en">English (EN)</a>
+        <a href="#" class="language-option" data-lang="de">Deutsch (DE)</a>
+        <a href="#" class="language-option" data-lang="es">Español (ES)</a>
+    </div>
+    
+    <div class="dropdown-content" id="currencyDropdown">
+        <a href="#" class="currency-option" data-currency="pln"><i class="fas fa-check"></i> PLN (zł)</a>
+        <a href="#" class="currency-option" data-currency="eur">EUR (€)</a>
+        <a href="#" class="currency-option" data-currency="usd">USD ($)</a>
+        <a href="#" class="currency-option" data-currency="gbp">GBP (£)</a>
+    </div>
+    
+    <div class="dropdown-content" id="accountDropdownContent">
+        <a href="#"><i class="fas fa-sign-in-alt"></i> Zaloguj się</a>
+        <a href="#"><i class="fas fa-user-plus"></i> Zarejestruj</a>
+    </div>
+    
+    <!-- Mobile Menu -->
     <div class="overlay" id="overlay"></div>
     
     <div class="mobile-menu" id="mobileMenu">
@@ -314,11 +539,11 @@
                     <span><i class="fas fa-flag"></i> Język: Polski (PL)</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="dropdown-content">
-                    <a href="#"><i class="fas fa-check"></i> Polski (PL)</a>
-                    <a href="#">English (EN)</a>
-                    <a href="#">Deutsch (DE)</a>
-                    <a href="#">Español (ES)</a>
+                <div class="dropdown-content" id="mobileLanguageDropdown">
+                    <a href="#" class="language-option" data-lang="pl"><i class="fas fa-check"></i> Polski (PL)</a>
+                    <a href="#" class="language-option" data-lang="en">English (EN)</a>
+                    <a href="#" class="language-option" data-lang="de">Deutsch (DE)</a>
+                    <a href="#" class="language-option" data-lang="es">Español (ES)</a>
                 </div>
             </div>
             
@@ -327,11 +552,11 @@
                     <span><i class="fas fa-money-bill-wave"></i> Waluta: PLN (zł)</span>
                     <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="dropdown-content">
-                    <a href="#"><i class="fas fa-check"></i> PLN (zł)</a>
-                    <a href="#">EUR (€)</a>
-                    <a href="#">USD ($)</a>
-                    <a href="#">GBP (£)</a>
+                <div class="dropdown-content" id="mobileCurrencyDropdown">
+                    <a href="#" class="currency-option" data-currency="pln"><i class="fas fa-check"></i> PLN (zł)</a>
+                    <a href="#" class="currency-option" data-currency="eur">EUR (€)</a>
+                    <a href="#" class="currency-option" data-currency="usd">USD ($)</a>
+                    <a href="#" class="currency-option" data-currency="gbp">GBP (£)</a>
                 </div>
             </div>
         </div>
@@ -341,6 +566,132 @@
             <a href="#"><i class="fas fa-user-plus"></i> Zarejestruj</a>
         </div>
     </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="search-box">
+            <h1 class="search-title">Znajdź idealny lot</h1>
+            <form class="search-form">
+                <div class="form-group">
+                    <label for="from">Skąd</label>
+                    <input type="text" id="from" placeholder="Miasto lub lotnisko">
+                </div>
+                
+                <div class="form-group">
+                    <label for="to">Dokąd</label>
+                    <input type="text" id="to" placeholder="Miasto lub lotnisko">
+                </div>
+                
+                <div class="form-group">
+                    <label for="departure">Wylot</label>
+                    <input type="date" id="departure">
+                </div>
+                
+                <div class="form-group">
+                    <label for="return">Powrót</label>
+                    <input type="date" id="return">
+                </div>
+                
+                <div class="form-group">
+                    <label for="passengers">Pasażerowie</label>
+                    <select id="passengers">
+                        <option value="1">1 dorosły</option>
+                        <option value="2">2 dorosłych</option>
+                        <option value="3">3 dorosłych</option>
+                        <option value="4">4 dorosłych</option>
+                        <option value="family">Rodzina</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="search-button">Szukaj lotów</button>
+            </form>
+        </div>
+        
+        <div class="offers-section">
+            <h2 class="section-title">Nasze promocje</h2>
+            
+            <div class="offers-grid">
+                <div class="offer-card">
+                    <div class="offer-image" style="background-image: url('https://images.unsplash.com/photo-1500835556837-99ac94a94552?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="offer-details">
+                        <h3 class="offer-city">Paryż, Francja</h3>
+                        <div class="offer-price">od 199 zł</div>
+                        <p class="offer-info">Lot z Warszawy, bagaż podręczny w cenie</p>
+                        <a href="#" class="book-button">Rezerwuj</a>
+                    </div>
+                </div>
+                
+                <div class="offer-card">
+                    <div class="offer-image" style="background-image: url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="offer-details">
+                        <h3 class="offer-city">Rzym, Włochy</h3>
+                        <div class="offer-price">od 249 zł</div>
+                        <p class="offer-info">Lot z Krakowa, bagaż rejestrowany w cenie</p>
+                        <a href="#" class="book-button">Rezerwuj</a>
+                    </div>
+                </div>
+                
+                <div class="offer-card">
+                    <div class="offer-image" style="background-image: url('https://images.unsplash.com/photo-1503917988258-f87a78e3c995?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60')"></div>
+                    <div class="offer-details">
+                        <h3 class="offer-city">Barcelona, Hiszpania</h3>
+                        <div class="offer-price">od 299 zł</div>
+                        <p class="offer-info">Lot z Gdańska, bezpłatna zmiana rezerwacji</p>
+                        <a href="#" class="book-button">Rezerwuj</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>Vistula Airlines</h3>
+                <ul>
+                    <li><a href="#">O nas</a></li>
+                    <li><a href="#">Kariera</a></li>
+                    <li><a href="#">Flota</a></li>
+                    <li><a href="#">Media</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Informacje</h3>
+                <ul>
+                    <li><a href="#">Regulamin</a></li>
+                    <li><a href="#">Polityka prywatności</a></li>
+                    <li><a href="#">Warunki przewozu</a></li>
+                    <li><a href="#">Informacje dot. COVID-19</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Pomoc</h3>
+                <ul>
+                    <li><a href="#">Centrum pomocy</a></li>
+                    <li><a href="#">Kontakt</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Reklamacje</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Śledź nas</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 Vistula Airlines. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
     
     <script>
         // Mobile menu toggle
@@ -367,25 +718,111 @@
             document.body.style.overflow = '';
         });
         
+        // Dropdown functionality
+        const desktopLanguage = document.getElementById('desktopLanguage');
+        const desktopCurrency = document.getElementById('desktopCurrency');
+        const accountDropdown = document.getElementById('accountDropdown');
+        const languageDropdown = document.getElementById('languageDropdown');
+        const currencyDropdown = document.getElementById('currencyDropdown');
+        const accountDropdownContent = document.getElementById('accountDropdownContent');
+        
+        // Position dropdowns
+        function positionDropdown(button, dropdown) {
+            const rect = button.getBoundingClientRect();
+            dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+            dropdown.style.right = `${window.innerWidth - rect.right}px`;
+        }
+        
+        // Toggle dropdowns
+        function setupDropdown(button, dropdown) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                // Close all other dropdowns
+                document.querySelectorAll('.dropdown-content').forEach(d => {
+                    if (d !== dropdown) d.style.display = 'none';
+                });
+                
+                // Toggle current dropdown
+                if (dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                } else {
+                    positionDropdown(button, dropdown);
+                    dropdown.style.display = 'block';
+                }
+            });
+        }
+        
+        setupDropdown(desktopLanguage, languageDropdown);
+        setupDropdown(desktopCurrency, currencyDropdown);
+        setupDropdown(accountDropdown, accountDropdownContent);
+        
         // Mobile dropdowns
         const mobileLanguage = document.getElementById('mobileLanguage');
         const mobileCurrency = document.getElementById('mobileCurrency');
+        const mobileLanguageDropdown = document.getElementById('mobileLanguageDropdown');
+        const mobileCurrencyDropdown = document.getElementById('mobileCurrencyDropdown');
         
-        mobileLanguage.addEventListener('click', function() {
-            this.classList.toggle('active');
+        mobileLanguage.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mobileLanguageDropdown.style.display = mobileLanguageDropdown.style.display === 'block' ? 'none' : 'block';
+            mobileCurrencyDropdown.style.display = 'none';
         });
         
-        mobileCurrency.addEventListener('click', function() {
-            this.classList.toggle('active');
+        mobileCurrency.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mobileCurrencyDropdown.style.display = mobileCurrencyDropdown.style.display === 'block' ? 'none' : 'block';
+            mobileLanguageDropdown.style.display = 'none';
         });
         
         // Close dropdowns when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('.dropdown')) {
-                document.querySelectorAll('.dropdown-content').forEach(content => {
-                    content.style.display = 'none';
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+                dropdown.style.display = 'none';
+            });
+        });
+        
+        // Language and currency selection
+        document.querySelectorAll('.language-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const lang = this.getAttribute('data-lang');
+                
+                // Update all language displays
+                document.querySelectorAll('.language-icon span').forEach(span => {
+                    span.innerHTML = `<i class="fas fa-flag"></i> ${lang.toUpperCase()}`;
                 });
-            }
+                
+                // Update mobile language display
+                document.querySelector('#mobileLanguage .language-icon span').innerHTML = 
+                    `<i class="fas fa-flag"></i> Język: ${this.textContent.trim()}`;
+                
+                // Close dropdowns
+                document.querySelectorAll('.dropdown-content').forEach(d => {
+                    d.style.display = 'none';
+                });
+            });
+        });
+        
+        document.querySelectorAll('.currency-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                const currency = this.getAttribute('data-currency');
+                
+                // Update all currency displays
+                document.querySelectorAll('.currency-icon span').forEach(span => {
+                    span.innerHTML = `<i class="fas fa-money-bill-wave"></i> ${currency.toUpperCase()}`;
+                });
+                
+                // Update mobile currency display
+                document.querySelector('#mobileCurrency .currency-icon span').innerHTML = 
+                    `<i class="fas fa-money-bill-wave"></i> Waluta: ${this.textContent.trim()}`;
+                
+                // Close dropdowns
+                document.querySelectorAll('.dropdown-content').forEach(d => {
+                    d.style.display = 'none';
+                });
+            });
         });
     </script>
 </body>
