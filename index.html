@@ -7,662 +7,337 @@ $dbname = "vistula_airlines";
 
 // Połączenie z bazą danych
 $conn = new mysqli($servername, $username, $password, $dbname);
-
-// Sprawdzenie połączenia
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Tworzenie tabel jeśli nie istnieją
-$sql = "CREATE TABLE IF NOT EXISTS flights (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    flight_number VARCHAR(20) NOT NULL,
-    departure_airport VARCHAR(100) NOT NULL,
-    arrival_airport VARCHAR(100) NOT NULL,
-    departure_time TIME NOT NULL,
-    arrival_time TIME NOT NULL,
-    price_economy DECIMAL(10,2) NOT NULL,
-    price_business DECIMAL(10,2) NOT NULL,
-    available_seats_economy INT NOT NULL,
-    available_seats_business INT NOT NULL,
-    days_available VARCHAR(20) NOT NULL
-)";
-
-if (!$conn->query($sql)) {
-    echo "Error creating table: " . $conn->error;
-}
-
-$sql = "CREATE TABLE IF NOT EXISTS bookings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    flight_id INT NOT NULL,
-    flight_date DATE NOT NULL,
-    passenger_name VARCHAR(100) NOT NULL,
-    passenger_email VARCHAR(100) NOT NULL,
-    passenger_phone VARCHAR(20) NOT NULL,
-    seats INT NOT NULL,
-    travel_class VARCHAR(20) NOT NULL,
-    booking_reference VARCHAR(20) NOT NULL,
-    booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)";
-
-if (!$conn->query($sql)) {
-    echo "Error creating table: " . $conn->error;
-}
+if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 
 // Funkcje pomocnicze
 function generateBookingReference() {
     return 'VA-' . strtoupper(substr(md5(uniqid()), 0, 6));
 }
 
-function isFlightAvailable($day_of_week, $days_available) {
-    $day_map = [
-        'Monday' => 0,
-        'Tuesday' => 1,
-        'Wednesday' => 2,
-        'Thursday' => 3,
-        'Friday' => 4,
-        'Saturday' => 5,
-        'Sunday' => 6
-    ];
-    return substr($days_available, $day_map[$day_of_week], 1) === '1';
+// Inicjalizacja lotów jeśli baza jest pusta
+$result = $conn->query("SELECT COUNT(*) as count FROM flights");
+if ($result->fetch_assoc()['count'] == 0) {
+    // Lot Warszawa-Gdańsk
+    $conn->query("INSERT INTO flights (flight_number, departure_airport, arrival_airport, 
+                departure_time, arrival_time, price_economy, price_business, 
+                available_seats_economy, available_seats_business, days_available) 
+                VALUES ('VA101', 'Warszawa (WAW)', 'Gdańsk (GDN)', '06:55:00', '07:55:00', 
+                199.99, 399.99, 120, 24, '1111111')");
+    
+    // Lot Gdańsk-Warszawa
+    $conn->query("INSERT INTO flights (flight_number, departure_airport, arrival_airport, 
+                departure_time, arrival_time, price_economy, price_business, 
+                available_seats_economy, available_seats_business, days_available) 
+                VALUES ('VA102', 'Gdańsk (GDN)', 'Warszawa (WAW)', '10:00:00', '11:00:00', 
+                199.99, 399.99, 120, 24, '1111111')");
 }
 
-// Logika aplikacji
+// Styl CSS wspólny dla wszystkich stron
+$commonCSS = "
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: #006994; color: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        .form-container { background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #006994; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .flight-card { border: 1px solid #ddd; border-radius: 5px; padding: 15px; margin-bottom: 15px; }
+        .seat-map { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; margin: 20px 0; }
+        .seat { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; 
+                border-radius: 3px; cursor: pointer; }
+        .seat.available { background: #4CAF50; color: white; }
+        .seat.selected { background: #2196F3; color: white; }
+        .seat.occupied { background: #f44336; color: white; cursor: not-allowed; }
+        .addon-option { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+    </style>
+";
+
+// Routing między stronami
 $page = isset($_GET['page']) ? $_GET['page'] : 'search';
 
-// Dodawanie lotów Vistula Airlines Warszawa-Gdańsk jeśli tabela jest pusta
-$result = $conn->query("SELECT COUNT(*) as count FROM flights");
-$row = $result->fetch_assoc();
-if ($row['count'] == 0) {
-    // Lot Warszawa-Gdańsk (codziennie)
-    $stmt = $conn->prepare("INSERT INTO flights (flight_number, departure_airport, arrival_airport, departure_time, arrival_time, price_economy, price_business, available_seats_economy, available_seats_business, days_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $flight_data = ['VA101', 'Warszawa (WAW)', 'Gdańsk (GDN)', '06:55:00', '07:55:00', 199.99, 399.99, 120, 24, '1111111'];
-    $stmt->bind_param("sssssddiis", ...$flight_data);
-    $stmt->execute();
-    
-    // Lot powrotny Gdańsk-Warszawa (codziennie)
-    $stmt = $conn->prepare("INSERT INTO flights (flight_number, departure_airport, arrival_airport, departure_time, arrival_time, price_economy, price_business, available_seats_economy, available_seats_business, days_available) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $flight_data = ['VA102', 'Gdańsk (GDN)', 'Warszawa (WAW)', '10:00:00', '11:00:00', 199.99, 399.99, 120, 24, '1111111'];
-    $stmt->bind_param("sssssddiis", ...$flight_data);
-    $stmt->execute();
-}
-?>
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistula Airlines - Rezerwacja lotów</title>
-    <style>
-        :root {
-            --primary-color: #006994;
-            --secondary-color: #4da6c4;
-            --accent-color: #e6f2f7;
-            --white: #ffffff;
-            --light-gray: #f5f5f5;
-            --dark-gray: #333333;
-        }
-        
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            background-color: var(--light-gray);
-            color: var(--dark-gray);
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--white);
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo h1 {
-            font-size: 28px;
-            font-weight: 700;
-        }
-        
-        .search-section {
-            background-color: var(--white);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            margin: 30px 0;
-        }
-        
-        .search-title {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-        
-        .search-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-        
-        .form-group input, 
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .search-button {
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 14px 25px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            grid-column: 1 / -1;
-            margin-top: 10px;
-        }
-        
-        .flights-list {
-            margin: 40px 0;
-        }
-        
-        .flight-card {
-            background-color: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        
-        .flight-header {
-            background-color: var(--accent-color);
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .flight-number {
-            font-weight: 700;
-            color: var(--primary-color);
-            font-size: 18px;
-        }
-        
-        .flight-details {
-            display: grid;
-            grid-template-columns: 2fr 1fr 2fr;
-            padding: 20px;
-        }
-        
-        .flight-time {
-            text-align: center;
-        }
-        
-        .flight-time .time {
-            font-size: 24px;
-            font-weight: 600;
-        }
-        
-        .flight-time .airport {
-            font-weight: 600;
-            margin-top: 5px;
-        }
-        
-        .flight-duration {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-        }
-        
-        .flight-prices {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 20px;
-            background-color: var(--light-gray);
-        }
-        
-        .price-option {
-            background-color: var(--white);
-            padding: 15px;
-            border-radius: 6px;
-        }
-        
-        .price-option h3 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-        
-        .price {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-        
-        .price-option button {
-            background-color: var(--secondary-color);
-            color: var(--white);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-        }
-        
-        .date-selector {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            gap: 10px;
-        }
-        
-        .date-selector button {
-            background-color: var(--white);
-            border: 1px solid #ddd;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .date-selector button.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .booking-form {
-            background-color: var(--white);
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            margin: 30px 0;
-        }
-        
-        .booking-summary {
-            background-color: var(--accent-color);
-            padding: 20px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-        }
-        
-        .passenger-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .submit-button {
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 15px 30px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            margin-top: 20px;
-        }
-        
-        .confirmation {
-            text-align: center;
-            padding: 50px 20px;
-        }
-        
-        .confirmation-code {
-            background-color: var(--accent-color);
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 4px;
-            font-weight: 700;
-            margin: 20px 0;
-            color: var(--primary-color);
-        }
-        
-        @media (max-width: 768px) {
-            .flight-details {
-                grid-template-columns: 1fr;
-            }
-            
-            .flight-prices {
-                grid-template-columns: 1fr;
-            }
-            
-            .passenger-details {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <h1>Vistula Airlines</h1>
-            </div>
-        </div>
-    </header>
-
-    <div class="container">
-        <?php if ($page == 'search'): ?>
-            <!-- Strona wyszukiwania lotów -->
-            <section class="search-section">
-                <h2 class="search-title">Wyszukaj loty Vistula Airlines</h2>
-                <form action="?page=results" method="post" class="search-form">
-                    <div class="form-group">
-                        <label for="departure">Skąd</label>
-                        <select id="departure" name="departure" required>
-                            <option value="">Wybierz lotnisko</option>
-                            <option value="Warszawa (WAW)">Warszawa (WAW)</option>
-                            <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="arrival">Dokąd</label>
-                        <select id="arrival" name="arrival" required>
-                            <option value="">Wybierz lotnisko</option>
-                            <option value="Warszawa (WAW)">Warszawa (WAW)</option>
-                            <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="departure_date">Data wylotu</label>
-                        <input type="date" id="departure_date" name="departure_date" required min="<?php echo date('Y-m-d'); ?>">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="class">Klasa podróży</label>
-                        <select id="class" name="class" required>
-                            <option value="economy">Ekonomiczna</option>
-                            <option value="business">Business</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="passengers">Liczba pasażerów</label>
-                        <select id="passengers" name="passengers" required>
-                            <?php for ($i = 1; $i <= 8; $i++): ?>
-                                <option value="<?php echo $i; ?>"><?php echo $i; ?> <?php echo $i == 1 ? 'pasażer' : 'pasażerów'; ?></option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="search-button">Szukaj lotów</button>
-                </form>
-            </section>
-
-        <?php elseif ($page == 'results' && $_SERVER['REQUEST_METHOD'] == 'POST'): ?>
-            <!-- Wyniki wyszukiwania -->
-            <?php
-            $departure = $_POST['departure'];
-            $arrival = $_POST['arrival'];
-            $departure_date = $_POST['departure_date'];
-            $class = $_POST['class'];
-            $passengers = $_POST['passengers'];
-            
-            // Sprawdź czy wybrano różne lotniska
-            if ($departure == $arrival) {
-                echo '<div class="alert">Proszę wybrać różne lotniska wylotu i przylotu.</div>';
-                echo '<a href="?page=search" class="search-button">Wróć do wyszukiwania</a>';
-            } else {
-                // Pobierz loty dla wybranej trasy
-                $sql = "SELECT * FROM flights WHERE departure_airport = ? AND arrival_airport = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ss", $departure, $arrival);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                
-                // Sprawdź czy lot jest dostępny w wybranym dniu tygodnia
-                $day_of_week = date('l', strtotime($departure_date));
-                $available_flights = [];
-                
-                while ($flight = $result->fetch_assoc()) {
-                    if (isFlightAvailable($day_of_week, $flight['days_available'])) {
-                        $available_flights[] = $flight;
-                    }
-                }
-                ?>
-                
-                <section class="flights-list">
-                    <h2>Dostępne loty z <?php echo $departure; ?> do <?php echo $arrival; ?></h2>
-                    <p>Data: <?php echo date('d.m.Y', strtotime($departure_date)); ?> | Klasa: <?php echo $class == 'economy' ? 'Ekonomiczna' : 'Business'; ?> | Pasażerów: <?php echo $passengers; ?></p>
-                    
-                    <div class="date-selector">
-                        <?php for ($i = -2; $i <= 2; $i++): ?>
-                            <?php 
-                            $new_date = date('Y-m-d', strtotime($departure_date . " $i days"));
-                            $day_name = date('D', strtotime($new_date));
-                            ?>
-                            <a href="?page=results&date=<?php echo $new_date; ?>&departure=<?php echo $departure; ?>&arrival=<?php echo $arrival; ?>&class=<?php echo $class; ?>&passengers=<?php echo $passengers; ?>">
-                                <button <?php echo $i == 0 ? 'class="active"' : ''; ?>>
-                                    <?php echo $day_name; ?><br>
-                                    <?php echo date('d.m', strtotime($new_date)); ?>
-                                </button>
-                            </a>
-                        <?php endfor; ?>
-                    </div>
-                    
-                    <?php if (count($available_flights) > 0): ?>
-                        <?php foreach ($available_flights as $flight): ?>
-                            <div class="flight-card">
-                                <div class="flight-header">
-                                    <span class="flight-number">Vistula Airlines <?php echo $flight['flight_number']; ?></span>
-                                </div>
-                                
-                                <div class="flight-details">
-                                    <div class="flight-time">
-                                        <div class="time"><?php echo $flight['departure_time']; ?></div>
-                                        <div class="airport"><?php echo $flight['departure_airport']; ?></div>
-                                    </div>
-                                    
-                                    <div class="flight-duration">
-                                        <svg width="100" height="20" viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="10" cy="10" r="5" fill="#006994"/>
-                                            <line x1="15" y1="10" x2="85" y2="10" stroke="#006994" stroke-width="2" stroke-dasharray="5,5"/>
-                                            <circle cx="90" cy="10" r="5" fill="#006994"/>
-                                            <path d="M80,5 L90,10 L80,15 Z" fill="#006994"/>
-                                        </svg>
-                                        <div class="duration">
-                                            <?php 
-                                            $departure = new DateTime($flight['departure_time']);
-                                            $arrival = new DateTime($flight['arrival_time']);
-                                            $interval = $departure->diff($arrival);
-                                            echo $interval->format('%h godz. %i min.');
-                                            ?>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flight-time">
-                                        <div class="time"><?php echo $flight['arrival_time']; ?></div>
-                                        <div class="airport"><?php echo $flight['arrival_airport']; ?></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="flight-prices">
-                                    <div class="price-option">
-                                        <h3>Klasa ekonomiczna</h3>
-                                        <div class="price"><?php echo number_format($flight['price_economy'], 2, ',', ' '); ?> PLN</div>
-                                        <form action="?page=booking" method="post">
-                                            <input type="hidden" name="flight_id" value="<?php echo $flight['id']; ?>">
-                                            <input type="hidden" name="flight_date" value="<?php echo $departure_date; ?>">
-                                            <input type="hidden" name="class" value="economy">
-                                            <input type="hidden" name="passengers" value="<?php echo $passengers; ?>">
-                                            <button type="submit">Rezerwuj</button>
-                                        </form>
-                                    </div>
-                                    
-                                    <div class="price-option">
-                                        <h3>Klasa business</h3>
-                                        <div class="price"><?php echo number_format($flight['price_business'], 2, ',', ' '); ?> PLN</div>
-                                        <form action="?page=booking" method="post">
-                                            <input type="hidden" name="flight_id" value="<?php echo $flight['id']; ?>">
-                                            <input type="hidden" name="flight_date" value="<?php echo $departure_date; ?>">
-                                            <input type="hidden" name="class" value="business">
-                                            <input type="hidden" name="passengers" value="<?php echo $passengers; ?>">
-                                            <button type="submit">Rezerwuj</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="no-flights">
-                            <p>Niestety, nie znaleziono dostępnych lotów dla podanych kryteriów.</p>
-                            <a href="?page=search" class="search-button">Wróć do wyszukiwania</a>
-                        </div>
-                    <?php endif; ?>
-                </section>
-            <?php } ?>
-
-        <?php elseif ($page == 'booking' && $_SERVER['REQUEST_METHOD'] == 'POST'): ?>
-            <!-- Formularz rezerwacji -->
-            <?php
-            $flight_id = $_POST['flight_id'];
-            $flight_date = $_POST['flight_date'];
-            $class = $_POST['class'];
-            $passengers = $_POST['passengers'];
-            
-            $sql = "SELECT * FROM flights WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $flight_id);
-            $stmt->execute();
-            $flight = $stmt->get_result()->fetch_assoc();
-            
-            $price = $class == 'economy' ? $flight['price_economy'] : $flight['price_business'];
-            $total_price = $price * $passengers;
-            ?>
-            
-            <section class="booking-form">
-                <h2>Dane pasażera</h2>
-                
-                <div class="booking-summary">
-                    <h3>Podsumowanie lotu</h3>
-                    <p><strong>Lot:</strong> Vistula Airlines <?php echo $flight['flight_number']; ?></p>
-                    <p><strong>Trasa:</strong> <?php echo $flight['departure_airport']; ?> → <?php echo $flight['arrival_airport']; ?></p>
-                    <p><strong>Data:</strong> <?php echo date('d.m.Y', strtotime($flight_date)); ?></p>
-                    <p><strong>Wylot:</strong> <?php echo $flight['departure_time']; ?> | <strong>Przylot:</strong> <?php echo $flight['arrival_time']; ?></p>
-                    <p><strong>Klasa:</strong> <?php echo $class == 'economy' ? 'Ekonomiczna' : 'Business'; ?></p>
-                    <p><strong>Liczba pasażerów:</strong> <?php echo $passengers; ?></p>
-                    <p><strong>Cena całkowita:</strong> <?php echo number_format($total_price, 2, ',', ' '); ?> PLN</p>
-                </div>
-                
-                <form action="?page=confirmation" method="post">
-                    <input type="hidden" name="flight_id" value="<?php echo $flight_id; ?>">
-                    <input type="hidden" name="flight_date" value="<?php echo $flight_date; ?>">
-                    <input type="hidden" name="class" value="<?php echo $class; ?>">
-                    <input type="hidden" name="passengers" value="<?php echo $passengers; ?>">
-                    <input type="hidden" name="total_price" value="<?php echo $total_price; ?>">
-                    
-                    <div class="passenger-details">
-                        <div class="form-group">
-                            <label for="passenger_name">Imię i nazwisko</label>
-                            <input type="text" id="passenger_name" name="passenger_name" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="passenger_email">Adres e-mail</label>
-                            <input type="email" id="passenger_email" name="passenger_email" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="passenger_phone">Telefon</label>
-                            <input type="tel" id="passenger_phone" name="passenger_phone" required>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="submit-button">Potwierdź rezerwację</button>
-                </form>
-            </section>
-
-        <?php elseif ($page == 'confirmation' && $_SERVER['REQUEST_METHOD'] == 'POST'): ?>
-            <!-- Potwierdzenie rezerwacji -->
-            <?php
-            $flight_id = $_POST['flight_id'];
-            $flight_date = $_POST['flight_date'];
-            $class = $_POST['class'];
-            $passengers = $_POST['passengers'];
-            $total_price = $_POST['total_price'];
-            $passenger_name = $_POST['passenger_name'];
-            $passenger_email = $_POST['passenger_email'];
-            $passenger_phone = $_POST['passenger_phone'];
-            
-            // Pobierz dane lotu
-            $sql = "SELECT * FROM flights WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $flight_id);
-            $stmt->execute();
-            $flight = $stmt->get_result()->fetch_assoc();
-            
-            // Generuj kod rezerwacji
-            $booking_reference = generateBookingReference();
-            
-            // Zapisz rezerwację do bazy danych
-            $stmt = $conn->prepare("INSERT INTO bookings (flight_id, flight_date, passenger_name, passenger_email, passenger_phone, seats, travel_class, booking_reference) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("issssiss", $flight_id, $flight_date, $passenger_name, $passenger_email, $passenger_phone, $passengers, $class, $booking_reference);
-            $stmt->execute();
-            
-            // Aktualizuj liczbę dostępnych miejsc
-            if ($class == 'economy') {
-                $sql = "UPDATE flights SET available_seats_economy = available_seats_economy - ? WHERE id = ?";
-            } else {
-                $sql = "UPDATE flights SET available_seats_business = available_seats_business - ? WHERE id = ?";
-            }
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $passengers, $flight_id);
-            $stmt->execute();
-            ?>
-            
-            <section class="confirmation">
-                <h2>Dziękujemy za rezerwację w Vistula Airlines!</h2>
-                <p>Twoja rezerwacja została pomyślnie zarejestrowana.</p>
-                
-                <div class="confirmation-code">
-                    Numer rezerwacji: <?php echo $booking_reference; ?>
-                </div>
-                
-                <p>Potwierdzenie rezerwacji zostało wysłane na adres: <strong><?php echo $passenger_email; ?></strong></p>
-                
-                <h3>Szczegóły lotu</h3>
-                <p><strong>Lot:</strong> Vistula Airlines <?php echo $flight['flight_number']; ?></p>
-                <p><strong>Trasa:</strong> <?php echo $flight['departure_airport']; ?> → <?php echo $flight['arrival_airport']; ?></p>
-                <p><strong>Data:</strong> <?php echo date('d.m.Y', strtotime($flight_date)); ?></p>
-                <p><strong>Wylot:</strong> <?php echo $flight['departure_time']; ?> | <strong>Przylot:</strong> <?php echo $flight['arrival_time']; ?></p>
-                <p><strong>Klasa:</strong> <?php echo $class == 'economy' ? 'Ekonomiczna' : 'Business'; ?></p>
-                <p><strong>Liczba pasażerów:</strong> <?php echo $passengers; ?></p>
-                <p><strong>Cena całkowita:</strong> <?php echo number_format($total_price, 2, ',', ' '); ?> PLN</p>
-                
-                <a href="?page=search" class="search-button">Wróć do strony głównej</a>
-            </section>
-        <?php endif; ?>
+// Strona 1: Wyszukiwanie lotów
+if ($page == 'search') {
+    echo $commonCSS;
+    echo '
+    <div class="header">
+        <h1>Vistula Airlines - Wyszukiwanie lotów</h1>
     </div>
-</body>
-</html>
-<?php
+    <div class="form-container">
+        <form action="?page=results" method="post">
+            <div class="form-group">
+                <label for="departure">Skąd</label>
+                <select id="departure" name="departure" required>
+                    <option value="">Wybierz lotnisko</option>
+                    <option value="Warszawa (WAW)">Warszawa (WAW)</option>
+                    <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="arrival">Dokąd</label>
+                <select id="arrival" name="arrival" required>
+                    <option value="">Wybierz lotnisko</option>
+                    <option value="Warszawa (WAW)">Warszawa (WAW)</option>
+                    <option value="Gdańsk (GDN)">Gdańsk (GDN)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="departure_date">Data wylotu</label>
+                <input type="date" id="departure_date" name="departure_date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="class">Klasa podróży</label>
+                <select id="class" name="class" required>
+                    <option value="economy">Ekonomiczna</option>
+                    <option value="business">Business</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="passengers">Liczba pasażerów</label>
+                <select id="passengers" name="passengers" required>
+                    <option value="1">1 pasażer</option>
+                    <option value="2">2 pasażerów</option>
+                    <option value="3">3 pasażerów</option>
+                </select>
+            </div>
+            
+            <button type="submit">Szukaj lotów</button>
+        </form>
+    </div>';
+}
+
+// Strona 2: Wyniki wyszukiwania
+elseif ($page == 'results' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['search_data'] = $_POST;
+    $departure = $_POST['departure'];
+    $arrival = $_POST['arrival'];
+    $departure_date = $_POST['departure_date'];
+    $class = $_POST['class'];
+    $passengers = $_POST['passengers'];
+    
+    echo $commonCSS;
+    echo '
+    <div class="header">
+        <h1>Dostępne loty</h1>
+    </div>
+    <div class="form-container">
+        <h2>Lot z '.$departure.' do '.$arrival.'</h2>
+        <p>Data: '.date('d.m.Y', strtotime($departure_date)).' | Pasażerów: '.$passengers.' | Klasa: '.($class == 'economy' ? 'Ekonomiczna' : 'Business').'</p>';
+    
+    // Wyszukaj loty w bazie danych
+    $sql = "SELECT * FROM flights WHERE departure_airport = ? AND arrival_airport = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $departure, $arrival);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        while ($flight = $result->fetch_assoc()) {
+            echo '
+            <div class="flight-card">
+                <h3>Lot VA'.$flight['flight_number'].'</h3>
+                <p>Wylot: '.$flight['departure_time'].' | Przylot: '.$flight['arrival_time'].'</p>
+                <p>Cena: '.number_format($class == 'economy' ? $flight['price_economy'] : $flight['price_business'], 2, ',', ' ').' PLN</p>
+                <form action="?page=passenger" method="post">
+                    <input type="hidden" name="flight_id" value="'.$flight['id'].'">
+                    <button type="submit">Wybierz</button>
+                </form>
+            </div>';
+        }
+    } else {
+        echo '<p>Brak dostępnych lotów dla wybranych kryteriów.</p>';
+    }
+    
+    echo '</div>';
+}
+
+// Strona 3: Dane pasażera
+elseif ($page == 'passenger' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['flight_id'] = $_POST['flight_id'];
+    
+    echo $commonCSS;
+    echo '
+    <div class="header">
+        <h1>Dane pasażera</h1>
+    </div>
+    <div class="form-container">
+        <form action="?page=seats" method="post">
+            <div class="form-group">
+                <label for="name">Imię i nazwisko</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Telefon</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            
+            <button type="submit">Dalej: Wybór miejsc</button>
+        </form>
+    </div>';
+}
+
+// Strona 4: Wybór miejsc
+elseif ($page == 'seats' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['passenger_data'] = $_POST;
+    
+    // Generowanie mapy miejsc (symulacja - w rzeczywistości pobierane z bazy)
+    $seats = [];
+    for ($row = 1; $row <= 10; $row++) {
+        for ($col = 1; $col <= 6; $col++) {
+            $seatNumber = chr(64 + $row) . $col;
+            $seats[$seatNumber] = rand(0, 4) > 0 ? 'available' : 'occupied'; // 80% szans na wolne miejsce
+        }
+    }
+    
+    echo $commonCSS;
+    echo '
+    <div class="header">
+        <h1>Wybór miejsc</h1>
+    </div>
+    <div class="form-container">
+        <h2>Wybierz miejsca dla swojej rezerwacji</h2>
+        <div class="seat-map">';
+    
+    foreach ($seats as $seat => $status) {
+        echo '<div class="seat '.$status.'" data-seat="'.$seat.'">'.$seat.'</div>';
+    }
+    
+    echo '
+        </div>
+        <form action="?page=extras" method="post" id="seatsForm">
+            <input type="hidden" name="selected_seats" id="selectedSeats">
+            <button type="submit">Dalej: Dodatki</button>
+        </form>
+    </div>
+    <script>
+        document.querySelectorAll(".seat.available").forEach(seat => {
+            seat.addEventListener("click", function() {
+                this.classList.toggle("selected");
+                updateSelectedSeats();
+            });
+        });
+        
+        function updateSelectedSeats() {
+            const selected = Array.from(document.querySelectorAll(".seat.selected"))
+                                .map(s => s.getAttribute("data-seat"));
+            document.getElementById("selectedSeats").value = selected.join(",");
+        }
+    </script>';
+}
+
+// Strona 5: Dodatki do lotu
+elseif ($page == 'extras' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['selected_seats'] = $_POST['selected_seats'];
+    
+    echo $commonCSS;
+    echo '
+    <div class="header">
+        <h1>Dodatki do lotu</h1>
+    </div>
+    <div class="form-container">
+        <h2>Wybierz dodatkowe usługi</h2>
+        
+        <div class="addon-option">
+            <h3>Dodatkowy bagaż</h3>
+            <p>+10 kg bagażu rejestrowanego - 50 PLN</p>
+            <input type="checkbox" name="extra_baggage" value="50"> Wybierz
+        </div>
+        
+        <div class="addon-option">
+            <h3>Posiłek na pokładzie</h3>
+            <p>Specjalny posiłek - 30 PLN</p>
+            <input type="checkbox" name="meal" value="30"> Wybierz
+        </div>
+        
+        <div class="addon-option">
+            <h3>Ubezpieczenie podróży</h3>
+            <p>Ubezpieczenie na czas lotu - 25 PLN</p>
+            <input type="checkbox" name="insurance" value="25"> Wybierz
+        </div>
+        
+        <form action="?page=payment" method="post">
+            <button type="submit">Dalej: Płatność</button>
+        </form>
+    </div>';
+}
+
+// Strona 6: Płatność
+elseif ($page == 'payment' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['extras'] = $_POST;
+    
+    echo $commonCSS;
+    echo '
+    <div class="header">
+        <h1>Płatność</h1>
+    </div>
+    <div class="form-container">
+        <h2>Wybierz metodę płatności</h2>
+        
+        <div class="form-group">
+            <label>
+                <input type="radio" name="payment_method" value="card" checked> Karta kredytowa
+            </label>
+        </div>
+        
+        <div class="form-group">
+            <label>
+                <input type="radio" name="payment_method" value="transfer"> Przelew bankowy
+            </label>
+        </div>
+        
+        <div class="form-group">
+            <label>
+                <input type="radio" name="payment_method" value="blik"> BLIK
+            </label>
+        </div>
+        
+        <form action="?page=confirmation" method="post">
+            <div class="form-group">
+                <label for="card_number">Numer karty (jeśli wybrano kartę)</label>
+                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456">
+            </div>
+            
+            <button type="submit">Zapłać i potwierdź rezerwację</button>
+        </form>
+    </div>';
+}
+
+// Strona 7: Potwierdzenie rezerwacji
+elseif ($page == 'confirmation' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $booking_ref = generateBookingReference();
+    
+    // Tutaj powinien być kod zapisujący rezerwację do bazy danych
+    // z użyciem danych z $_SESSION i $_POST
+    
+    echo $commonCSS;
+    echo '
+    <div class="header">
+        <h1>Potwierdzenie rezerwacji</h1>
+    </div>
+    <div class="form-container">
+        <h2>Dziękujemy za rezerwację w Vistula Airlines!</h2>
+        <p>Twój numer rezerwacji: <strong>'.$booking_ref.'</strong></p>
+        
+        <h3>Podsumowanie rezerwacji:</h3>
+        <p>Lot: VA'.$_SESSION['flight_id'].'</p>
+        <p>Miejsca: '.$_SESSION['selected_seats'].'</p>
+        <p>Metoda płatności: '.$_POST['payment_method'].'</p>
+        
+        <p>Potwierdzenie zostało wysłane na adres email: '.$_SESSION['passenger_data']['email'].'</p>
+        
+        <a href="?page=search" class="button">Powrót do strony głównej</a>
+    </div>';
+}
+
 $conn->close();
 ?>
