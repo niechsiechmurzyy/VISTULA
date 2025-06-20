@@ -364,6 +364,7 @@
             padding: 10px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
         }
         
         .ui-datepicker .ui-datepicker-header {
@@ -371,27 +372,83 @@
             color: white;
             border: none;
             border-radius: 4px 4px 0 0;
+            padding: 10px 0;
         }
         
         .ui-datepicker .ui-datepicker-prev,
         .ui-datepicker .ui-datepicker-next {
             color: white;
             cursor: pointer;
+            top: 10px;
+        }
+        
+        .ui-datepicker .ui-datepicker-prev:hover,
+        .ui-datepicker .ui-datepicker-next:hover {
+            background: none;
+            border: none;
         }
         
         .ui-datepicker .ui-datepicker-title {
             font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .ui-datepicker .ui-state-default {
+            border: 1px solid #ddd;
+            background: white;
+            color: var(--text-color);
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .ui-datepicker .ui-state-hover {
+            background: #f5f5f5;
+            border: 1px solid #bbb;
         }
         
         .ui-datepicker .ui-state-active {
             background: var(--primary-color);
             color: white;
-            border: none;
+            border: 1px solid var(--primary-color);
         }
         
         .ui-datepicker .ui-state-highlight {
             background: var(--accent-color);
             color: var(--text-color);
+            border: 1px solid var(--secondary-color);
+        }
+        
+        .ui-datepicker .ui-datepicker-current-day .ui-state-active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .ui-datepicker .ui-datepicker-week-end .ui-state-default {
+            color: #d9534f;
+        }
+        
+        .ui-datepicker .ui-datepicker-week-end .ui-state-active {
+            color: white;
+        }
+        
+        .ui-datepicker .ui-datepicker-buttonpane {
+            margin-top: 10px;
+            background: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 5px 0;
+        }
+        
+        .ui-datepicker .ui-datepicker-buttonpane button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        
+        .ui-datepicker .ui-datepicker-buttonpane button:hover {
+            background: #005580;
         }
         
         @media (max-width: 768px) {
@@ -518,7 +575,7 @@
             <h3>Klasa podróży i pasażerowie</h3>
             
             <div class="class-options">
-                <div class="class-option" data-class="economy">Economy</div>
+                <div class="class-option active" data-class="economy">Economy</div>
                 <div class="class-option" data-class="premium">Premium Economy</div>
                 <div class="class-option" data-class="business">Business</div>
                 <div class="class-option" data-class="first">First Class</div>
@@ -619,6 +676,18 @@
                 minDate: 0,
                 maxDate: '+1Y',
                 firstDay: 1,
+                showButtonPanel: true,
+                closeText: 'Zamknij',
+                currentText: 'Dzisiaj',
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                changeMonth: true,
+                changeYear: true,
+                showWeek: true,
+                dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+                dayNamesMin: ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So'],
+                monthNames: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
+                monthNamesShort: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'],
                 onSelect: function(dateText, inst) {
                     const date = $(this).datepicker('getDate');
                     departureDate = date;
@@ -656,6 +725,18 @@
                 minDate: 0,
                 maxDate: '+1Y',
                 firstDay: 1,
+                showButtonPanel: true,
+                closeText: 'Zamknij',
+                currentText: 'Dzisiaj',
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                changeMonth: true,
+                changeYear: true,
+                showWeek: true,
+                dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+                dayNamesMin: ['Nd', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So'],
+                monthNames: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
+                monthNamesShort: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'],
                 onSelect: function(dateText, inst) {
                     const date = $(this).datepicker('getDate');
                     returnDate = date;
@@ -938,7 +1019,7 @@
         
         function selectAirport(airport) {
             const airportText = `${airport.city} - ${airport.name} (${airport.code})`;
-            const airportValue = `${airport.city} - ${airport.name} (${airport.code})`;
+            const airportValue = `${airport.city} (${airport.code})`;
             
             if (currentInput === 'from') {
                 document.getElementById('fromInput').textContent = airportText;
@@ -949,6 +1030,18 @@
             }
             
             document.getElementById('airportModal').style.display = 'none';
+            
+            // Sprawdź czy wybrano to samo lotnisko
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (from && to && from === to) {
+                errorMessage.textContent = "Proszę wybrać różne lotniska wylotu i przylotu";
+                errorMessage.style.display = 'block';
+            } else {
+                errorMessage.style.display = 'none';
+            }
         }
         
         function showFlights(from, to, date, tripType) {
@@ -956,6 +1049,7 @@
             const normalizedFrom = normalizeAirport(from);
             const normalizedTo = normalizeAirport(to);
             const routeKey = `${normalizedFrom}-${normalizedTo}`;
+            const reverseRouteKey = `${normalizedTo}-${normalizedFrom}`;
             
             // Ukryj formularz, pokaż wyniki
             document.getElementById('searchSection').classList.add('hidden');
@@ -1007,6 +1101,37 @@
                         flight.price
                     );
                 });
+                
+                // Jeśli to lot powrotny, dodaj sekcję z lotami powrotnymi
+                if (tripType === 'roundtrip') {
+                    const returnDate = $("#returnDate").val();
+                    const returnDateObj = new Date(returnDate.split('.').reverse().join('-'));
+                    const returnFormattedDate = returnDateObj.toLocaleDateString('pl-PL', options);
+                    
+                    const returnFlights = flightDatabase[reverseRouteKey] || [];
+                    
+                    if (returnFlights.length > 0) {
+                        const returnInfo = document.createElement('div');
+                        returnInfo.className = 'search-info';
+                        returnInfo.style.marginTop = '40px';
+                        returnInfo.innerHTML = `
+                            <h3>${to.split(' (')[0]} → ${from.split(' (')[0]}</h3>
+                            <p class="flight-date">${returnFormattedDate} • ${document.getElementById('travelClassInput').textContent}</p>
+                        `;
+                        flightsContainer.appendChild(returnInfo);
+                        
+                        returnFlights.forEach(flight => {
+                            createFlightCard(
+                                flightsContainer,
+                                flight.number,
+                                to, from,
+                                flight.departure, flight.arrival,
+                                '1h 00m',
+                                flight.price
+                            );
+                        });
+                    }
+                }
             } else {
                 flightsContainer.innerHTML += `
                     <div class="no-flights-message">
