@@ -38,6 +38,7 @@
         
         .form-group {
             margin-bottom: 20px;
+            position: relative;
         }
         
         label {
@@ -144,6 +145,16 @@
             display: none;
         }
         
+        .country-group {
+            font-weight: bold;
+            margin-top: 10px;
+            color: var(--primary-color);
+        }
+        
+        .airport-option {
+            padding-left: 20px;
+        }
+        
         @media (max-width: 768px) {
             .row {
                 flex-direction: column;
@@ -172,9 +183,11 @@
                     <div class="form-group">
                         <label for="from">Skąd</label>
                         <select id="from" name="from" required>
-                            <option value="">Wybierz miasto</option>
-                            <option value="Warszawa">Warszawa (WAW)</option>
-                            <option value="Gdańsk">Gdańsk (GDN)</option>
+                            <option value="">Wybierz lotnisko</option>
+                            <optgroup label="Polska" class="country-group">
+                                <option value="Warszawa (WAW)" class="airport-option">Warszawa - Okęcie (WAW)</option>
+                                <option value="Gdańsk (GDN)" class="airport-option">Gdańsk - Rębiechowo (GDN)</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
@@ -182,9 +195,11 @@
                     <div class="form-group">
                         <label for="to">Dokąd</label>
                         <select id="to" name="to" required>
-                            <option value="">Wybierz miasto</option>
-                            <option value="Warszawa">Warszawa (WAW)</option>
-                            <option value="Gdańsk">Gdańsk (GDN)</option>
+                            <option value="">Wybierz lotnisko</option>
+                            <optgroup label="Polska" class="country-group">
+                                <option value="Warszawa (WAW)" class="airport-option">Warszawa - Okęcie (WAW)</option>
+                                <option value="Gdańsk (GDN)" class="airport-option">Gdańsk - Rębiechowo (GDN)</option>
+                            </optgroup>
                         </select>
                     </div>
                 </div>
@@ -212,7 +227,7 @@
             </div>
             
             <div class="error-message" id="errorMessage">
-                Obecnie obsługujemy tylko połączenia Warszawa-Gdańsk i Gdańsk-Warszawa
+                Obecnie obsługujemy tylko wybrane połączenia
             </div>
             
             <button type="submit" class="btn">Szukaj lotów</button>
@@ -227,6 +242,24 @@
     </div>
 
     <script>
+        // Baza danych lotów
+        const flightDatabase = {
+            // Warszawa -> Gdańsk
+            "Warszawa (WAW)-Gdańsk (GDN)": [
+                { number: "VA701", departure: "07:00", arrival: "08:00", price: "179 PLN" },
+                { number: "VA703", departure: "15:20", arrival: "16:20", price: "199 PLN" },
+                { number: "VA705", departure: "19:25", arrival: "20:25", price: "219 PLN" },
+                { number: "VA707", departure: "22:55", arrival: "23:55", price: "189 PLN" }
+            ],
+            // Gdańsk -> Warszawa
+            "Gdańsk (GDN)-Warszawa (WAW)": [
+                { number: "VA702", departure: "06:00", arrival: "07:00", price: "169 PLN" },
+                { number: "VA704", departure: "08:45", arrival: "09:45", price: "179 PLN" },
+                { number: "VA706", departure: "17:05", arrival: "18:05", price: "199 PLN" },
+                { number: "VA708", departure: "21:10", arrival: "22:10", price: "189 PLN" }
+            ]
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             // Ustaw domyślną datę na dzisiaj
             const today = new Date().toISOString().split('T')[0];
@@ -245,13 +278,13 @@
                 
                 // Sprawdź poprawność trasy
                 if (from === to) {
-                    errorMessage.textContent = "Proszę wybrać różne miasta wylotu i przylotu";
+                    errorMessage.textContent = "Proszę wybrać różne lotniska wylotu i przylotu";
                     errorMessage.style.display = 'block';
                     return;
                 }
                 
-                if (!((from === 'Warszawa' && to === 'Gdańsk') || 
-                      (from === 'Gdańsk' && to === 'Warszawa'))) {
+                if (from === "" || to === "") {
+                    errorMessage.textContent = "Proszę wybrać lotnisko wylotu i przylotu";
                     errorMessage.style.display = 'block';
                     return;
                 }
@@ -284,27 +317,38 @@
             const flightsContainer = document.getElementById('flightsContainer');
             flightsContainer.innerHTML = '';
             
-            // Generuj dostępne loty
-            if ((from === 'Warszawa' && to === 'Gdańsk') || (from === 'Gdańsk' && to === 'Warszawa')) {
-                // Lot poranny
+            // Dodaj nagłówek z informacjami o wyszukiwaniu
+            const searchInfo = document.createElement('div');
+            searchInfo.className = 'search-info';
+            searchInfo.innerHTML = `
+                <h3>${from} → ${to}</h3>
+                <p class="flight-date">${formattedDate} • ${passengers} ${passengers === '1' ? 'pasażer' : 'pasażerów'}</p>
+            `;
+            flightsContainer.appendChild(searchInfo);
+            
+            // Znajdź odpowiednie loty w bazie danych
+            const routeKey = `${from}-${to}`;
+            const flights = flightDatabase[routeKey] || [];
+            
+            // Wyświetl dostępne loty
+            flights.forEach(flight => {
                 createFlightCard(
                     flightsContainer,
-                    'VA101',
+                    flight.number,
                     from, to,
-                    '06:55', '07:55',
+                    flight.departure, flight.arrival,
                     '1h 00m',
-                    '159 PLN'
+                    flight.price
                 );
-                
-                // Lot popołudniowy
-                createFlightCard(
-                    flightsContainer,
-                    'VA102',
-                    from, to,
-                    '08:35', '09:35',
-                    '1h 00m',
-                    '179 PLN'
-                );
+            });
+            
+            // Jeśli brak lotów
+            if (flights.length === 0) {
+                flightsContainer.innerHTML += `
+                    <div style="text-align: center; padding: 20px;">
+                        Brak dostępnych lotów na wybraną trasę
+                    </div>
+                `;
             }
         }
         
@@ -313,7 +357,7 @@
             flightCard.className = 'flight-card';
             flightCard.innerHTML = `
                 <div class="flight-info">
-                    <div class="flight-route">${from} → ${to}</div>
+                    <div class="flight-route">${from.split(' (')[0]} → ${to.split(' (')[0]}</div>
                     <div class="flight-number">${flightNumber}</div>
                 </div>
                 <div class="flight-time">
@@ -331,7 +375,7 @@
             // Dodaj obsługę przycisku "Wybierz"
             const selectButton = flightCard.querySelector('.flight-price button');
             selectButton.addEventListener('click', function() {
-                alert('Funkcjonalność rezerwacji będzie tutaj zaimplementowana');
+                alert('System rezerwacji: Wybrano lot ' + flightNumber);
             });
         }
     </script>
