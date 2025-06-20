@@ -296,7 +296,7 @@
             </div>
             
             <div class="error-message" id="errorMessage">
-                Obecnie obsługujemy tylko wybrane połączenia
+                Obecnie obsługujemy tylko połączenia Warszawa-Gdańsk i Gdańsk-Warszawa
             </div>
             
             <button type="submit" class="btn">Szukaj lotów</button>
@@ -329,23 +329,29 @@
             ]
         };
 
-        // Baza danych lotów (codzienne)
+        // Baza danych lotów (codzienne) - ZMODYFIKOWANA
         const flightDatabase = {
-            // Warszawa -> Gdańsk (codzienne)
-            "Warszawa - Okęcie (WAW)-Gdańsk - Rębiechowo (GDN)": [
-                { number: "VA701", departure: "07:00", arrival: "08:00", price: "179 PLN", days: [0,1,2,3,4,5,6] },
-                { number: "VA703", departure: "15:20", arrival: "16:20", price: "199 PLN", days: [0,1,2,3,4,5,6] },
-                { number: "VA705", departure: "19:25", arrival: "20:25", price: "219 PLN", days: [0,1,2,3,4,5,6] },
-                { number: "VA707", departure: "22:55", arrival: "23:55", price: "189 PLN", days: [0,1,2,3,4,5,6] }
+            // Klucze w formie "Miasto (KOD)-Miasto (KOD)"
+            "Warszawa (WAW)-Gdańsk (GDN)": [
+                { number: "VA701", departure: "07:00", arrival: "08:00", price: "179 PLN" },
+                { number: "VA703", departure: "15:20", arrival: "16:20", price: "199 PLN" },
+                { number: "VA705", departure: "19:25", arrival: "20:25", price: "219 PLN" },
+                { number: "VA707", departure: "22:55", arrival: "23:55", price: "189 PLN" }
             ],
-            // Gdańsk -> Warszawa (codzienne)
-            "Gdańsk - Rębiechowo (GDN)-Warszawa - Okęcie (WAW)": [
-                { number: "VA702", departure: "06:00", arrival: "07:00", price: "169 PLN", days: [0,1,2,3,4,5,6] },
-                { number: "VA704", departure: "08:45", arrival: "09:45", price: "179 PLN", days: [0,1,2,3,4,5,6] },
-                { number: "VA706", departure: "17:05", arrival: "18:05", price: "199 PLN", days: [0,1,2,3,4,5,6] },
-                { number: "VA708", departure: "21:10", arrival: "22:10", price: "189 PLN", days: [0,1,2,3,4,5,6] }
+            "Gdańsk (GDN)-Warszawa (WAW)": [
+                { number: "VA702", departure: "06:00", arrival: "07:00", price: "169 PLN" },
+                { number: "VA704", departure: "08:45", arrival: "09:45", price: "179 PLN" },
+                { number: "VA706", departure: "17:05", arrival: "18:05", price: "199 PLN" },
+                { number: "VA708", departure: "21:10", arrival: "22:10", price: "189 PLN" }
             ]
         };
+
+        // Funkcja normalizująca nazwę lotniska
+        function normalizeAirport(airport) {
+            // Przykład: "Warszawa - Okęcie (WAW)" → "Warszawa (WAW)"
+            const match = airport.match(/(.+?)\s*-\s*.+?\s*\(([A-Z]{3})\)/);
+            return match ? `${match[1]} (${match[2]})` : airport;
+        }
 
         // Zmienne globalne
         let currentInput = null;
@@ -510,6 +516,11 @@
         }
         
         function showFlights(from, to, date, passengers) {
+            // Normalizuj nazwy lotnisk
+            const normalizedFrom = normalizeAirport(from);
+            const normalizedTo = normalizeAirport(to);
+            const routeKey = `${normalizedFrom}-${normalizedTo}`;
+            
             // Ukryj formularz, pokaż wyniki
             document.getElementById('searchSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.remove('hidden');
@@ -545,31 +556,28 @@
             `;
             flightsContainer.appendChild(searchInfo);
             
-            // Znajdź odpowiednie loty w bazie danych
-            const routeKey = `${from}-${to}`;
+            // Znajdź loty dla trasy
             const flights = flightDatabase[routeKey] || [];
             
-            // Sprawdź dzień tygodnia (0 - niedziela, 6 - sobota)
-            const dayOfWeek = new Date(date).getDay();
-            
-            // Wyświetl dostępne loty (tylko te dostępne w wybranym dniu)
+            // Wyświetl dostępne loty
             if (flights.length > 0) {
                 flights.forEach(flight => {
-                    if (flight.days.includes(dayOfWeek)) {
-                        createFlightCard(
-                            flightsContainer,
-                            flight.number,
-                            from, to,
-                            flight.departure, flight.arrival,
-                            '1h 00m',
-                            flight.price
-                        );
-                    }
+                    createFlightCard(
+                        flightsContainer,
+                        flight.number,
+                        from, to,
+                        flight.departure, flight.arrival,
+                        '1h 00m',
+                        flight.price
+                    );
                 });
             } else {
                 flightsContainer.innerHTML += `
                     <div class="no-flights-message">
-                        Niestety, nie znaleziono dostępnych lotów na wybraną trasę w podanym terminie.
+                        Niestety, nie znaleziono dostępnych lotów na wybraną trasę.
+                        <br><br>
+                        Obsługiwane połączenia:<br>
+                        <strong>Warszawa (WAW) ↔ Gdańsk (GDN)</strong>
                     </div>
                 `;
             }
@@ -599,6 +607,7 @@
             const selectButton = flightCard.querySelector('.flight-price button');
             selectButton.addEventListener('click', function() {
                 alert('System rezerwacji: Wybrano lot ' + flightNumber);
+                // Tutaj można dodać przekierowanie do formularza rezerwacji
             });
         }
     </script>
