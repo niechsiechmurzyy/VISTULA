@@ -48,13 +48,14 @@
             color: var(--primary-color);
         }
         
-        input, select {
+        input, select, .airport-input {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 16px;
             box-sizing: border-box;
+            cursor: pointer;
         }
         
         .row {
@@ -145,14 +146,71 @@
             display: none;
         }
         
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
         .country-group {
             font-weight: bold;
-            margin-top: 10px;
+            margin-top: 15px;
+            color: var(--primary-color);
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .airport-item {
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        
+        .airport-item:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .airport-code {
+            font-weight: bold;
             color: var(--primary-color);
         }
         
-        .airport-option {
-            padding-left: 20px;
+        .search-airport {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         
         @media (max-width: 768px) {
@@ -170,6 +228,11 @@
                 text-align: center;
                 width: 100%;
             }
+            
+            .modal-content {
+                margin: 20% auto;
+                width: 95%;
+            }
         }
     </style>
 </head>
@@ -182,25 +245,15 @@
                 <div class="col">
                     <div class="form-group">
                         <label for="from">Skąd</label>
-                        <select id="from" name="from" required>
-                            <option value="">Wybierz lotnisko</option>
-                            <optgroup label="Polska" class="country-group">
-                                <option value="Warszawa (WAW)" class="airport-option">Warszawa - Okęcie (WAW)</option>
-                                <option value="Gdańsk (GDN)" class="airport-option">Gdańsk - Rębiechowo (GDN)</option>
-                            </optgroup>
-                        </select>
+                        <div class="airport-input" id="fromInput">Wybierz lotnisko</div>
+                        <input type="hidden" id="from" name="from" value="">
                     </div>
                 </div>
                 <div class="col">
                     <div class="form-group">
                         <label for="to">Dokąd</label>
-                        <select id="to" name="to" required>
-                            <option value="">Wybierz lotnisko</option>
-                            <optgroup label="Polska" class="country-group">
-                                <option value="Warszawa (WAW)" class="airport-option">Warszawa - Okęcie (WAW)</option>
-                                <option value="Gdańsk (GDN)" class="airport-option">Gdańsk - Rębiechowo (GDN)</option>
-                            </optgroup>
-                        </select>
+                        <div class="airport-input" id="toInput">Wybierz lotnisko</div>
+                        <input type="hidden" id="to" name="to" value="">
                     </div>
                 </div>
             </div>
@@ -241,24 +294,46 @@
         <a href="#" class="btn" id="backButton">Powrót do wyszukiwania</a>
     </div>
 
+    <!-- Modal do wyboru lotniska -->
+    <div id="airportModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalTitle">Wybierz lotnisko</h3>
+            <input type="text" id="searchAirport" class="search-airport" placeholder="Wyszukaj lotnisko...">
+            <div id="airportList"></div>
+        </div>
+    </div>
+
     <script>
+        // Baza danych lotnisk
+        const airports = {
+            "Polska": [
+                { name: "Warszawa - Okęcie", code: "WAW", city: "Warszawa" },
+                { name: "Gdańsk - Rębiechowo", code: "GDN", city: "Gdańsk" }
+            ]
+            // Tutaj możesz dodać kolejne kraje i lotniska
+        };
+
         // Baza danych lotów
         const flightDatabase = {
             // Warszawa -> Gdańsk
-            "Warszawa (WAW)-Gdańsk (GDN)": [
+            "Warszawa - Okęcie (WAW)-Gdańsk - Rębiechowo (GDN)": [
                 { number: "VA701", departure: "07:00", arrival: "08:00", price: "179 PLN" },
                 { number: "VA703", departure: "15:20", arrival: "16:20", price: "199 PLN" },
                 { number: "VA705", departure: "19:25", arrival: "20:25", price: "219 PLN" },
                 { number: "VA707", departure: "22:55", arrival: "23:55", price: "189 PLN" }
             ],
             // Gdańsk -> Warszawa
-            "Gdańsk (GDN)-Warszawa (WAW)": [
+            "Gdańsk - Rębiechowo (GDN)-Warszawa - Okęcie (WAW)": [
                 { number: "VA702", departure: "06:00", arrival: "07:00", price: "169 PLN" },
                 { number: "VA704", departure: "08:45", arrival: "09:45", price: "179 PLN" },
                 { number: "VA706", departure: "17:05", arrival: "18:05", price: "199 PLN" },
                 { number: "VA708", departure: "21:10", arrival: "22:10", price: "189 PLN" }
             ]
         };
+
+        // Zmienne globalne
+        let currentInput = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             // Ustaw domyślną datę na dzisiaj
@@ -277,14 +352,14 @@
                 const errorMessage = document.getElementById('errorMessage');
                 
                 // Sprawdź poprawność trasy
-                if (from === to) {
-                    errorMessage.textContent = "Proszę wybrać różne lotniska wylotu i przylotu";
+                if (!from || !to) {
+                    errorMessage.textContent = "Proszę wybrać lotnisko wylotu i przylotu";
                     errorMessage.style.display = 'block';
                     return;
                 }
                 
-                if (from === "" || to === "") {
-                    errorMessage.textContent = "Proszę wybrać lotnisko wylotu i przylotu";
+                if (from === to) {
+                    errorMessage.textContent = "Proszę wybrać różne lotniska wylotu i przylotu";
                     errorMessage.style.display = 'block';
                     return;
                 }
@@ -301,7 +376,123 @@
                 document.getElementById('searchSection').classList.remove('hidden');
                 document.getElementById('resultsSection').classList.add('hidden');
             });
+            
+            // Obsługa modalnego okna lotnisk
+            const modal = document.getElementById('airportModal');
+            const closeBtn = document.querySelector('.close');
+            const fromInput = document.getElementById('fromInput');
+            const toInput = document.getElementById('toInput');
+            
+            fromInput.addEventListener('click', function() {
+                currentInput = 'from';
+                document.getElementById('modalTitle').textContent = 'Wybierz lotnisko wylotu';
+                showAirportModal();
+            });
+            
+            toInput.addEventListener('click', function() {
+                currentInput = 'to';
+                document.getElementById('modalTitle').textContent = 'Wybierz lotnisko przylotu';
+                showAirportModal();
+            });
+            
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Wyszukiwanie lotnisk
+            document.getElementById('searchAirport').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const airportList = document.getElementById('airportList');
+                
+                airportList.innerHTML = '';
+                
+                for (const country in airports) {
+                    const filteredAirports = airports[country].filter(airport => 
+                        airport.name.toLowerCase().includes(searchTerm) || 
+                        airport.city.toLowerCase().includes(searchTerm) ||
+                        airport.code.toLowerCase().includes(searchTerm)
+                    );
+                    
+                    if (filteredAirports.length > 0) {
+                        const countryGroup = document.createElement('div');
+                        countryGroup.className = 'country-group';
+                        countryGroup.textContent = country;
+                        airportList.appendChild(countryGroup);
+                        
+                        filteredAirports.forEach(airport => {
+                            const airportItem = document.createElement('div');
+                            airportItem.className = 'airport-item';
+                            airportItem.innerHTML = `
+                                <div><strong>${airport.city}</strong> - ${airport.name}</div>
+                                <div class="airport-code">${airport.code}</div>
+                            `;
+                            
+                            airportItem.addEventListener('click', function() {
+                                selectAirport(airport);
+                            });
+                            
+                            airportList.appendChild(airportItem);
+                        });
+                    }
+                }
+            });
         });
+        
+        function showAirportModal() {
+            const modal = document.getElementById('airportModal');
+            const airportList = document.getElementById('airportList');
+            
+            // Wyczyść wyszukiwanie
+            document.getElementById('searchAirport').value = '';
+            
+            // Załaduj wszystkie lotniska
+            airportList.innerHTML = '';
+            
+            for (const country in airports) {
+                const countryGroup = document.createElement('div');
+                countryGroup.className = 'country-group';
+                countryGroup.textContent = country;
+                airportList.appendChild(countryGroup);
+                
+                airports[country].forEach(airport => {
+                    const airportItem = document.createElement('div');
+                    airportItem.className = 'airport-item';
+                    airportItem.innerHTML = `
+                        <div><strong>${airport.city}</strong> - ${airport.name}</div>
+                        <div class="airport-code">${airport.code}</div>
+                    `;
+                    
+                    airportItem.addEventListener('click', function() {
+                        selectAirport(airport);
+                    });
+                    
+                    airportList.appendChild(airportItem);
+                });
+            }
+            
+            modal.style.display = 'block';
+        }
+        
+        function selectAirport(airport) {
+            const airportText = `${airport.city} - ${airport.name} (${airport.code})`;
+            const airportValue = `${airport.city} - ${airport.name} (${airport.code})`;
+            
+            if (currentInput === 'from') {
+                document.getElementById('fromInput').textContent = airportText;
+                document.getElementById('from').value = airportValue;
+            } else if (currentInput === 'to') {
+                document.getElementById('toInput').textContent = airportText;
+                document.getElementById('to').value = airportValue;
+            }
+            
+            document.getElementById('airportModal').style.display = 'none';
+        }
         
         function showFlights(from, to, date, passengers) {
             // Ukryj formularz, pokaż wyniki
@@ -321,7 +512,7 @@
             const searchInfo = document.createElement('div');
             searchInfo.className = 'search-info';
             searchInfo.innerHTML = `
-                <h3>${from} → ${to}</h3>
+                <h3>${from.split(' (')[0]} → ${to.split(' (')[0]}</h3>
                 <p class="flight-date">${formattedDate} • ${passengers} ${passengers === '1' ? 'pasażer' : 'pasażerów'}</p>
             `;
             flightsContainer.appendChild(searchInfo);
