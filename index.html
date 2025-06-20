@@ -3,47 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vistula Airlines - Rezerwacja lotów</title>
+    <title>Rezerwacja lotów - Vistula Airlines</title>
     <style>
         :root {
             --primary-color: #006994;
             --secondary-color: #5F9EA0;
             --accent-color: #B0E0E6;
             --text-color: #333;
-            --light-color: #f8f9fa;
         }
         
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             color: var(--text-color);
             background-color: #f5f5f5;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        
-        .logo {
-            font-size: 1.2em;
-            letter-spacing: 3px;
         }
         
         .search-box, .results-box {
@@ -51,7 +25,8 @@
             border-radius: 8px;
             padding: 30px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         .search-title, .results-title {
@@ -165,14 +140,6 @@
             display: inline-block;
         }
         
-        footer {
-            text-align: center;
-            padding: 20px;
-            background-color: var(--primary-color);
-            color: white;
-            margin-top: 30px;
-        }
-        
         .hidden {
             display: none;
         }
@@ -196,83 +163,68 @@
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Vistula Airlines</h1>
-            <div class="logo">Podróżuj z klasą</div>
-        </div>
-    </header>
-    
-    <div class="container">
-        <!-- Formularz wyszukiwania -->
-        <div id="searchSection" class="search-box">
-            <h2 class="search-title">Wyszukaj lot</h2>
-            <form id="searchForm">
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="from">Skąd</label>
-                            <select id="from" name="from" required>
-                                <option value="">Wybierz miasto</option>
-                                <option value="Warszawa">Warszawa (WAW)</option>
-                                <option value="Gdańsk">Gdańsk (GDN)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="to">Dokąd</label>
-                            <select id="to" name="to" required>
-                                <option value="">Wybierz miasto</option>
-                                <option value="Warszawa">Warszawa (WAW)</option>
-                                <option value="Gdańsk">Gdańsk (GDN)</option>
-                            </select>
-                        </div>
+    <!-- Formularz wyszukiwania -->
+    <div id="searchSection" class="search-box">
+        <h2 class="search-title">Wyszukaj lot</h2>
+        <form id="searchForm">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="from">Skąd</label>
+                        <select id="from" name="from" required>
+                            <option value="">Wybierz miasto</option>
+                            <option value="Warszawa">Warszawa (WAW)</option>
+                            <option value="Gdańsk">Gdańsk (GDN)</option>
+                        </select>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="departure">Data wylotu</label>
-                            <input type="date" id="departure" name="departure" required>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="passengers">Liczba pasażerów</label>
-                            <select id="passengers" name="passengers" required>
-                                <option value="1">1 pasażer</option>
-                                <option value="2">2 pasażerów</option>
-                                <option value="3">3 pasażerów</option>
-                                <option value="4">4 pasażerów</option>
-                                <option value="5">5 pasażerów</option>
-                            </select>
-                        </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="to">Dokąd</label>
+                        <select id="to" name="to" required>
+                            <option value="">Wybierz miasto</option>
+                            <option value="Warszawa">Warszawa (WAW)</option>
+                            <option value="Gdańsk">Gdańsk (GDN)</option>
+                        </select>
                     </div>
                 </div>
-                
-                <div class="error-message" id="errorMessage">
-                    Obecnie obsługujemy tylko połączenia Warszawa-Gdańsk i Gdańsk-Warszawa
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="departure">Data wylotu</label>
+                        <input type="date" id="departure" name="departure" required>
+                    </div>
                 </div>
-                
-                <button type="submit" class="btn">Szukaj lotów</button>
-            </form>
-        </div>
-        
-        <!-- Wyniki wyszukiwania -->
-        <div id="resultsSection" class="results-box hidden">
-            <h2 class="results-title">Dostępne loty</h2>
-            <div id="flightsContainer"></div>
-            <a href="#" class="btn" id="backButton">Powrót do wyszukiwania</a>
-        </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="passengers">Liczba pasażerów</label>
+                        <select id="passengers" name="passengers" required>
+                            <option value="1">1 pasażer</option>
+                            <option value="2">2 pasażerów</option>
+                            <option value="3">3 pasażerów</option>
+                            <option value="4">4 pasażerów</option>
+                            <option value="5">5 pasażerów</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                Obecnie obsługujemy tylko połączenia Warszawa-Gdańsk i Gdańsk-Warszawa
+            </div>
+            
+            <button type="submit" class="btn">Szukaj lotów</button>
+        </form>
     </div>
     
-    <footer>
-        <div class="container">
-            &copy; 2023 Vistula Airlines. Wszelkie prawa zastrzeżone.
-        </div>
-    </footer>
+    <!-- Wyniki wyszukiwania -->
+    <div id="resultsSection" class="results-box hidden">
+        <h2 class="results-title">Dostępne loty</h2>
+        <div id="flightsContainer"></div>
+        <a href="#" class="btn" id="backButton">Powrót do wyszukiwania</a>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -332,16 +284,7 @@
             const flightsContainer = document.getElementById('flightsContainer');
             flightsContainer.innerHTML = '';
             
-            // Dodaj nagłówek z informacjami o wyszukiwaniu
-            const searchInfo = document.createElement('div');
-            searchInfo.className = 'search-info';
-            searchInfo.innerHTML = `
-                <h3>${from} → ${to}</h3>
-                <p class="flight-date">${formattedDate} • ${passengers} ${passengers === '1' ? 'pasażer' : 'pasażerów'}</p>
-            `;
-            flightsContainer.appendChild(searchInfo);
-            
-            // Generuj dostępne loty (tylko dla WAW-GDN i GDN-WAW)
+            // Generuj dostępne loty
             if ((from === 'Warszawa' && to === 'Gdańsk') || (from === 'Gdańsk' && to === 'Warszawa')) {
                 // Lot poranny
                 createFlightCard(
@@ -389,7 +332,6 @@
             const selectButton = flightCard.querySelector('.flight-price button');
             selectButton.addEventListener('click', function() {
                 alert('Funkcjonalność rezerwacji będzie tutaj zaimplementowana');
-                // Tutaj można dodać przekierowanie do formularza rezerwacji
             });
         }
     </script>
