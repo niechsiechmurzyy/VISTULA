@@ -553,27 +553,23 @@
             const dayOfWeek = new Date(date).getDay();
             
             // Wyświetl dostępne loty (tylko te dostępne w wybranym dniu)
-            flights.forEach(flight => {
-                if (flight.days.includes(dayOfWeek)) {
-                    createFlightCard(
-                        flightsContainer,
-                        flight.number,
-                        from, to,
-                        flight.departure, flight.arrival,
-                        '1h 00m',
-                        flight.price
-                    );
-                }
-            });
-            
-            // Jeśli brak lotów (dla różnych lotnisk)
-            if (flights.length === 0 && from !== to) {
+            if (flights.length > 0) {
+                flights.forEach(flight => {
+                    if (flight.days.includes(dayOfWeek)) {
+                        createFlightCard(
+                            flightsContainer,
+                            flight.number,
+                            from, to,
+                            flight.departure, flight.arrival,
+                            '1h 00m',
+                            flight.price
+                        );
+                    }
+                });
+            } else {
                 flightsContainer.innerHTML += `
                     <div class="no-flights-message">
                         Niestety, nie znaleziono dostępnych lotów na wybraną trasę w podanym terminie.
-                        <br><br>
-                        Sprawdź czy wybrane lotniska to:<br>
-                        <strong>Warszawa - Okęcie (WAW)</strong> i <strong>Gdańsk - Rębiechowo (GDN)</strong>
                     </div>
                 `;
             }
