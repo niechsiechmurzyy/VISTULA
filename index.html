@@ -647,6 +647,8 @@
         let currentDateInput = null;
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
+        let selectedDepartureDate = null;
+        let selectedReturnDate = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             // Inicjalizacja kalendarza
@@ -913,6 +915,15 @@
                     currentMonth = 11;
                     currentYear--;
                 }
+                
+                // Sprawdź czy nie cofamy się przed aktualny miesiąc
+                const today = new Date();
+                if (currentYear < today.getFullYear() || 
+                    (currentYear === today.getFullYear() && currentMonth < today.getMonth())) {
+                    currentMonth = today.getMonth();
+                    currentYear = today.getFullYear();
+                }
+                
                 generateCalendar(currentMonth, currentYear);
             });
             
@@ -927,8 +938,6 @@
                 const today = new Date();
                 const maxDate = new Date();
                 maxDate.setFullYear(today.getFullYear() + 1);
-                maxDate.setMonth(today.getMonth());
-                maxDate.setDate(today.getDate());
                 
                 const nextMonthFirstDay = new Date(currentYear, currentMonth, 1);
                 if (nextMonthFirstDay > maxDate) {
@@ -965,12 +974,13 @@
             
             // Obecna data
             const today = new Date();
-            const todayString = today.toISOString().split('T')[0];
+            const todayDate = today.getDate();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
             
             // Maksymalna data (rok do przodu)
             const maxDate = new Date();
             maxDate.setFullYear(today.getFullYear() + 1);
-            const maxDateString = maxDate.toISOString().split('T')[0];
             
             let date = 1;
             for (let i = 0; i < 6; i++) {
@@ -996,18 +1006,14 @@
                         // Komórki z dniami miesiąca
                         cell.textContent = date;
                         
-                        // Utwórz pełną datę dla tego dnia
-                        const currentDate = new Date(year, month, date);
-                        const currentDateString = currentDate.toISOString().split('T')[0];
-                        
                         // Sprawdź czy data jest w przeszłości lub po maksymalnej dacie
+                        const currentDate = new Date(year, month, date);
+                        
                         if (currentDate < today || currentDate > maxDate) {
                             cell.classList.add('disabled');
                         } else {
                             // Sprawdź czy to dzisiejsza data
-                            if (currentDate.getDate() === today.getDate() && 
-                                currentDate.getMonth() === today.getMonth() && 
-                                currentDate.getFullYear() === today.getFullYear()) {
+                            if (date === todayDate && month === todayMonth && year === todayYear) {
                                 cell.classList.add('today');
                             }
                             
@@ -1029,25 +1035,27 @@
         
         function selectDate(day, month, year) {
             const selectedDate = new Date(year, month, day);
-            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const formattedDisplayDate = `${String(day).padStart(2, '0')}.${String(month + 1).padStart(2, '0')}.${year}`;
             
             if (currentDateInput === 'departure') {
                 document.getElementById('departureInput').textContent = formattedDisplayDate;
                 document.getElementById('departure').value = formattedDate;
+                selectedDepartureDate = selectedDate;
                 
                 // Ustaw minimalną datę powrotu na wybraną datę wylotu
                 document.getElementById('return').min = formattedDate;
                 
                 // Jeśli data powrotu jest wcześniejsza niż data wylotu, wyczyść ją
-                const returnDate = document.getElementById('return').value;
-                if (returnDate && returnDate < formattedDate) {
+                if (selectedReturnDate && selectedReturnDate < selectedDepartureDate) {
                     document.getElementById('return').value = '';
                     document.getElementById('returnInput').textContent = 'Wybierz datę';
+                    selectedReturnDate = null;
                 }
             } else if (currentDateInput === 'return') {
                 document.getElementById('returnInput').textContent = formattedDisplayDate;
                 document.getElementById('return').value = formattedDate;
+                selectedReturnDate = selectedDate;
             }
             
             document.getElementById('dateModal').style.display = 'none';
