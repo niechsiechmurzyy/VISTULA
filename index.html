@@ -146,6 +146,22 @@
             display: none;
         }
         
+        .no-flights-message {
+            text-align: center;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .same-airport-warning {
+            color: #d9534f;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
         /* Modal styles */
         .modal {
             display: none;
@@ -498,14 +514,27 @@
             document.getElementById('searchSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.remove('hidden');
             
+            // Wyczyść poprzednie wyniki
+            const flightsContainer = document.getElementById('flightsContainer');
+            flightsContainer.innerHTML = '';
+            
+            // Sprawdź czy wybrano to samo lotnisko
+            if (from === to) {
+                flightsContainer.innerHTML = `
+                    <div class="same-airport-warning">
+                        Wybrano to samo lotnisko wylotu i przylotu!
+                    </div>
+                    <div class="no-flights-message">
+                        Proszę wybrać różne lotniska aby kontynuować wyszukiwanie.
+                    </div>
+                `;
+                return;
+            }
+            
             // Formatowanie daty
             const departureDate = new Date(date);
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const formattedDate = departureDate.toLocaleDateString('pl-PL', options);
-            
-            // Wyczyść poprzednie wyniki
-            const flightsContainer = document.getElementById('flightsContainer');
-            flightsContainer.innerHTML = '';
             
             // Dodaj nagłówek z informacjami o wyszukiwaniu
             const searchInfo = document.createElement('div');
@@ -537,11 +566,14 @@
                 }
             });
             
-            // Jeśli brak lotów
-            if (flights.length === 0) {
+            // Jeśli brak lotów (dla różnych lotnisk)
+            if (flights.length === 0 && from !== to) {
                 flightsContainer.innerHTML += `
-                    <div style="text-align: center; padding: 20px;">
-                        Brak dostępnych lotów na wybraną trasę
+                    <div class="no-flights-message">
+                        Niestety, nie znaleziono dostępnych lotów na wybraną trasę w podanym terminie.
+                        <br><br>
+                        Sprawdź czy wybrane lotniska to:<br>
+                        <strong>Warszawa - Okęcie (WAW)</strong> i <strong>Gdańsk - Rębiechowo (GDN)</strong>
                     </div>
                 `;
             }
