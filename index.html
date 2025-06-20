@@ -54,7 +54,7 @@
             color: var(--primary-color);
         }
         
-        input, select, .airport-input, .travel-class-input {
+        input, select, .airport-input, .travel-class-input, .date-input {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -331,13 +331,12 @@
         }
         
         /* Date picker styles */
-        .date-picker-container {
+        .date-input-container {
             position: relative;
         }
         
         .date-input {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding: 12px;
             border: 1px solid #ddd;
@@ -346,33 +345,17 @@
             background-color: white;
         }
         
-        .date-selection {
-            display: flex;
-            align-items: center;
-        }
-        
-        .date-label {
-            color: #777;
-            margin-right: 5px;
-        }
-        
-        .date-value {
+        .date-input-value {
+            flex: 1;
             font-weight: bold;
         }
         
-        .date-separator {
-            margin: 0 10px;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-        
-        .days-count {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 3px 10px;
-            border-radius: 20px;
+        .days-info {
             font-size: 0.9em;
-            margin-left: 10px;
+            color: var(--primary-color);
+            margin-top: 5px;
+            font-weight: bold;
+            text-align: center;
         }
         
         /* Calendar customization */
@@ -448,29 +431,6 @@
             .class-option {
                 width: 100%;
             }
-            
-            .date-input {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .date-selection {
-                width: 100%;
-                margin-bottom: 5px;
-            }
-            
-            .date-separator {
-                display: none;
-            }
-            
-            .days-count {
-                margin-left: 0;
-                margin-top: 5px;
-            }
-            
-            .ui-datepicker {
-                width: 300px;
-            }
         }
     </style>
 </head>
@@ -506,23 +466,25 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
-                            <label>Data podróży</label>
-                            <div class="date-picker-container">
-                                <div class="date-input" id="datePickerTrigger">
-                                    <div class="date-selection">
-                                        <span class="date-label">Wylot:</span>
-                                        <span class="date-value" id="departureDateText">Wybierz datę</span>
-                                    </div>
-                                    <span class="date-separator">→</span>
-                                    <div class="date-selection" id="returnDateSelection">
-                                        <span class="date-label">Powrót:</span>
-                                        <span class="date-value" id="returnDateText">Wybierz datę</span>
-                                    </div>
-                                    <div id="daysCountBadge" class="days-count" style="display: none;"></div>
+                            <label for="departure">Data wylotu</label>
+                            <div class="date-input-container">
+                                <div class="date-input" id="departureDateInput">
+                                    <span class="date-input-value" id="departureDateText">Wybierz datę</span>
                                 </div>
                                 <input type="hidden" id="departure" name="departure" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col" id="returnDateCol">
+                        <div class="form-group">
+                            <label for="return">Data powrotu</label>
+                            <div class="date-input-container">
+                                <div class="date-input" id="returnDateInput">
+                                    <span class="date-input-value" id="returnDateText">Wybierz datę</span>
+                                </div>
                                 <input type="hidden" id="return" name="return" value="">
                             </div>
+                            <div class="days-info" id="daysInfo"></div>
                         </div>
                     </div>
                 </div>
@@ -672,139 +634,74 @@
             let departureDate = null;
             let returnDate = null;
             let isRoundTrip = true;
-            let selectingDeparture = true;
 
-            // Inicjalizacja kalendarza
-            function initDatePicker() {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const maxDate = new Date();
-                maxDate.setFullYear(today.getFullYear() + 1);
-                maxDate.setHours(0, 0, 0, 0);
-
-                // Utwórz div dla kalendarza
-                const datepickerDiv = $('<div id="flightDatepicker"></div>').appendTo('body').hide();
-                
-                // Inicjalizacja kalendarza
-                datepickerDiv.datepicker({
-                    dateFormat: 'dd.mm.yy',
-                    minDate: today,
-                    maxDate: maxDate,
-                    firstDay: 1,
-                    beforeShowDay: function(date) {
-                        // Podświetl wybrane daty
-                        if (departureDate && date.toDateString() === departureDate.toDateString()) {
-                            return [true, 'ui-state-active', 'Wylot'];
-                        }
-                        if (returnDate && date.toDateString() === returnDate.toDateString()) {
-                            return [true, 'ui-state-active', 'Powrót'];
-                        }
-                        return [true, ''];
-                    },
-                    onChangeMonthYear: function(year, month, inst) {
-                        updateCalendarInfo();
-                    },
-                    onSelect: function(dateText, inst) {
-                        const selectedDate = $(this).datepicker('getDate');
-                        selectedDate.setHours(0, 0, 0, 0);
-                        
-                        if (selectingDeparture) {
-                            departureDate = selectedDate;
-                            $('#departureDateText').text(formatDate(departureDate));
-                            $('#departure').val(dateText);
-                            
-                            if (isRoundTrip) {
-                                selectingDeparture = false;
-                                $('#returnDateText').text('Wybierz datę');
-                                $('#daysCountBadge').hide();
-                                updateCalendarInfo();
-                            } else {
-                                datepickerDiv.datepicker('hide');
-                                updateDisplay();
-                            }
-                        } else {
-                            returnDate = selectedDate;
-                            $('#returnDateText').text(formatDate(returnDate));
-                            $('#return').val(dateText);
-                            datepickerDiv.datepicker('hide');
-                            updateDisplay();
-                        }
-                    },
-                    beforeShow: function(input, inst) {
-                        setTimeout(function() {
-                            inst.dpDiv.css({
-                                'z-index': 1050
-                            });
-                        }, 0);
-                    }
-                });
-
-                // Dodaj informację o liczbie dni na kalendarzu
-                function updateCalendarInfo() {
-                    const header = datepickerDiv.find('.ui-datepicker-header');
-                    let infoText = '';
+            // Inicjalizacja kalendarza dla daty wylotu
+            $('#departureDateInput').datepicker({
+                dateFormat: 'dd.mm.yy',
+                minDate: 0,
+                maxDate: '+1Y',
+                firstDay: 1,
+                onSelect: function(dateText, inst) {
+                    const date = $(this).datepicker('getDate');
+                    departureDate = date;
+                    $('#departureDateText').text(formatDate(date));
+                    $('#departure').val(dateText);
                     
-                    if (selectingDeparture) {
-                        infoText = 'Wybierz datę wylotu';
-                    } else if (isRoundTrip) {
-                        infoText = 'Wybierz datę powrotu';
-                    }
-                    
-                    if (departureDate && returnDate) {
-                        const days = calculateDaysBetweenDates(departureDate, returnDate);
-                        infoText = `Podróż trwa ${days} dni`;
-                    }
-                    
-                    datepickerDiv.find('.calendar-info').remove();
-                    header.after(`<div class="calendar-info">${infoText}</div>`);
-                }
-
-                // Obsługa kliknięcia w pole daty
-                $('#datePickerTrigger').click(function() {
-                    selectingDeparture = true;
-                    datepickerDiv.datepicker('show');
-                    updateCalendarInfo();
-                    
-                    // Ustaw minimalną datę powrotu
-                    if (departureDate && isRoundTrip) {
-                        datepickerDiv.datepicker('option', 'minDate', departureDate);
-                    }
-                });
-
-                // Aktualizacja wyświetlania
-                function updateDisplay() {
-                    if (departureDate && returnDate && isRoundTrip) {
-                        const days = calculateDaysBetweenDates(departureDate, returnDate);
-                        $('#daysCountBadge').text(`${days} dni`).show();
-                    } else {
-                        $('#daysCountBadge').hide();
-                    }
-                }
-
-                // Obsługa zmiany typu podróży
-                $('.trip-type-option').click(function() {
-                    $('.trip-type-option').removeClass('active');
-                    $(this).addClass('active');
-                    
-                    isRoundTrip = $(this).data('type') === 'roundtrip';
-                    
+                    // Jeśli wybrano datę wylotu, ustaw minimalną datę powrotu
                     if (isRoundTrip) {
-                        $('#returnDateSelection').show();
-                        if (departureDate && !returnDate) {
-                            $('#daysCountBadge').hide();
+                        $('#returnDateInput').datepicker('option', 'minDate', date);
+                        
+                        // Jeśli data powrotu jest wcześniejsza niż data wylotu, zresetuj ją
+                        if (returnDate && returnDate < date) {
+                            $('#returnDateInput').datepicker('setDate', null);
+                            $('#return').val('');
+                            $('#returnDateText').text('Wybierz datę');
+                            returnDate = null;
+                            $('#daysInfo').text('');
                         }
-                    } else {
-                        $('#returnDateSelection').hide();
-                        returnDate = null;
-                        $('#return').val('');
-                        $('#returnDateText').text('Wybierz datę');
-                        updateDisplay();
                     }
-                });
-            }
+                    
+                    // Oblicz różnicę dni jeśli obie daty są wybrane
+                    if (returnDate) {
+                        const daysDiff = calculateDaysBetweenDates(departureDate, returnDate);
+                        $('#daysInfo').text(`${daysDiff} dni`);
+                    }
+                },
+                beforeShow: function(input, inst) {
+                    setTimeout(function() {
+                        inst.dpDiv.css({
+                            'z-index': 1050
+                        });
+                    }, 0);
+                }
+            });
 
-            // Inicjalizacja kalendarza
-            initDatePicker();
+            // Inicjalizacja kalendarza dla daty powrotu
+            $('#returnDateInput').datepicker({
+                dateFormat: 'dd.mm.yy',
+                minDate: 0,
+                maxDate: '+1Y',
+                firstDay: 1,
+                onSelect: function(dateText, inst) {
+                    const date = $(this).datepicker('getDate');
+                    returnDate = date;
+                    $('#returnDateText').text(formatDate(date));
+                    $('#return').val(dateText);
+                    
+                    // Oblicz różnicę dni między datami
+                    if (departureDate) {
+                        const daysDiff = calculateDaysBetweenDates(departureDate, returnDate);
+                        $('#daysInfo').text(`${daysDiff} dni`);
+                    }
+                },
+                beforeShow: function(input, inst) {
+                    setTimeout(function() {
+                        inst.dpDiv.css({
+                            'z-index': 1050
+                        });
+                    }, 0);
+                }
+            });
 
             // Ustaw język polski dla kalendarza
             $.datepicker.setDefaults($.datepicker.regional['pl']);
@@ -932,6 +829,35 @@
                         });
                     }
                 }
+            });
+            
+            // Obsługa typu podróży
+            const tripTypeOptions = document.querySelectorAll('.trip-type-option');
+            tripTypeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    tripTypeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    isRoundTrip = this.dataset.type === 'roundtrip';
+                    
+                    if (isRoundTrip) {
+                        document.getElementById('returnDateCol').style.display = 'block';
+                        
+                        // Jeśli jest wybrana data wylotu, ustaw minimalną datę powrotu
+                        if (departureDate) {
+                            $('#returnDateInput').datepicker('option', 'minDate', departureDate);
+                        }
+                        
+                        // Jeśli są wybrane obie daty, pokaż różnicę dni
+                        if (departureDate && returnDate) {
+                            const daysDiff = calculateDaysBetweenDates(departureDate, returnDate);
+                            $('#daysInfo').text(`${daysDiff} dni`);
+                        }
+                    } else {
+                        document.getElementById('returnDateCol').style.display = 'none';
+                        $('#daysInfo').text('');
+                    }
+                });
             });
 
             // Obsługa klasy podróży
