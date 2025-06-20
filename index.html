@@ -53,7 +53,7 @@
             color: var(--primary-color);
         }
         
-        input, select, .airport-input, .travel-class-input {
+        input, select, .airport-input, .travel-class-input, .date-input {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -329,6 +329,89 @@
             background-color: var(--accent-color);
         }
         
+        /* Calendar styles */
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .calendar th {
+            padding: 10px;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .calendar td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        
+        .calendar td:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .calendar td.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .calendar td.today {
+            background-color: #e6f7ff;
+        }
+        
+        .calendar td.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .calendar-title {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+        
+        .date-modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .date-modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
         @media (max-width: 768px) {
             .row {
                 flex-direction: column;
@@ -393,13 +476,15 @@
                     <div class="col">
                         <div class="form-group">
                             <label for="departure">Data wylotu</label>
-                            <input type="date" id="departure" name="departure" required>
+                            <div class="date-input" id="departureInput">Wybierz datę</div>
+                            <input type="hidden" id="departure" name="departure" value="">
                         </div>
                     </div>
                     <div class="col" id="returnDateCol">
                         <div class="form-group">
                             <label for="return">Data powrotu</label>
-                            <input type="date" id="return" name="return">
+                            <div class="date-input" id="returnInput">Wybierz datę</div>
+                            <input type="hidden" id="return" name="return" value="">
                         </div>
                     </div>
                 </div>
@@ -494,6 +579,35 @@
         </div>
     </div>
 
+    <!-- Modal kalendarza -->
+    <div id="dateModal" class="date-modal">
+        <div class="date-modal-content">
+            <span class="close">&times;</span>
+            <h3 id="dateModalTitle">Wybierz datę</h3>
+            <div class="calendar-header">
+                <button id="prevMonth">&lt;</button>
+                <div class="calendar-title" id="calendarTitle">Styczeń 2023</div>
+                <button id="nextMonth">&gt;</button>
+            </div>
+            <table class="calendar" id="calendar">
+                <thead>
+                    <tr>
+                        <th>Pn</th>
+                        <th>Wt</th>
+                        <th>Śr</th>
+                        <th>Cz</th>
+                        <th>Pt</th>
+                        <th>So</th>
+                        <th>Nd</th>
+                    </tr>
+                </thead>
+                <tbody id="calendarBody">
+                    <!-- Calendar will be generated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
         // Baza danych lotnisk
         const airports = {
@@ -527,19 +641,14 @@
 
         // Zmienne globalne
         let currentInput = null;
+        let currentDateInput = null;
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Ustawienia daty
-            const today = new Date();
-            const maxDate = new Date();
-            maxDate.setFullYear(today.getFullYear() + 1); // Rok do przodu
-
-            // Ustaw zakres dat
-            document.getElementById('departure').min = today.toISOString().split('T')[0];
-            document.getElementById('departure').max = maxDate.toISOString().split('T')[0];
-            document.getElementById('return').min = today.toISOString().split('T')[0];
-            document.getElementById('return').max = maxDate.toISOString().split('T')[0];
-
+            // Inicjalizacja kalendarza
+            generateCalendar(currentMonth, currentYear);
+            
             // Obsługa formularza
             document.getElementById('searchForm').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -560,6 +669,12 @@
                 
                 if (from === to) {
                     errorMessage.textContent = "Proszę wybrać różne lotniska wylotu i przylotu";
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                if (!departureDate) {
+                    errorMessage.textContent = "Proszę wybrać datę wylotu";
                     errorMessage.style.display = 'block';
                     return;
                 }
@@ -611,13 +726,17 @@
                 btn.addEventListener('click', function() {
                     airportModal.style.display = 'none';
                     document.getElementById('travelClassModal').style.display = 'none';
+                    document.getElementById('dateModal').style.display = 'none';
                 });
             });
             
             window.addEventListener('click', function(event) {
-                if (event.target === airportModal || event.target === document.getElementById('travelClassModal')) {
+                if (event.target === airportModal || 
+                    event.target === document.getElementById('travelClassModal') ||
+                    event.target === document.getElementById('dateModal')) {
                     airportModal.style.display = 'none';
                     document.getElementById('travelClassModal').style.display = 'none';
+                    document.getElementById('dateModal').style.display = 'none';
                 }
             });
             
@@ -749,6 +868,54 @@
                 
                 travelClassModal.style.display = 'none';
             });
+            
+            // Obsługa kalendarza
+            const departureInput = document.getElementById('departureInput');
+            const returnInput = document.getElementById('returnInput');
+            
+            departureInput.addEventListener('click', function() {
+                currentDateInput = 'departure';
+                document.getElementById('dateModalTitle').textContent = 'Wybierz datę wylotu';
+                document.getElementById('dateModal').style.display = 'block';
+            });
+            
+            returnInput.addEventListener('click', function() {
+                currentDateInput = 'return';
+                document.getElementById('dateModalTitle').textContent = 'Wybierz datę powrotu';
+                document.getElementById('dateModal').style.display = 'block';
+            });
+            
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                generateCalendar(currentMonth, currentYear);
+            });
+            
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                
+                // Sprawdź czy nie przekraczamy roku do przodu
+                const today = new Date();
+                const maxDate = new Date();
+                maxDate.setFullYear(today.getFullYear() + 1);
+                
+                if (new Date(currentYear, currentMonth, 1) > maxDate) {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                        currentMonth = 11;
+                        currentYear--;
+                    }
+                }
+                
+                generateCalendar(currentMonth, currentYear);
+            });
         });
         
         function showAirportModal() {
@@ -799,6 +966,104 @@
             }
             
             document.getElementById('airportModal').style.display = 'none';
+        }
+        
+        function generateCalendar(month, year) {
+            const calendarBody = document.getElementById('calendarBody');
+            const monthNames = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", 
+                               "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+            
+            document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
+            
+            // Pobierz pierwszy dzień miesiąca i ilość dni w miesiącu
+            const firstDay = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Pobierz dzień tygodnia pierwszego dnia miesiąca (0 - niedziela, 1 - poniedziałek, itd.)
+            let startingDay = firstDay.getDay();
+            // Dostosuj, aby tydzień zaczynał się od poniedziałku
+            startingDay = startingDay === 0 ? 6 : startingDay - 1;
+            
+            // Wyczyść kalendarz
+            calendarBody.innerHTML = '';
+            
+            // Obecna data
+            const today = new Date();
+            const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            // Maksymalna data (rok do przodu)
+            const maxDate = new Date();
+            maxDate.setFullYear(today.getFullYear() + 1);
+            
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                // Jeśli przekroczymy ilość dni w miesiącu, przerwij pętlę
+                if (date > daysInMonth) {
+                    break;
+                }
+                
+                const row = document.createElement('tr');
+                
+                for (let j = 0; j < 7; j++) {
+                    const cell = document.createElement('td');
+                    
+                    if (i === 0 && j < startingDay) {
+                        // Puste komórki przed pierwszym dniem miesiąca
+                        cell.textContent = '';
+                        cell.classList.add('disabled');
+                    } else if (date > daysInMonth) {
+                        // Puste komórki po ostatnim dniu miesiąca
+                        cell.textContent = '';
+                        cell.classList.add('disabled');
+                    } else {
+                        // Komórki z dniami miesiąca
+                        cell.textContent = date;
+                        
+                        // Sprawdź czy data jest w przeszłości lub po maksymalnej dacie
+                        const currentDate = new Date(year, month, date);
+                        const currentDateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                        
+                        if (currentDate < today || currentDate > maxDate) {
+                            cell.classList.add('disabled');
+                        } else {
+                            // Sprawdź czy to dzisiejsza data
+                            if (currentDateString === todayString) {
+                                cell.classList.add('today');
+                            }
+                            
+                            // Dodaj obsługę kliknięcia
+                            cell.addEventListener('click', function() {
+                                selectDate(date, month, year);
+                            });
+                        }
+                        
+                        date++;
+                    }
+                    
+                    row.appendChild(cell);
+                }
+                
+                calendarBody.appendChild(row);
+            }
+        }
+        
+        function selectDate(day, month, year) {
+            const selectedDate = new Date(year, month, day);
+            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const formattedDisplayDate = `${String(day).padStart(2, '0')}.${String(month + 1).padStart(2, '0')}.${year}`;
+            
+            if (currentDateInput === 'departure') {
+                document.getElementById('departureInput').textContent = formattedDisplayDate;
+                document.getElementById('departure').value = formattedDate;
+                
+                // Ustaw minimalną datę powrotu na wybraną datę wylotu
+                document.getElementById('return').min = formattedDate;
+            } else if (currentDateInput === 'return') {
+                document.getElementById('returnInput').textContent = formattedDisplayDate;
+                document.getElementById('return').value = formattedDate;
+            }
+            
+            document.getElementById('dateModal').style.display = 'none';
         }
         
         function showFlights(from, to, date, tripType) {
