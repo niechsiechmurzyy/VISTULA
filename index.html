@@ -875,7 +875,30 @@
                             `;
                             
                             airportItem.addEventListener('click', function() {
-                                selectAirport(airport);
+                                const airportText = `${airport.city} - ${airport.name} (${airport.code})`;
+                                const airportValue = `${airport.city} (${airport.code})`;
+                                
+                                if (currentInput === 'from') {
+                                    document.getElementById('fromInput').textContent = airportText;
+                                    document.getElementById('from').value = airportValue;
+                                } else {
+                                    document.getElementById('toInput').textContent = airportText;
+                                    document.getElementById('to').value = airportValue;
+                                }
+                                
+                                airportModal.style.display = 'none';
+                                
+                                // Sprawdź czy wybrano to samo lotnisko
+                                const from = document.getElementById('from').value;
+                                const to = document.getElementById('to').value;
+                                const errorMessage = document.getElementById('errorMessage');
+                                
+                                if (from && to && from === to) {
+                                    errorMessage.textContent = "Proszę wybrać różne lotniska wylotu i przylotu";
+                                    errorMessage.style.display = 'block';
+                                } else {
+                                    errorMessage.style.display = 'none';
+                                }
                             });
                             
                             airportList.appendChild(airportItem);
@@ -981,68 +1004,6 @@
                 travelClassModal.style.display = 'none';
             });
         });
-        
-        function showAirportModal() {
-            const modal = document.getElementById('airportModal');
-            const airportList = document.getElementById('airportList');
-            
-            // Wyczyść wyszukiwanie
-            document.getElementById('searchAirport').value = '';
-            
-            // Załaduj wszystkie lotniska
-            airportList.innerHTML = '';
-            
-            for (const country in airports) {
-                const countryGroup = document.createElement('div');
-                countryGroup.className = 'country-group';
-                countryGroup.textContent = country;
-                airportList.appendChild(countryGroup);
-                
-                airports[country].forEach(airport => {
-                    const airportItem = document.createElement('div');
-                    airportItem.className = 'airport-item';
-                    airportItem.innerHTML = `
-                        <div><strong>${airport.city}</strong> - ${airport.name}</div>
-                        <div class="airport-code">${airport.code}</div>
-                    `;
-                    
-                    airportItem.addEventListener('click', function() {
-                        selectAirport(airport);
-                    });
-                    
-                    airportList.appendChild(airportItem);
-                });
-            }
-            
-            modal.style.display = 'block';
-        }
-        
-        function selectAirport(airport) {
-            const airportText = `${airport.city} - ${airport.name} (${airport.code})`;
-            const airportValue = `${airport.city} (${airport.code})`;
-            
-            if (currentInput === 'from') {
-                document.getElementById('fromInput').textContent = airportText;
-                document.getElementById('from').value = airportValue;
-            } else if (currentInput === 'to') {
-                document.getElementById('toInput').textContent = airportText;
-                document.getElementById('to').value = airportValue;
-            }
-            
-            document.getElementById('airportModal').style.display = 'none';
-            
-            // Sprawdź czy wybrano to samo lotnisko
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (from && to && from === to) {
-                errorMessage.textContent = "Proszę wybrać różne lotniska wylotu i przylotu";
-                errorMessage.style.display = 'block';
-            } else {
-                errorMessage.style.display = 'none';
-            }
-        }
         
         function showFlights(from, to, date, tripType) {
             // Normalizuj nazwy lotnisk
@@ -1172,4 +1133,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
