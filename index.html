@@ -357,10 +357,12 @@
         .calendar td.disabled {
             color: #ccc;
             cursor: not-allowed;
+            background-color: #f9f9f9;
         }
         
         .calendar td.today {
             background-color: #e6f7ff;
+            font-weight: bold;
         }
         
         .calendar td.selected {
@@ -390,6 +392,7 @@
             border: none;
             font-size: 1.2em;
             cursor: pointer;
+            color: var(--primary-color);
         }
         
         .date-modal {
@@ -877,12 +880,31 @@
                 currentDateInput = 'departure';
                 document.getElementById('dateModalTitle').textContent = 'Wybierz datę wylotu';
                 document.getElementById('dateModal').style.display = 'block';
+                
+                // Resetuj kalendarz do aktualnej daty
+                const today = new Date();
+                currentMonth = today.getMonth();
+                currentYear = today.getFullYear();
+                generateCalendar(currentMonth, currentYear);
             });
             
             returnInput.addEventListener('click', function() {
                 currentDateInput = 'return';
                 document.getElementById('dateModalTitle').textContent = 'Wybierz datę powrotu';
                 document.getElementById('dateModal').style.display = 'block';
+                
+                // Jeśli jest wybrana data wylotu, ustaw początkowy miesiąc na miesiąc wylotu
+                const departureDate = document.getElementById('departure').value;
+                if (departureDate) {
+                    const depDate = new Date(departureDate);
+                    currentMonth = depDate.getMonth();
+                    currentYear = depDate.getFullYear();
+                } else {
+                    const today = new Date();
+                    currentMonth = today.getMonth();
+                    currentYear = today.getFullYear();
+                }
+                generateCalendar(currentMonth, currentYear);
             });
             
             document.getElementById('prevMonth').addEventListener('click', function() {
@@ -905,68 +927,22 @@
                 const today = new Date();
                 const maxDate = new Date();
                 maxDate.setFullYear(today.getFullYear() + 1);
+                maxDate.setMonth(today.getMonth());
+                maxDate.setDate(today.getDate());
                 
-                if (new Date(currentYear, currentMonth, 1) > maxDate) {
+                const nextMonthFirstDay = new Date(currentYear, currentMonth, 1);
+                if (nextMonthFirstDay > maxDate) {
                     currentMonth--;
                     if (currentMonth < 0) {
                         currentMonth = 11;
                         currentYear--;
                     }
+                    return;
                 }
                 
                 generateCalendar(currentMonth, currentYear);
             });
         });
-        
-        function showAirportModal() {
-            const modal = document.getElementById('airportModal');
-            const airportList = document.getElementById('airportList');
-            
-            // Wyczyść wyszukiwanie
-            document.getElementById('searchAirport').value = '';
-            
-            // Załaduj wszystkie lotniska
-            airportList.innerHTML = '';
-            
-            for (const country in airports) {
-                const countryGroup = document.createElement('div');
-                countryGroup.className = 'country-group';
-                countryGroup.textContent = country;
-                airportList.appendChild(countryGroup);
-                
-                airports[country].forEach(airport => {
-                    const airportItem = document.createElement('div');
-                    airportItem.className = 'airport-item';
-                    airportItem.innerHTML = `
-                        <div><strong>${airport.city}</strong> - ${airport.name}</div>
-                        <div class="airport-code">${airport.code}</div>
-                    `;
-                    
-                    airportItem.addEventListener('click', function() {
-                        selectAirport(airport);
-                    });
-                    
-                    airportList.appendChild(airportItem);
-                });
-            }
-            
-            modal.style.display = 'block';
-        }
-        
-        function selectAirport(airport) {
-            const airportText = `${airport.city} - ${airport.name} (${airport.code})`;
-            const airportValue = `${airport.city} - ${airport.name} (${airport.code})`;
-            
-            if (currentInput === 'from') {
-                document.getElementById('fromInput').textContent = airportText;
-                document.getElementById('from').value = airportValue;
-            } else if (currentInput === 'to') {
-                document.getElementById('toInput').textContent = airportText;
-                document.getElementById('to').value = airportValue;
-            }
-            
-            document.getElementById('airportModal').style.display = 'none';
-        }
         
         function generateCalendar(month, year) {
             const calendarBody = document.getElementById('calendarBody');
@@ -989,11 +965,12 @@
             
             // Obecna data
             const today = new Date();
-            const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            const todayString = today.toISOString().split('T')[0];
             
             // Maksymalna data (rok do przodu)
             const maxDate = new Date();
             maxDate.setFullYear(today.getFullYear() + 1);
+            const maxDateString = maxDate.toISOString().split('T')[0];
             
             let date = 1;
             for (let i = 0; i < 6; i++) {
@@ -1019,15 +996,18 @@
                         // Komórki z dniami miesiąca
                         cell.textContent = date;
                         
-                        // Sprawdź czy data jest w przeszłości lub po maksymalnej dacie
+                        // Utwórz pełną datę dla tego dnia
                         const currentDate = new Date(year, month, date);
-                        const currentDateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                        const currentDateString = currentDate.toISOString().split('T')[0];
                         
+                        // Sprawdź czy data jest w przeszłości lub po maksymalnej dacie
                         if (currentDate < today || currentDate > maxDate) {
                             cell.classList.add('disabled');
                         } else {
                             // Sprawdź czy to dzisiejsza data
-                            if (currentDateString === todayString) {
+                            if (currentDate.getDate() === today.getDate() && 
+                                currentDate.getMonth() === today.getMonth() && 
+                                currentDate.getFullYear() === today.getFullYear()) {
                                 cell.classList.add('today');
                             }
                             
@@ -1049,7 +1029,7 @@
         
         function selectDate(day, month, year) {
             const selectedDate = new Date(year, month, day);
-            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const formattedDate = selectedDate.toISOString().split('T')[0];
             const formattedDisplayDate = `${String(day).padStart(2, '0')}.${String(month + 1).padStart(2, '0')}.${year}`;
             
             if (currentDateInput === 'departure') {
@@ -1058,6 +1038,13 @@
                 
                 // Ustaw minimalną datę powrotu na wybraną datę wylotu
                 document.getElementById('return').min = formattedDate;
+                
+                // Jeśli data powrotu jest wcześniejsza niż data wylotu, wyczyść ją
+                const returnDate = document.getElementById('return').value;
+                if (returnDate && returnDate < formattedDate) {
+                    document.getElementById('return').value = '';
+                    document.getElementById('returnInput').textContent = 'Wybierz datę';
+                }
             } else if (currentDateInput === 'return') {
                 document.getElementById('returnInput').textContent = formattedDisplayDate;
                 document.getElementById('return').value = formattedDate;
