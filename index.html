@@ -311,24 +311,23 @@
                 { name: "Warszawa - Okęcie", code: "WAW", city: "Warszawa" },
                 { name: "Gdańsk - Rębiechowo", code: "GDN", city: "Gdańsk" }
             ]
-            // Tutaj możesz dodać kolejne kraje i lotniska
         };
 
-        // Baza danych lotów
+        // Baza danych lotów (codzienne)
         const flightDatabase = {
-            // Warszawa -> Gdańsk
+            // Warszawa -> Gdańsk (codzienne)
             "Warszawa - Okęcie (WAW)-Gdańsk - Rębiechowo (GDN)": [
-                { number: "VA701", departure: "07:00", arrival: "08:00", price: "179 PLN" },
-                { number: "VA703", departure: "15:20", arrival: "16:20", price: "199 PLN" },
-                { number: "VA705", departure: "19:25", arrival: "20:25", price: "219 PLN" },
-                { number: "VA707", departure: "22:55", arrival: "23:55", price: "189 PLN" }
+                { number: "VA701", departure: "07:00", arrival: "08:00", price: "179 PLN", days: [0,1,2,3,4,5,6] },
+                { number: "VA703", departure: "15:20", arrival: "16:20", price: "199 PLN", days: [0,1,2,3,4,5,6] },
+                { number: "VA705", departure: "19:25", arrival: "20:25", price: "219 PLN", days: [0,1,2,3,4,5,6] },
+                { number: "VA707", departure: "22:55", arrival: "23:55", price: "189 PLN", days: [0,1,2,3,4,5,6] }
             ],
-            // Gdańsk -> Warszawa
+            // Gdańsk -> Warszawa (codzienne)
             "Gdańsk - Rębiechowo (GDN)-Warszawa - Okęcie (WAW)": [
-                { number: "VA702", departure: "06:00", arrival: "07:00", price: "169 PLN" },
-                { number: "VA704", departure: "08:45", arrival: "09:45", price: "179 PLN" },
-                { number: "VA706", departure: "17:05", arrival: "18:05", price: "199 PLN" },
-                { number: "VA708", departure: "21:10", arrival: "22:10", price: "189 PLN" }
+                { number: "VA702", departure: "06:00", arrival: "07:00", price: "169 PLN", days: [0,1,2,3,4,5,6] },
+                { number: "VA704", departure: "08:45", arrival: "09:45", price: "179 PLN", days: [0,1,2,3,4,5,6] },
+                { number: "VA706", departure: "17:05", arrival: "18:05", price: "199 PLN", days: [0,1,2,3,4,5,6] },
+                { number: "VA708", departure: "21:10", arrival: "22:10", price: "189 PLN", days: [0,1,2,3,4,5,6] }
             ]
         };
 
@@ -521,16 +520,21 @@
             const routeKey = `${from}-${to}`;
             const flights = flightDatabase[routeKey] || [];
             
-            // Wyświetl dostępne loty
+            // Sprawdź dzień tygodnia (0 - niedziela, 6 - sobota)
+            const dayOfWeek = new Date(date).getDay();
+            
+            // Wyświetl dostępne loty (tylko te dostępne w wybranym dniu)
             flights.forEach(flight => {
-                createFlightCard(
-                    flightsContainer,
-                    flight.number,
-                    from, to,
-                    flight.departure, flight.arrival,
-                    '1h 00m',
-                    flight.price
-                );
+                if (flight.days.includes(dayOfWeek)) {
+                    createFlightCard(
+                        flightsContainer,
+                        flight.number,
+                        from, to,
+                        flight.departure, flight.arrival,
+                        '1h 00m',
+                        flight.price
+                    );
+                }
             });
             
             // Jeśli brak lotów
