@@ -5,16 +5,494 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rezerwacja lotów - Vistula Airlines</title>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ... (pozostawiam niezmienione style) ... */
+        :root {
+            --primary-color: #006994;
+            --secondary-color: #5F9EA0;
+            --accent-color: #B0E0E6;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #757575;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            background-color: var(--light-gray);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .search-box, .results-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-title, .results-title {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        input, select, .airport-input, .travel-class-input, .date-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        
+        .row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .col {
+            flex: 1;
+        }
+        
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: #005580;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .error-message {
+            color: #d9534f;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .flight-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .flight-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .flight-info {
+            flex: 2;
+        }
+        
+        .flight-time {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .flight-price {
+            flex: 1;
+            text-align: right;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .flight-route {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .flight-date {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .flight-number {
+            background-color: var(--accent-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .no-flights-message {
+            text-align: center;
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .same-airport-warning {
+            color: #d9534f;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        
+        /* Nowoczesny kalendarz */
+        .calendar-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .calendar-day {
+            min-width: 80px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--medium-gray);
+            background-color: white;
+            transition: all 0.3s;
+        }
+        
+        .calendar-day:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .calendar-day.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .calendar-day.disabled {
+            color: var(--dark-gray);
+            background-color: var(--light-gray);
+            cursor: not-allowed;
+        }
+        
+        .calendar-day .day-name {
+            font-size: 0.8em;
+            color: inherit;
+        }
+        
+        .calendar-day .day-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .calendar-day .day-price {
+            font-size: 0.9em;
+            color: inherit;
+        }
+        
+        /* Nowoczesny wybór klasy */
+        .class-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .class-option {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray);
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .class-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .class-option.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .class-option .class-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .class-option .class-price {
+            font-size: 0.9em;
+        }
+        
+        /* Styl dla wyników lotów powrotnych */
+        .return-flights-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--medium-gray);
+        }
+        
+        .flight-selected {
+            background-color: #e8f4f8;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .country-group {
+            font-weight: bold;
+            margin-top: 15px;
+            color: var(--primary-color);
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .airport-item {
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        
+        .airport-item:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .airport-code {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .search-airport {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* Trip type styles */
+        .trip-type {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid var(--primary-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .trip-type-option {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .trip-type-option:not(:last-child) {
+            border-right: 1px solid var(--primary-color);
+        }
+        
+        .trip-type-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .row {
+                flex-direction: column;
+            }
+            
+            .flight-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .flight-info, .flight-time, .flight-price {
+                margin-bottom: 15px;
+                text-align: center;
+                width: 100%;
+            }
+            
+            .modal-content {
+                margin: 20% auto;
+                width: 95%;
+            }
+            
+            .class-options {
+                flex-direction: column;
+            }
+            
+            .class-option {
+                width: 100%;
+            }
+            
+            .class-selector {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- ... (pozostawiam niezmienioną sekcję formularza) ... -->
+        <!-- Formularz wyszukiwania -->
+        <div id="searchSection" class="search-box">
+            <h2 class="search-title">Wyszukaj lot</h2>
+            <form id="searchForm">
+                <!-- Typ podróży -->
+                <div class="trip-type">
+                    <div class="trip-type-option active" data-type="roundtrip">Lot w obie strony</div>
+                    <div class="trip-type-option" data-type="oneway">Lot w jedną stronę</div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="from">Skąd</label>
+                            <div class="airport-input" id="fromInput">Wybierz lotnisko</div>
+                            <input type="hidden" id="from" name="from" value="">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="to">Dokąd</label>
+                            <div class="airport-input" id="toInput">Wybierz lotnisko</div>
+                            <input type="hidden" id="to" name="to" value="">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="departure">Data wylotu</label>
+                            <div class="date-input-container">
+                                <input type="text" class="date-input" id="departureDate" placeholder="Wybierz datę" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col" id="returnDateCol">
+                        <div class="form-group">
+                            <label for="return">Data powrotu</label>
+                            <div class="date-input-container">
+                                <input type="text" class="date-input" id="returnDate" placeholder="Wybierz datę" readonly>
+                            </div>
+                            <div class="days-info" id="daysInfo"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="travelClass">Klasa podróży</label>
+                            <div id="classSelectorContainer"></div>
+                            <input type="hidden" id="travelClass" name="travelClass" value="">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="error-message" id="errorMessage">
+                    Obecnie obsługujemy tylko połączenia Warszawa-Gdańsk i Gdańsk-Warszawa
+                </div>
+                
+                <button type="submit" class="btn btn-block">Szukaj lotów</button>
+            </form>
+        </div>
+        
+        <!-- Wyniki wyszukiwania -->
+        <div id="resultsSection" class="results-box hidden">
+            <h2 class="results-title">Dostępne loty</h2>
+            <div id="flightsContainer"></div>
+            <a href="#" class="btn btn-block" id="backButton">Powrót do wyszukiwania</a>
+        </div>
     </div>
 
-    <!-- ... (pozostawiam niezmienione modale) ... -->
+    <!-- Modal do wyboru lotniska -->
+    <div id="airportModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalTitle">Wybierz lotnisko</h3>
+            <input type="text" id="searchAirport" class="search-airport" placeholder="Wyszukaj lotnisko...">
+            <div id="airportList"></div>
+        </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -51,9 +529,19 @@
             return match ? `${match[1]} (${match[2]})` : airport;
         }
 
+        // Funkcja obliczająca różnicę dni między datami
+        function calculateDaysBetweenDates(date1, date2) {
+            const oneDay = 24 * 60 * 60 * 1000;
+            return Math.round(Math.abs((date1 - date2) / oneDay));
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Zmienne globalne
             let currentInput = null;
+            let departureDate = null;
+            let returnDate = null;
+            let isRoundTrip = true;
+            let selectedOutboundFlight = null;
 
             // Inicjalizacja kalendarza dla daty wylotu
             $("#departureDate").datepicker({
@@ -61,10 +549,41 @@
                 minDate: 0,
                 maxDate: '+1Y',
                 firstDay: 1,
+                showButtonPanel: true,
+                currentText: 'Dzisiaj',
+                closeText: 'Zamknij',
+                dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+                dayNamesMin: ['Nd', 'Pn', 'Wt', 'Śr', 'Czw', 'Pt', 'So'],
+                monthNames: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
+                monthNamesShort: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'],
                 onSelect: function(dateText, inst) {
-                    if ($("#tripType").val() === 'roundtrip') {
-                        $("#returnDate").datepicker("option", "minDate", dateText);
+                    const date = $(this).datepicker('getDate');
+                    departureDate = date;
+                    
+                    // Jeśli wybrano datę wylotu, ustaw minimalną datę powrotu
+                    if (isRoundTrip) {
+                        $("#returnDate").datepicker("option", "minDate", date);
+                        
+                        // Jeśli data powrotu jest wcześniejsza niż data wylotu, zresetuj ją
+                        if (returnDate && returnDate < date) {
+                            $("#returnDate").datepicker("setDate", null);
+                            returnDate = null;
+                            $("#daysInfo").text('');
+                        }
                     }
+                    
+                    // Oblicz różnicę dni jeśli obie daty są wybrane
+                    if (returnDate) {
+                        const daysDiff = calculateDaysBetweenDates(departureDate, returnDate);
+                        $("#daysInfo").text(`${daysInfo} dni`);
+                    }
+                },
+                beforeShow: function(input, inst) {
+                    setTimeout(function() {
+                        inst.dpDiv.css({
+                            'z-index': 1050
+                        });
+                    }, 0);
                 }
             });
 
@@ -73,15 +592,43 @@
                 dateFormat: 'dd.mm.yy',
                 minDate: 0,
                 maxDate: '+1Y',
-                firstDay: 1
+                firstDay: 1,
+                showButtonPanel: true,
+                currentText: 'Dzisiaj',
+                closeText: 'Zamknij',
+                dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
+                dayNamesMin: ['Nd', 'Pn', 'Wt', 'Śr', 'Czw', 'Pt', 'So'],
+                monthNames: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
+                monthNamesShort: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'],
+                onSelect: function(dateText, inst) {
+                    const date = $(this).datepicker('getDate');
+                    returnDate = date;
+                    
+                    // Oblicz różnicę dni między datami
+                    if (departureDate) {
+                        const daysDiff = calculateDaysBetweenDates(departureDate, returnDate);
+                        $("#daysInfo").text(`${daysDiff} dni`);
+                    }
+                },
+                beforeShow: function(input, inst) {
+                    setTimeout(function() {
+                        inst.dpDiv.css({
+                            'z-index': 1050
+                        });
+                    }, 0);
+                }
             });
 
             // Ustaw język polski dla kalendarza
             $.datepicker.setDefaults($.datepicker.regional['pl']);
 
+            // Inicjalizacja wyboru klasy podróży
+            initClassSelector();
+
             // Obsługa formularza
             document.getElementById('searchForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                
                 const from = document.getElementById('from').value;
                 const to = document.getElementById('to').value;
                 const departureDate = $("#departureDate").val();
@@ -89,6 +636,7 @@
                 const tripType = document.querySelector('.trip-type-option.active').dataset.type;
                 const errorMessage = document.getElementById('errorMessage');
                 
+                // Sprawdź poprawność trasy
                 if (!from || !to) {
                     errorMessage.textContent = "Proszę wybrać lotnisko wylotu i przylotu";
                     errorMessage.style.display = 'block';
@@ -114,6 +662,8 @@
                 }
                 
                 errorMessage.style.display = 'none';
+                
+                // Wyświetl wyniki
                 showFlights(from, to, departureDate, tripType);
             });
             
@@ -126,6 +676,7 @@
             
             // Obsługa modalnego okna lotnisk
             const airportModal = document.getElementById('airportModal');
+            const closeBtns = document.querySelectorAll('.close');
             const fromInput = document.getElementById('fromInput');
             const toInput = document.getElementById('toInput');
             
@@ -141,17 +692,15 @@
                 showAirportModal();
             });
             
-            document.querySelectorAll('.close').forEach(btn => {
+            closeBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     airportModal.style.display = 'none';
-                    document.getElementById('travelClassModal').style.display = 'none';
                 });
             });
             
             window.addEventListener('click', function(event) {
-                if (event.target === airportModal || event.target === document.getElementById('travelClassModal')) {
+                if (event.target === airportModal) {
                     airportModal.style.display = 'none';
-                    document.getElementById('travelClassModal').style.display = 'none';
                 }
             });
             
@@ -159,6 +708,7 @@
             document.getElementById('searchAirport').addEventListener('input', function(e) {
                 const searchTerm = e.target.value.toLowerCase();
                 const airportList = document.getElementById('airportList');
+                
                 airportList.innerHTML = '';
                 
                 for (const country in airports) {
@@ -200,13 +750,282 @@
                 }
             });
             
-            // ... (pozostawiam resztę kodu bez zmian) ...
+            // Obsługa typu podróży
+            const tripTypeOptions = document.querySelectorAll('.trip-type-option');
+            tripTypeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    tripTypeOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    isRoundTrip = this.dataset.type === 'roundtrip';
+                    
+                    if (isRoundTrip) {
+                        document.getElementById('returnDateCol').style.display = 'block';
+                        
+                        // Jeśli jest wybrana data wylotu, ustaw minimalną datę powrotu
+                        if (departureDate) {
+                            $("#returnDate").datepicker("option", "minDate", departureDate);
+                        }
+                    } else {
+                        document.getElementById('returnDateCol').style.display = 'none';
+                        $("#daysInfo").text('');
+                    }
+                });
+            });
         });
         
+        // Funkcja inicjalizująca wybór klasy podróży
+        function initClassSelector() {
+            const classOptions = [
+                { name: 'Economy', price: 'od 179 PLN', value: 'economy' },
+                { name: 'Premium', price: 'od 299 PLN', value: 'premium' },
+                { name: 'Business', price: 'od 599 PLN', value: 'business' },
+                { name: 'First', price: 'od 999 PLN', value: 'first' }
+            ];
+            
+            const container = document.getElementById('classSelectorContainer');
+            container.innerHTML = '';
+            
+            const selector = document.createElement('div');
+            selector.className = 'class-selector';
+            
+            classOptions.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'class-option';
+                optionElement.dataset.value = option.value;
+                
+                optionElement.innerHTML = `
+                    <div class="class-name">${option.name}</div>
+                    <div class="class-price">${option.price}</div>
+                `;
+                
+                optionElement.addEventListener('click', function() {
+                    document.querySelectorAll('.class-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+                    document.getElementById('travelClass').value = this.dataset.value;
+                });
+                
+                selector.appendChild(optionElement);
+            });
+            
+            // Domyślny wybór
+            selector.firstChild.classList.add('selected');
+            document.getElementById('travelClass').value = 'economy';
+            
+            container.appendChild(selector);
+        }
+        
+        // Funkcja generująca kalendarz na stronie wyników
+        function generateCalendar(daysToShow = 30) {
+            const calendarContainer = document.createElement('div');
+            calendarContainer.className = 'calendar-container';
+            
+            const today = new Date();
+            for (let i = 0; i < daysToShow; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                if (i === 0) dayElement.classList.add('active');
+                
+                const dayName = date.toLocaleDateString('pl-PL', { weekday: 'short' });
+                const dayNumber = date.getDate();
+                const month = date.toLocaleDateString('pl-PL', { month: 'short' });
+                
+                // Symulacja ceny - w rzeczywistości można pobrać z API
+                const price = 179 + Math.floor(Math.random() * 100);
+                
+                dayElement.innerHTML = `
+                    <div class="day-name">${dayName}, ${month}</div>
+                    <div class="day-number">${dayNumber}</div>
+                    <div class="day-price">${price} PLN</div>
+                `;
+                
+                dayElement.addEventListener('click', function() {
+                    document.querySelectorAll('.calendar-day').forEach(day => {
+                        day.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Aktualizacja daty w formularzu
+                    const formattedDate = `${dayNumber}.${date.getMonth()+1}.${date.getFullYear()}`;
+                    $("#departureDate").val(formattedDate).datepicker("setDate", formattedDate);
+                });
+                
+                calendarContainer.appendChild(dayElement);
+            }
+            
+            return calendarContainer;
+        }
+        
+        // Funkcja wyświetlająca loty
+        function showFlights(from, to, date, tripType) {
+            // Normalizuj nazwy lotnisk
+            const normalizedFrom = normalizeAirport(from);
+            const normalizedTo = normalizeAirport(to);
+            const routeKey = `${normalizedFrom}-${normalizedTo}`;
+            
+            // Ukryj formularz, pokaż wyniki
+            document.getElementById('searchSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.remove('hidden');
+            
+            // Wyczyść poprzednie wyniki
+            const flightsContainer = document.getElementById('flightsContainer');
+            flightsContainer.innerHTML = '';
+            
+            // Dodaj kalendarz na górze
+            const calendar = generateCalendar();
+            flightsContainer.appendChild(calendar);
+            
+            // Formatowanie daty
+            const departureDate = new Date(date.split('.').reverse().join('-'));
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = departureDate.toLocaleDateString('pl-PL', options);
+            
+            // Dodaj nagłówek z informacjami o wyszukiwaniu
+            const searchInfo = document.createElement('div');
+            searchInfo.className = 'search-info';
+            searchInfo.innerHTML = `
+                <h3>${from.split(' (')[0]} → ${to.split(' (')[0]}</h3>
+                <p class="flight-date">${formattedDate}</p>
+            `;
+            flightsContainer.appendChild(searchInfo);
+            
+            // Znajdź loty dla trasy
+            const flights = flightDatabase[routeKey] || [];
+            
+            // Wyświetl dostępne loty
+            if (flights.length > 0) {
+                flights.forEach(flight => {
+                    const flightCard = createFlightCard(
+                        flight.number,
+                        from, to,
+                        flight.departure, flight.arrival,
+                        '1h 00m',
+                        flight.price
+                    );
+                    
+                    flightCard.addEventListener('click', function() {
+                        // Oznaczenie wybranego lotu
+                        document.querySelectorAll('.flight-card').forEach(card => {
+                            card.classList.remove('flight-selected');
+                        });
+                        this.classList.add('flight-selected');
+                        
+                        // Zapamiętanie wybranego lotu
+                        selectedOutboundFlight = {
+                            number: flight.number,
+                            from: from,
+                            to: to,
+                            departure: flight.departure,
+                            arrival: flight.arrival,
+                            price: flight.price
+                        };
+                        
+                        // Jeśli to lot w obie strony, pokaż loty powrotne
+                        if (tripType === 'roundtrip') {
+                            showReturnFlights(to, from, $("#returnDate").val());
+                        }
+                    });
+                    
+                    flightsContainer.appendChild(flightCard);
+                });
+            } else {
+                flightsContainer.innerHTML += `
+                    <div class="no-flights-message">
+                        Niestety, nie znaleziono dostępnych lotów na wybraną trasę.
+                        <br><br>
+                        Obsługiwane połączenia:<br>
+                        <strong>Warszawa (WAW) ↔ Gdańsk (GDN)</strong>
+                    </div>
+                `;
+            }
+        }
+        
+        // Funkcja tworząca kartę lotu
+        function createFlightCard(flightNumber, from, to, departureTime, arrivalTime, duration, price) {
+            const flightCard = document.createElement('div');
+            flightCard.className = 'flight-card';
+            flightCard.innerHTML = `
+                <div class="flight-info">
+                    <div class="flight-route">${from.split(' (')[0]} → ${to.split(' (')[0]}</div>
+                    <div class="flight-number">${flightNumber}</div>
+                </div>
+                <div class="flight-time">
+                    <div><strong>${departureTime}</strong> - ${arrivalTime}</div>
+                    <div>${duration}</div>
+                </div>
+                <div class="flight-price">
+                    ${price}
+                    <button class="btn" style="margin-top: 10px; padding: 8px 16px;">Wybierz</button>
+                </div>
+            `;
+            
+            return flightCard;
+        }
+        
+        // Funkcja pokazująca loty powrotne
+        function showReturnFlights(from, to, date) {
+            // Usuń poprzednią sekcję lotów powrotnych jeśli istnieje
+            const existingSection = document.querySelector('.return-flights-section');
+            if (existingSection) existingSection.remove();
+            
+            const returnSection = document.createElement('div');
+            returnSection.className = 'return-flights-section';
+            
+            const title = document.createElement('h3');
+            title.textContent = 'Wybierz lot powrotny';
+            returnSection.appendChild(title);
+            
+            const normalizedFrom = normalizeAirport(from);
+            const normalizedTo = normalizeAirport(to);
+            const returnKey = `${normalizedFrom}-${normalizedTo}`;
+            const returnFlights = flightDatabase[returnKey] || [];
+            
+            if (returnFlights.length > 0) {
+                returnFlights.forEach(flight => {
+                    const flightCard = createFlightCard(
+                        flight.number,
+                        from, to,
+                        flight.departure, flight.arrival,
+                        '1h 00m',
+                        flight.price
+                    );
+                    
+                    flightCard.addEventListener('click', function() {
+                        document.querySelectorAll('.return-flights-section .flight-card').forEach(card => {
+                            card.classList.remove('flight-selected');
+                        });
+                        this.classList.add('flight-selected');
+                        
+                        // Tutaj można dodać logikę finalizacji rezerwacji
+                        // z selectedOutboundFlight i wybranym lotem powrotnym
+                    });
+                    
+                    returnSection.appendChild(flightCard);
+                });
+            } else {
+                const noFlights = document.createElement('div');
+                noFlights.className = 'no-flights-message';
+                noFlights.textContent = 'Brak dostępnych lotów powrotnych na wybraną datę.';
+                returnSection.appendChild(noFlights);
+            }
+            
+            document.getElementById('flightsContainer').appendChild(returnSection);
+        }
+        
+        // Funkcja pokazująca modal z lotniskami
         function showAirportModal() {
             const modal = document.getElementById('airportModal');
             const airportList = document.getElementById('airportList');
+            
+            // Wyczyść wyszukiwanie
             document.getElementById('searchAirport').value = '';
+            
+            // Załaduj wszystkie lotniska
             airportList.innerHTML = '';
             
             for (const country in airports) {
@@ -232,7 +1051,7 @@
                             document.getElementById('toInput').textContent = airportText;
                             document.getElementById('to').value = airportText;
                         }
-                        airportModal.style.display = 'none';
+                        modal.style.display = 'none';
                     });
                     
                     airportList.appendChild(airportItem);
@@ -241,8 +1060,6 @@
             
             modal.style.display = 'block';
         }
-        
-        // ... (pozostawiam resztę funkcji bez zmian) ...
     </script>
 </body>
 </html>
