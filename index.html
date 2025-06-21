@@ -230,45 +230,6 @@
             color: inherit;
         }
         
-        /* Nowoczesny wybór klasy */
-        .class-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .class-option {
-            flex: 1;
-            min-width: 120px;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--medium-gray);
-            background-color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        
-        .class-option:hover {
-            border-color: var(--primary-color);
-        }
-        
-        .class-option.selected {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-        
-        .class-option .class-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .class-option .class-price {
-            font-size: 0.9em;
-        }
-        
         /* Styl dla wyników lotów powrotnych */
         .return-flights-section {
             margin-top: 40px;
@@ -374,6 +335,74 @@
             color: white;
         }
         
+        /* Travel class modal styles */
+        .travel-class-modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .travel-class-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .passenger-type {
+            margin-bottom: 20px;
+        }
+        
+        .passenger-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .passenger-controls button {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .passenger-count {
+            margin: 0 15px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .class-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .class-option {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .class-option.active {
+            border-color: var(--primary-color);
+            background-color: var(--accent-color);
+        }
+        
         @media (max-width: 768px) {
             .row {
                 flex-direction: column;
@@ -401,10 +430,6 @@
             
             .class-option {
                 width: 100%;
-            }
-            
-            .class-selector {
-                flex-direction: column;
             }
         }
     </style>
@@ -461,9 +486,10 @@
                 <div class="row">
                     <div class="col">
                         <div class="form-group">
-                            <label for="travelClass">Klasa podróży</label>
-                            <div id="classSelectorContainer"></div>
+                            <label for="travelClass">Klasa podróży i pasażerowie</label>
+                            <div class="travel-class-input" id="travelClassInput">Wybierz klasę i pasażerów</div>
                             <input type="hidden" id="travelClass" name="travelClass" value="">
+                            <input type="hidden" id="passengers" name="passengers" value="">
                         </div>
                     </div>
                 </div>
@@ -491,6 +517,59 @@
             <h3 id="modalTitle">Wybierz lotnisko</h3>
             <input type="text" id="searchAirport" class="search-airport" placeholder="Wyszukaj lotnisko...">
             <div id="airportList"></div>
+        </div>
+    </div>
+
+    <!-- Modal klasy podróży -->
+    <div id="travelClassModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Klasa podróży i pasażerowie</h3>
+            
+            <div class="class-options">
+                <div class="class-option active" data-class="economy">Economy</div>
+                <div class="class-option" data-class="premium">Premium Economy</div>
+                <div class="class-option" data-class="business">Business</div>
+                <div class="class-option" data-class="first">First Class</div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>Dorośli (16+ lat)</div>
+                <div class="passenger-controls">
+                    <button id="adultMinus">-</button>
+                    <div id="adultCount" class="passenger-count">1</div>
+                    <button id="adultPlus">+</button>
+                </div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>Nastolatkowie (12-15 lat)</div>
+                <div class="passenger-controls">
+                    <button id="teenMinus">-</button>
+                    <div id="teenCount" class="passenger-count">0</div>
+                    <button id="teenPlus">+</button>
+                </div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>Dzieci (2-11 lat)</div>
+                <div class="passenger-controls">
+                    <button id="childMinus">-</button>
+                    <div id="childCount" class="passenger-count">0</div>
+                    <button id="childPlus">+</button>
+                </div>
+            </div>
+            
+            <div class="passenger-type">
+                <div>Niemowlęta (na kolanach, 0-24 miesiące)</div>
+                <div class="passenger-controls">
+                    <button id="infantMinus">-</button>
+                    <div id="infantCount" class="passenger-count">0</div>
+                    <button id="infantPlus">+</button>
+                </div>
+            </div>
+            
+            <button id="confirmTravelClass" class="btn btn-block">Potwierdź</button>
         </div>
     </div>
 
@@ -575,7 +654,7 @@
                     // Oblicz różnicę dni jeśli obie daty są wybrane
                     if (returnDate) {
                         const daysDiff = calculateDaysBetweenDates(departureDate, returnDate);
-                        $("#daysInfo").text(`${daysInfo} dni`);
+                        $("#daysInfo").text(`${daysDiff} dni`);
                     }
                 },
                 beforeShow: function(input, inst) {
@@ -621,9 +700,6 @@
 
             // Ustaw język polski dla kalendarza
             $.datepicker.setDefaults($.datepicker.regional['pl']);
-
-            // Inicjalizacja wyboru klasy podróży
-            initClassSelector();
 
             // Obsługa formularza
             document.getElementById('searchForm').addEventListener('submit', function(e) {
@@ -679,6 +755,8 @@
             const closeBtns = document.querySelectorAll('.close');
             const fromInput = document.getElementById('fromInput');
             const toInput = document.getElementById('toInput');
+            const travelClassInput = document.getElementById('travelClassInput');
+            const travelClassModal = document.getElementById('travelClassModal');
             
             fromInput.addEventListener('click', function() {
                 currentInput = 'from';
@@ -692,15 +770,21 @@
                 showAirportModal();
             });
             
+            travelClassInput.addEventListener('click', function() {
+                travelClassModal.style.display = 'block';
+            });
+            
             closeBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
                     airportModal.style.display = 'none';
+                    travelClassModal.style.display = 'none';
                 });
             });
             
             window.addEventListener('click', function(event) {
-                if (event.target === airportModal) {
+                if (event.target === airportModal || event.target === travelClassModal) {
                     airportModal.style.display = 'none';
+                    travelClassModal.style.display = 'none';
                 }
             });
             
@@ -772,50 +856,75 @@
                     }
                 });
             });
-        });
-        
-        // Funkcja inicjalizująca wybór klasy podróży
-        function initClassSelector() {
-            const classOptions = [
-                { name: 'Economy', price: 'od 179 PLN', value: 'economy' },
-                { name: 'Premium', price: 'od 299 PLN', value: 'premium' },
-                { name: 'Business', price: 'od 599 PLN', value: 'business' },
-                { name: 'First', price: 'od 999 PLN', value: 'first' }
-            ];
-            
-            const container = document.getElementById('classSelectorContainer');
-            container.innerHTML = '';
-            
-            const selector = document.createElement('div');
-            selector.className = 'class-selector';
+
+            // Obsługa klasy podróży
+            const classOptions = document.querySelectorAll('.class-option');
             
             classOptions.forEach(option => {
-                const optionElement = document.createElement('div');
-                optionElement.className = 'class-option';
-                optionElement.dataset.value = option.value;
-                
-                optionElement.innerHTML = `
-                    <div class="class-name">${option.name}</div>
-                    <div class="class-price">${option.price}</div>
-                `;
-                
-                optionElement.addEventListener('click', function() {
-                    document.querySelectorAll('.class-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-                    this.classList.add('selected');
-                    document.getElementById('travelClass').value = this.dataset.value;
+                option.addEventListener('click', function() {
+                    classOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
                 });
-                
-                selector.appendChild(optionElement);
             });
             
-            // Domyślny wybór
-            selector.firstChild.classList.add('selected');
-            document.getElementById('travelClass').value = 'economy';
+            // Obsługa pasażerów
+            const passengerControls = {
+                adult: { plus: 'adultPlus', minus: 'adultMinus', count: 'adultCount', min: 1 },
+                teen: { plus: 'teenPlus', minus: 'teenMinus', count: 'teenCount', min: 0 },
+                child: { plus: 'childPlus', minus: 'childMinus', count: 'childCount', min: 0 },
+                infant: { plus: 'infantPlus', minus: 'infantMinus', count: 'infantCount', min: 0 }
+            };
             
-            container.appendChild(selector);
-        }
+            Object.keys(passengerControls).forEach(type => {
+                const config = passengerControls[type];
+                document.getElementById(config.plus).addEventListener('click', () => {
+                    const countElement = document.getElementById(config.count);
+                    countElement.textContent = parseInt(countElement.textContent) + 1;
+                });
+                
+                document.getElementById(config.minus).addEventListener('click', () => {
+                    const countElement = document.getElementById(config.count);
+                    let count = parseInt(countElement.textContent);
+                    if (count > config.min) {
+                        countElement.textContent = count - 1;
+                    }
+                });
+            });
+            
+            // Potwierdzenie klasy podróży
+            document.getElementById('confirmTravelClass').addEventListener('click', function() {
+                const selectedClass = document.querySelector('.class-option.active').dataset.class;
+                const classNames = {
+                    'economy': 'Economy',
+                    'premium': 'Premium Economy',
+                    'business': 'Business',
+                    'first': 'First Class'
+                };
+                
+                const adults = parseInt(document.getElementById('adultCount').textContent);
+                const teens = parseInt(document.getElementById('teenCount').textContent);
+                const children = parseInt(document.getElementById('childCount').textContent);
+                const infants = parseInt(document.getElementById('infantCount').textContent);
+                
+                let passengerText = `${classNames[selectedClass]} | `;
+                passengerText += adults > 0 ? `${adults} dorosły(ych)` : '';
+                passengerText += teens > 0 ? `${teens > 0 && adults > 0 ? ', ' : ''}${teens} nastolatek(ów)` : '';
+                passengerText += children > 0 ? `${(teens > 0 || adults > 0) ? ', ' : ''}${children} dziecko(ci)` : '';
+                passengerText += infants > 0 ? `${(children > 0 || teens > 0 || adults > 0) ? ', ' : ''}${infants} niemowlę(ąt)` : '';
+                
+                travelClassInput.textContent = passengerText;
+                document.getElementById('travelClass').value = selectedClass;
+                document.getElementById('passengers').value = JSON.stringify({
+                    class: selectedClass,
+                    adults: adults,
+                    teens: teens,
+                    children: children,
+                    infants: infants
+                });
+                
+                travelClassModal.style.display = 'none';
+            });
+        });
         
         // Funkcja generująca kalendarz na stronie wyników
         function generateCalendar(daysToShow = 30) {
@@ -915,16 +1024,6 @@
                         });
                         this.classList.add('flight-selected');
                         
-                        // Zapamiętanie wybranego lotu
-                        selectedOutboundFlight = {
-                            number: flight.number,
-                            from: from,
-                            to: to,
-                            departure: flight.departure,
-                            arrival: flight.arrival,
-                            price: flight.price
-                        };
-                        
                         // Jeśli to lot w obie strony, pokaż loty powrotne
                         if (tripType === 'roundtrip') {
                             showReturnFlights(to, from, $("#returnDate").val());
@@ -1000,9 +1099,6 @@
                             card.classList.remove('flight-selected');
                         });
                         this.classList.add('flight-selected');
-                        
-                        // Tutaj można dodać logikę finalizacji rezerwacji
-                        // z selectedOutboundFlight i wybranym lotem powrotnym
                     });
                     
                     returnSection.appendChild(flightCard);
