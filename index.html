@@ -466,51 +466,6 @@
             flex: 2;
         }
         
-        /* Seat selection */
-        .seat-selection {
-            margin-top: 20px;
-        }
-        
-        .seat-map {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .seat-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .seat {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        
-        .seat.selected {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-        
-        .seat.occupied {
-            background-color: #ddd;
-            cursor: not-allowed;
-        }
-        
-        .seat.aisle {
-            visibility: hidden;
-        }
-        
         /* Mobile specific styles */
         @media (max-width: 480px) {
             .container {
@@ -628,8 +583,8 @@
     </div>
 
     <!-- Modal klasy podróży -->
-    <div id="travelClassModal" class="modal">
-        <div class="modal-content">
+    <div id="travelClassModal" class="travel-class-modal">
+        <div class="travel-class-content">
             <span class="close">&times;</span>
             <h3>Klasa podróży i pasażerowie</h3>
             
@@ -1009,8 +964,9 @@
             
             closeBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
-                    airportModal.style.display = 'none';
-                    travelClassModal.style.display = 'none';
+                    if (this.closest('.modal')) {
+                        this.closest('.modal').style.display = 'none';
+                    }
                 });
             });
             
@@ -1382,91 +1338,10 @@
                         <div class="flight-details-label">Liczba miejsc:</div>
                         <div class="flight-details-value">${flightData.seats}</div>
                     </div>
-                    
-                    <div class="seat-selection">
-                        <div class="flight-details-title">Wybór miejsc</div>
-                        <div class="seat-map">
-                            <!-- Mapa miejsc będzie generowana dynamicznie w JavaScript -->
-                        </div>
-                    </div>
                 </div>
             `;
             
-            // Generowanie mapy miejsc
-            const seatMap = flightCard.querySelector('.seat-map');
-            generateSeatMap(seatMap, flightData.seats);
-            
             return flightCard;
-        }
-        
-        // Funkcja generująca mapę miejsc w samolocie
-        function generateSeatMap(container, totalSeats) {
-            // Symulacja układu miejsc w samolocie
-            const rows = Math.ceil(totalSeats / 6);
-            const occupiedSeats = Math.floor(Math.random() * totalSeats * 0.7); // 70% miejsc zajętych
-            
-            // Generowanie zajętych miejsc
-            const occupied = [];
-            for (let i = 0; i < occupiedSeats; i++) {
-                occupied.push(Math.floor(Math.random() * totalSeats) + 1;
-            }
-            
-            // Generowanie rzędów
-            for (let row = 1; row <= rows; row++) {
-                const seatRow = document.createElement('div');
-                seatRow.className = 'seat-row';
-                
-                // Lewa strona (miejsca A, B, C)
-                for (let seat = 0; seat < 3; seat++) {
-                    const seatNumber = (row - 1) * 6 + seat + 1;
-                    if (seatNumber > totalSeats) continue;
-                    
-                    const seatLetter = String.fromCharCode(65 + seat); // A, B, C
-                    const seatElement = document.createElement('div');
-                    seatElement.className = 'seat';
-                    seatElement.textContent = `${row}${seatLetter}`;
-                    seatElement.dataset.seat = `${row}${seatLetter}`;
-                    
-                    if (occupied.includes(seatNumber)) {
-                        seatElement.classList.add('occupied');
-                    } else {
-                        seatElement.addEventListener('click', function() {
-                            this.classList.toggle('selected');
-                        });
-                    }
-                    
-                    seatRow.appendChild(seatElement);
-                }
-                
-                // Przejście
-                const aisle = document.createElement('div');
-                aisle.className = 'seat aisle';
-                seatRow.appendChild(aisle);
-                
-                // Prawa strona (miejsca D, E, F)
-                for (let seat = 3; seat < 6; seat++) {
-                    const seatNumber = (row - 1) * 6 + seat + 1;
-                    if (seatNumber > totalSeats) continue;
-                    
-                    const seatLetter = String.fromCharCode(65 + seat); // D, E, F
-                    const seatElement = document.createElement('div');
-                    seatElement.className = 'seat';
-                    seatElement.textContent = `${row}${seatLetter}`;
-                    seatElement.dataset.seat = `${row}${seatLetter}`;
-                    
-                    if (occupied.includes(seatNumber)) {
-                        seatElement.classList.add('occupied');
-                    } else {
-                        seatElement.addEventListener('click', function() {
-                            this.classList.toggle('selected');
-                        });
-                    }
-                    
-                    seatRow.appendChild(seatElement);
-                }
-                
-                container.appendChild(seatRow);
-            }
         }
         
         // Funkcja pokazująca loty powrotne
