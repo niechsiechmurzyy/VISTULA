@@ -431,6 +431,86 @@
             background-color: var(--accent-color);
         }
         
+        /* Flight details */
+        .flight-details {
+            margin-top: 15px;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background-color: #f9f9f9;
+            border-radius: 0 0 8px 8px;
+            display: none;
+        }
+        
+        .flight-details.active {
+            display: block;
+        }
+        
+        .flight-details-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .flight-details-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .flight-details-label {
+            flex: 1;
+            color: #666;
+        }
+        
+        .flight-details-value {
+            flex: 2;
+        }
+        
+        /* Seat selection */
+        .seat-selection {
+            margin-top: 20px;
+        }
+        
+        .seat-map {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .seat-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .seat {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .seat.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .seat.occupied {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+        
+        .seat.aisle {
+            visibility: hidden;
+        }
+        
         /* Mobile specific styles */
         @media (max-width: 480px) {
             .container {
@@ -609,23 +689,148 @@
         const airports = {
             "Polska": [
                 { name: "Warszawa - Okęcie", code: "WAW", city: "Warszawa" },
-                { name: "Gdańsk - Rębiechowo", code: "GDN", city: "Gdańsk" }
+                { name: "Gdańsk - Rębiechowo", code: "GDN", city: "Gdańsk" },
+                { name: "Kraków - Balice", code: "KRK", city: "Kraków" },
+                { name: "Wrocław - Strachowice", code: "WRO", city: "Wrocław" },
+                { name: "Poznań - Ławica", code: "POZ", city: "Poznań" },
+                { name: "Katowice - Pyrzowice", code: "KTW", city: "Katowice" },
+                { name: "Łódź - Lublinek", code: "LCJ", city: "Łódź" },
+                { name: "Rzeszów - Jasionka", code: "RZE", city: "Rzeszów" },
+                { name: "Szczecin - Goleniów", code: "SZZ", city: "Szczecin" },
+                { name: "Bydgoszcz - Szwederowo", code: "BZG", city: "Bydgoszcz" },
+                { name: "Olsztyn-Mazury", code: "SZY", city: "Olsztyn" },
+                { name: "Zielona Góra - Babimost", code: "IEG", city: "Zielona Góra" }
             ]
         };
 
-        // Baza danych lotów (codzienne)
+        // Baza danych lotów
         const flightDatabase = {
+            // Bezpośrednie połączenia
             "Warszawa (WAW)-Gdańsk (GDN)": [
-                { number: "VA701", departure: "07:00", arrival: "08:00", price: "179 PLN" },
-                { number: "VA703", departure: "15:20", arrival: "16:20", price: "199 PLN" },
-                { number: "VA705", departure: "19:25", arrival: "20:25", price: "219 PLN" },
-                { number: "VA707", departure: "22:55", arrival: "23:55", price: "189 PLN" }
+                { 
+                    number: "VA701", 
+                    departure: "07:00", 
+                    arrival: "08:00", 
+                    price: "179 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                },
+                { 
+                    number: "VA703", 
+                    departure: "15:20", 
+                    arrival: "16:20", 
+                    price: "199 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                },
+                { 
+                    number: "VA705", 
+                    departure: "19:25", 
+                    arrival: "20:25", 
+                    price: "219 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                },
+                { 
+                    number: "VA707", 
+                    departure: "22:55", 
+                    arrival: "23:55", 
+                    price: "189 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                }
             ],
             "Gdańsk (GDN)-Warszawa (WAW)": [
-                { number: "VA702", departure: "06:00", arrival: "07:00", price: "169 PLN" },
-                { number: "VA704", departure: "08:45", arrival: "09:45", price: "179 PLN" },
-                { number: "VA706", departure: "17:05", arrival: "18:05", price: "199 PLN" },
-                { number: "VA708", departure: "21:10", arrival: "22:10", price: "189 PLN" }
+                { 
+                    number: "VA702", 
+                    departure: "06:00", 
+                    arrival: "07:00", 
+                    price: "169 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                },
+                { 
+                    number: "VA704", 
+                    departure: "08:45", 
+                    arrival: "09:45", 
+                    price: "179 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                },
+                { 
+                    number: "VA706", 
+                    departure: "17:05", 
+                    arrival: "18:05", 
+                    price: "199 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                },
+                { 
+                    number: "VA708", 
+                    departure: "21:10", 
+                    arrival: "22:10", 
+                    price: "189 PLN",
+                    aircraft: "Airbus A220-300",
+                    seats: 145,
+                    direct: true
+                }
+            ],
+            
+            // Połączenia z przesiadką w Warszawie
+            "Kraków (KRK)-Gdańsk (GDN)": [
+                { 
+                    number: "VA801 → VA701", 
+                    departure: "05:30", 
+                    arrival: "08:00", 
+                    price: "249 PLN",
+                    aircraft: "Embraer E175 → Airbus A220-300",
+                    seats: 88,
+                    direct: false,
+                    connection: "Warszawa (WAW)",
+                    connectionTime: "1h 10m"
+                },
+                { 
+                    number: "VA803 → VA705", 
+                    departure: "13:45", 
+                    arrival: "16:20", 
+                    price: "279 PLN",
+                    aircraft: "Embraer E175 → Airbus A220-300",
+                    seats: 88,
+                    direct: false,
+                    connection: "Warszawa (WAW)",
+                    connectionTime: "1h 20m"
+                }
+            ],
+            "Gdańsk (GDN)-Kraków (KRK)": [
+                { 
+                    number: "VA702 → VA802", 
+                    departure: "06:00", 
+                    arrival: "08:45", 
+                    price: "259 PLN",
+                    aircraft: "Airbus A220-300 → Embraer E175",
+                    seats: 88,
+                    direct: false,
+                    connection: "Warszawa (WAW)",
+                    connectionTime: "1h 15m"
+                },
+                { 
+                    number: "VA706 → VA806", 
+                    departure: "17:05", 
+                    arrival: "19:50", 
+                    price: "269 PLN",
+                    aircraft: "Airbus A220-300 → Embraer E175",
+                    seats: 88,
+                    direct: false,
+                    connection: "Warszawa (WAW)",
+                    connectionTime: "1h 10m"
+                }
             ]
         };
 
@@ -648,6 +853,7 @@
             let returnDate = null;
             let isRoundTrip = true;
             let selectedOutboundFlight = null;
+            let selectedReturnFlight = null;
 
             // Inicjalizacja kalendarza dla daty wylotu
             $("#departureDate").datepicker({
@@ -952,21 +1158,72 @@
                 
                 travelClassModal.style.display = 'none';
             });
+            
+            // Wyświetl listę lotnisk od razu po otwarciu modala
+            function showAirportModal() {
+                const modal = document.getElementById('airportModal');
+                const airportList = document.getElementById('airportList');
+                
+                // Wyczyść wyszukiwanie
+                document.getElementById('searchAirport').value = '';
+                
+                // Załaduj wszystkie lotniska
+                airportList.innerHTML = '';
+                
+                for (const country in airports) {
+                    const countryGroup = document.createElement('div');
+                    countryGroup.className = 'country-group';
+                    countryGroup.textContent = country;
+                    airportList.appendChild(countryGroup);
+                    
+                    airports[country].forEach(airport => {
+                        const airportItem = document.createElement('div');
+                        airportItem.className = 'airport-item';
+                        airportItem.innerHTML = `
+                            <div><strong>${airport.city}</strong> - ${airport.name}</div>
+                            <div class="airport-code">${airport.code}</div>
+                        `;
+                        
+                        airportItem.addEventListener('click', function() {
+                            const airportText = `${airport.city} - ${airport.name} (${airport.code})`;
+                            if (currentInput === 'from') {
+                                document.getElementById('fromInput').textContent = airportText;
+                                document.getElementById('from').value = airportText;
+                            } else if (currentInput === 'to') {
+                                document.getElementById('toInput').textContent = airportText;
+                                document.getElementById('to').value = airportText;
+                            }
+                            modal.style.display = 'none';
+                            currentInput = null; // Resetujemy wybór
+                        });
+                        
+                        airportList.appendChild(airportItem);
+                    });
+                }
+                
+                modal.style.display = 'block';
+            }
         });
         
         // Funkcja generująca kalendarz na stronie wyników
-        function generateCalendar(daysToShow = 30) {
+        function generateCalendar(daysToShow = 30, selectedDate) {
             const calendarContainer = document.createElement('div');
             calendarContainer.className = 'calendar-container';
             
             const today = new Date();
+            const selectedDateObj = selectedDate ? new Date(selectedDate.split('.').reverse().join('-')) : today;
+            
             for (let i = 0; i < daysToShow; i++) {
                 const date = new Date();
                 date.setDate(today.getDate() + i);
                 
                 const dayElement = document.createElement('div');
                 dayElement.className = 'calendar-day';
-                if (i === 0) dayElement.classList.add('active');
+                
+                // Sprawdź czy to wybrana data
+                if (date.toDateString() === selectedDateObj.toDateString()) {
+                    dayElement.classList.add('active');
+                }
                 
                 const dayName = date.toLocaleDateString('pl-PL', { weekday: 'short' });
                 const dayNumber = date.getDate();
@@ -990,6 +1247,15 @@
                     // Aktualizacja daty w formularzu
                     const formattedDate = `${dayNumber}.${date.getMonth()+1}.${date.getFullYear()}`;
                     $("#departureDate").val(formattedDate).datepicker("setDate", formattedDate);
+                    
+                    // Ponowne wyszukanie lotów dla nowej daty
+                    const from = document.getElementById('from').value;
+                    const to = document.getElementById('to').value;
+                    const tripType = document.querySelector('.trip-type-option.active').dataset.type;
+                    
+                    if (from && to) {
+                        showFlights(from, to, formattedDate, tripType);
+                    }
                 });
                 
                 calendarContainer.appendChild(dayElement);
@@ -1014,7 +1280,7 @@
             flightsContainer.innerHTML = '';
             
             // Dodaj kalendarz na górze
-            const calendar = generateCalendar();
+            const calendar = generateCalendar(30, date);
             flightsContainer.appendChild(calendar);
             
             // Formatowanie daty
@@ -1042,7 +1308,8 @@
                         from, to,
                         flight.departure, flight.arrival,
                         '1h 00m',
-                        flight.price
+                        flight.price,
+                        flight
                     );
                     
                     flightCard.addEventListener('click', function() {
@@ -1052,8 +1319,13 @@
                         });
                         this.classList.add('flight-selected');
                         
-                        // Jeśli to lot w obie strony, pokaż loty powrotne
+                        // Pokaż szczegóły lotu
+                        const details = this.querySelector('.flight-details');
+                        details.classList.toggle('active');
+                        
+                        // Jeśli to lot w obie strony, zapisz wybór i pokaż loty powrotne
                         if (tripType === 'roundtrip') {
+                            selectedOutboundFlight = flight;
                             showReturnFlights(to, from, $("#returnDate").val());
                         }
                     });
@@ -1066,19 +1338,24 @@
                         Niestety, nie znaleziono dostępnych lotów na wybraną trasę.
                         <br><br>
                         Obsługiwane połączenia:<br>
-                        <strong>Warszawa (WAW) ↔ Gdańsk (GDN)</strong>
+                        <strong>Warszawa (WAW) ↔ Gdańsk (GDN)</strong><br>
+                        <strong>Kraków (KRK) ↔ Gdańsk (GDN)</strong> (z przesiadką w Warszawie)
                     </div>
                 `;
             }
         }
         
         // Funkcja tworząca kartę lotu
-        function createFlightCard(flightNumber, from, to, departureTime, arrivalTime, duration, price) {
+        function createFlightCard(flightNumber, from, to, departureTime, arrivalTime, duration, price, flightData) {
             const flightCard = document.createElement('div');
             flightCard.className = 'flight-card';
+            
+            const fromCity = from.split(' (')[0];
+            const toCity = to.split(' (')[0];
+            
             flightCard.innerHTML = `
                 <div class="flight-info">
-                    <div class="flight-route">${from.split(' (')[0]} → ${to.split(' (')[0]}</div>
+                    <div class="flight-route">${fromCity} → ${toCity}</div>
                     <div class="flight-number">${flightNumber}</div>
                 </div>
                 <div class="flight-time">
@@ -1089,9 +1366,107 @@
                     ${price}
                     <button class="btn" style="margin-top: 10px; padding: 8px 16px;">Wybierz</button>
                 </div>
+                <div class="flight-details">
+                    <div class="flight-details-title">Szczegóły lotu</div>
+                    <div class="flight-details-row">
+                        <div class="flight-details-label">Model samolotu:</div>
+                        <div class="flight-details-value">${flightData.aircraft}</div>
+                    </div>
+                    ${flightData.direct ? '' : `
+                    <div class="flight-details-row">
+                        <div class="flight-details-label">Przesiadka w:</div>
+                        <div class="flight-details-value">${flightData.connection} (${flightData.connectionTime})</div>
+                    </div>
+                    `}
+                    <div class="flight-details-row">
+                        <div class="flight-details-label">Liczba miejsc:</div>
+                        <div class="flight-details-value">${flightData.seats}</div>
+                    </div>
+                    
+                    <div class="seat-selection">
+                        <div class="flight-details-title">Wybór miejsc</div>
+                        <div class="seat-map">
+                            <!-- Mapa miejsc będzie generowana dynamicznie w JavaScript -->
+                        </div>
+                    </div>
+                </div>
             `;
             
+            // Generowanie mapy miejsc
+            const seatMap = flightCard.querySelector('.seat-map');
+            generateSeatMap(seatMap, flightData.seats);
+            
             return flightCard;
+        }
+        
+        // Funkcja generująca mapę miejsc w samolocie
+        function generateSeatMap(container, totalSeats) {
+            // Symulacja układu miejsc w samolocie
+            const rows = Math.ceil(totalSeats / 6);
+            const occupiedSeats = Math.floor(Math.random() * totalSeats * 0.7); // 70% miejsc zajętych
+            
+            // Generowanie zajętych miejsc
+            const occupied = [];
+            for (let i = 0; i < occupiedSeats; i++) {
+                occupied.push(Math.floor(Math.random() * totalSeats) + 1;
+            }
+            
+            // Generowanie rzędów
+            for (let row = 1; row <= rows; row++) {
+                const seatRow = document.createElement('div');
+                seatRow.className = 'seat-row';
+                
+                // Lewa strona (miejsca A, B, C)
+                for (let seat = 0; seat < 3; seat++) {
+                    const seatNumber = (row - 1) * 6 + seat + 1;
+                    if (seatNumber > totalSeats) continue;
+                    
+                    const seatLetter = String.fromCharCode(65 + seat); // A, B, C
+                    const seatElement = document.createElement('div');
+                    seatElement.className = 'seat';
+                    seatElement.textContent = `${row}${seatLetter}`;
+                    seatElement.dataset.seat = `${row}${seatLetter}`;
+                    
+                    if (occupied.includes(seatNumber)) {
+                        seatElement.classList.add('occupied');
+                    } else {
+                        seatElement.addEventListener('click', function() {
+                            this.classList.toggle('selected');
+                        });
+                    }
+                    
+                    seatRow.appendChild(seatElement);
+                }
+                
+                // Przejście
+                const aisle = document.createElement('div');
+                aisle.className = 'seat aisle';
+                seatRow.appendChild(aisle);
+                
+                // Prawa strona (miejsca D, E, F)
+                for (let seat = 3; seat < 6; seat++) {
+                    const seatNumber = (row - 1) * 6 + seat + 1;
+                    if (seatNumber > totalSeats) continue;
+                    
+                    const seatLetter = String.fromCharCode(65 + seat); // D, E, F
+                    const seatElement = document.createElement('div');
+                    seatElement.className = 'seat';
+                    seatElement.textContent = `${row}${seatLetter}`;
+                    seatElement.dataset.seat = `${row}${seatLetter}`;
+                    
+                    if (occupied.includes(seatNumber)) {
+                        seatElement.classList.add('occupied');
+                    } else {
+                        seatElement.addEventListener('click', function() {
+                            this.classList.toggle('selected');
+                        });
+                    }
+                    
+                    seatRow.appendChild(seatElement);
+                }
+                
+                container.appendChild(seatRow);
+            }
         }
         
         // Funkcja pokazująca loty powrotne
@@ -1119,7 +1494,8 @@
                         from, to,
                         flight.departure, flight.arrival,
                         '1h 00m',
-                        flight.price
+                        flight.price,
+                        flight
                     );
                     
                     flightCard.addEventListener('click', function() {
@@ -1127,6 +1503,13 @@
                             card.classList.remove('flight-selected');
                         });
                         this.classList.add('flight-selected');
+                        
+                        // Pokaż szczegóły lotu
+                        const details = this.querySelector('.flight-details');
+                        details.classList.toggle('active');
+                        
+                        // Zapisz wybrany lot powrotny
+                        selectedReturnFlight = flight;
                     });
                     
                     returnSection.appendChild(flightCard);
@@ -1139,51 +1522,6 @@
             }
             
             document.getElementById('flightsContainer').appendChild(returnSection);
-        }
-        
-        // Funkcja pokazująca modal z lotniskami
-        function showAirportModal() {
-            const modal = document.getElementById('airportModal');
-            const airportList = document.getElementById('airportList');
-            
-            // Wyczyść wyszukiwanie
-            document.getElementById('searchAirport').value = '';
-            
-            // Załaduj wszystkie lotniska
-            airportList.innerHTML = '';
-            
-            for (const country in airports) {
-                const countryGroup = document.createElement('div');
-                countryGroup.className = 'country-group';
-                countryGroup.textContent = country;
-                airportList.appendChild(countryGroup);
-                
-                airports[country].forEach(airport => {
-                    const airportItem = document.createElement('div');
-                    airportItem.className = 'airport-item';
-                    airportItem.innerHTML = `
-                        <div><strong>${airport.city}</strong> - ${airport.name}</div>
-                        <div class="airport-code">${airport.code}</div>
-                    `;
-                    
-                    airportItem.addEventListener('click', function() {
-                        const airportText = `${airport.city} - ${airport.name} (${airport.code})`;
-                        if (currentInput === 'from') {
-                            document.getElementById('fromInput').textContent = airportText;
-                            document.getElementById('from').value = airportText;
-                        } else if (currentInput === 'to') {
-                            document.getElementById('toInput').textContent = airportText;
-                            document.getElementById('to').value = airportText;
-                        }
-                        modal.style.display = 'none';
-                        currentInput = null; // Resetujemy wybór
-                    });
-                    
-                    airportList.appendChild(airportItem);
-                });
-            }
-            
-            modal.style.display = 'block';
         }
     </script>
 </body>
