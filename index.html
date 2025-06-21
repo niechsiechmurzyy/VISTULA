@@ -20,7 +20,7 @@
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             color: var(--text-color);
             background-color: var(--light-gray);
         }
@@ -28,76 +28,76 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
         
         .search-box, .results-box {
             background-color: white;
             border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         
         .search-title, .results-title {
             color: var(--primary-color);
             margin-top: 0;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: center;
+            font-size: 1.5rem;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             font-weight: bold;
             color: var(--primary-color);
+            font-size: 0.9rem;
         }
         
         input, select, .airport-input, .travel-class-input, .date-input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 14px;
             box-sizing: border-box;
             cursor: pointer;
         }
         
         .row {
             display: flex;
-            gap: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .col {
             flex: 1;
+            min-width: 0;
         }
         
         .btn {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 15px;
+            font-size: 14px;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
             display: inline-block;
             text-align: center;
             text-decoration: none;
+            width: 100%;
         }
         
         .btn:hover {
             background-color: #005580;
-        }
-        
-        .btn-block {
-            display: block;
-            width: 100%;
         }
         
         .error-message {
@@ -105,56 +105,69 @@
             text-align: center;
             margin-top: 10px;
             display: none;
+            font-size: 0.9rem;
         }
         
         .flight-card {
             border: 1px solid #ddd;
             border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             transition: all 0.3s;
         }
         
-        .flight-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        @media (min-width: 768px) {
+            .flight-card {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
         }
         
         .flight-info {
             flex: 2;
+            margin-bottom: 10px;
         }
         
         .flight-time {
             flex: 1;
             text-align: center;
+            margin-bottom: 10px;
         }
         
         .flight-price {
             flex: 1;
-            text-align: right;
-            font-size: 1.5em;
+            text-align: center;
+            font-size: 1.2rem;
             font-weight: bold;
             color: var(--primary-color);
         }
         
+        @media (min-width: 768px) {
+            .flight-price {
+                text-align: right;
+            }
+        }
+        
         .flight-route {
-            font-size: 1.2em;
+            font-size: 1.1rem;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         
         .flight-date {
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
         }
         
         .flight-number {
             background-color: var(--accent-color);
-            padding: 3px 8px;
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.9em;
+            font-size: 0.8rem;
             display: inline-block;
         }
         
@@ -164,38 +177,42 @@
         
         .no-flights-message {
             text-align: center;
-            padding: 30px;
+            padding: 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            margin-top: 20px;
+            margin-top: 15px;
             background-color: #f9f9f9;
+            font-size: 0.9rem;
         }
         
         .same-airport-warning {
             color: #d9534f;
             text-align: center;
             font-weight: bold;
-            margin-top: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
         }
         
         /* Nowoczesny kalendarz */
         .calendar-container {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .calendar-day {
-            min-width: 80px;
-            padding: 10px;
-            border-radius: 8px;
+            min-width: 70px;
+            padding: 8px;
+            border-radius: 6px;
             text-align: center;
             cursor: pointer;
             border: 1px solid var(--medium-gray);
             background-color: white;
             transition: all 0.3s;
+            flex-shrink: 0;
         }
         
         .calendar-day:hover {
@@ -215,25 +232,25 @@
         }
         
         .calendar-day .day-name {
-            font-size: 0.8em;
+            font-size: 0.7rem;
             color: inherit;
         }
         
         .calendar-day .day-number {
-            font-size: 1.2em;
+            font-size: 1rem;
             font-weight: bold;
-            margin: 5px 0;
+            margin: 3px 0;
         }
         
         .calendar-day .day-price {
-            font-size: 0.9em;
+            font-size: 0.8rem;
             color: inherit;
         }
         
         /* Styl dla wyników lotów powrotnych */
         .return-flights-section {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 30px;
+            padding-top: 15px;
             border-top: 1px solid var(--medium-gray);
         }
         
@@ -252,15 +269,17 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .modal-content {
             background-color: white;
             margin: 10% auto;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             width: 90%;
-            max-width: 600px;
+            max-width: 500px;
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -268,7 +287,7 @@
         .close {
             color: #aaa;
             float: right;
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             cursor: pointer;
         }
@@ -279,17 +298,19 @@
         
         .country-group {
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 10px;
             color: var(--primary-color);
             padding-bottom: 5px;
             border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
         }
         
         .airport-item {
-            padding: 10px;
+            padding: 8px;
             cursor: pointer;
             border-radius: 4px;
-            margin: 5px 0;
+            margin: 3px 0;
+            font-size: 0.9rem;
         }
         
         .airport-item:hover {
@@ -299,20 +320,22 @@
         .airport-code {
             font-weight: bold;
             color: var(--primary-color);
+            font-size: 0.8rem;
         }
         
         .search-airport {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 8px;
+            margin-bottom: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 14px;
         }
         
         /* Trip type styles */
         .trip-type {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border: 1px solid var(--primary-color);
             border-radius: 4px;
             overflow: hidden;
@@ -320,10 +343,11 @@
         
         .trip-type-option {
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
         
         .trip-type-option:not(:last-child) {
@@ -345,57 +369,61 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
         }
         
         .travel-class-content {
             background-color: white;
             margin: 10% auto;
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             width: 90%;
-            max-width: 500px;
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .passenger-type {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
         }
         
         .passenger-controls {
             display: flex;
             align-items: center;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         
         .passenger-controls button {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border: 1px solid #ddd;
             background-color: white;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
         }
         
         .passenger-count {
-            margin: 0 15px;
+            margin: 0 10px;
             min-width: 20px;
             text-align: center;
         }
         
         .class-options {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
             flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
         }
         
         .class-option {
-            flex: 1;
-            min-width: 100px;
+            flex: 1 0 calc(50% - 8px);
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             text-align: center;
             cursor: pointer;
+            font-size: 0.9rem;
         }
         
         .class-option.active {
@@ -403,33 +431,32 @@
             background-color: var(--accent-color);
         }
         
-        @media (max-width: 768px) {
-            .row {
-                flex-direction: column;
+        /* Mobile specific styles */
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
             }
             
-            .flight-card {
-                flex-direction: column;
-                text-align: center;
+            .search-box, .results-box {
+                padding: 10px;
             }
             
-            .flight-info, .flight-time, .flight-price {
-                margin-bottom: 15px;
-                text-align: center;
-                width: 100%;
+            .search-title, .results-title {
+                font-size: 1.3rem;
+                margin-bottom: 10px;
             }
             
-            .modal-content {
-                margin: 20% auto;
-                width: 95%;
-            }
-            
-            .class-options {
-                flex-direction: column;
+            .col {
+                flex: 100%;
             }
             
             .class-option {
-                width: 100%;
+                flex: 100%;
+            }
+            
+            .modal-content {
+                margin: 5% auto;
+                width: 95%;
             }
         }
     </style>
@@ -498,7 +525,7 @@
                     Obecnie obsługujemy tylko połączenia Warszawa-Gdańsk i Gdańsk-Warszawa
                 </div>
                 
-                <button type="submit" class="btn btn-block">Szukaj lotów</button>
+                <button type="submit" class="btn">Szukaj lotów</button>
             </form>
         </div>
         
@@ -506,7 +533,7 @@
         <div id="resultsSection" class="results-box hidden">
             <h2 class="results-title">Dostępne loty</h2>
             <div id="flightsContainer"></div>
-            <a href="#" class="btn btn-block" id="backButton">Powrót do wyszukiwania</a>
+            <a href="#" class="btn" id="backButton">Powrót do wyszukiwania</a>
         </div>
     </div>
 
@@ -569,7 +596,7 @@
                 </div>
             </div>
             
-            <button id="confirmTravelClass" class="btn btn-block">Potwierdź</button>
+            <button id="confirmTravelClass" class="btn">Potwierdź</button>
         </div>
     </div>
 
@@ -826,6 +853,7 @@
                                     document.getElementById('to').value = airportText;
                                 }
                                 airportModal.style.display = 'none';
+                                currentInput = null; // Resetujemy wybór
                             });
                             
                             airportList.appendChild(airportItem);
@@ -1148,6 +1176,7 @@
                             document.getElementById('to').value = airportText;
                         }
                         modal.style.display = 'none';
+                        currentInput = null; // Resetujemy wybór
                     });
                     
                     airportList.appendChild(airportItem);
