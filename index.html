@@ -466,6 +466,45 @@
             flex: 2;
         }
         
+        /* Details modal */
+        .details-modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .details-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+        
+        .details-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .details-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .details-close:hover {
+            color: black;
+        }
+        
         /* Mobile specific styles */
         @media (max-width: 480px) {
             .container {
@@ -564,11 +603,18 @@
             </form>
         </div>
         
-        <!-- Wyniki wyszukiwania -->
-        <div id="resultsSection" class="results-box hidden">
-            <h2 class="results-title">Dostępne loty</h2>
-            <div id="flightsContainer"></div>
-            <a href="#" class="btn" id="backButton">Powrót do wyszukiwania</a>
+        <!-- Wyniki wyszukiwania - loty wylotowe -->
+        <div id="outboundResults" class="results-box hidden">
+            <h2 class="results-title">Dostępne loty - wylot</h2>
+            <div id="outboundFlightsContainer"></div>
+            <a href="#" class="btn" id="backToSearchButton">Powrót do wyszukiwania</a>
+        </div>
+        
+        <!-- Wyniki wyszukiwania - loty powrotne -->
+        <div id="returnResults" class="results-box hidden">
+            <h2 class="results-title">Dostępne loty - powrót</h2>
+            <div id="returnFlightsContainer"></div>
+            <a href="#" class="btn" id="backToOutboundButton">Powrót do wyboru lotu wylotowego</a>
         </div>
     </div>
 
@@ -635,6 +681,15 @@
         </div>
     </div>
 
+    <!-- Modal szczegółów lotu -->
+    <div id="detailsModal" class="details-modal">
+        <div class="details-content">
+            <span class="details-close">&times;</span>
+            <h3 class="details-title">Szczegóły lotu</h3>
+            <div id="detailsContent"></div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/i18n/jquery-ui-i18n.min.js"></script>
@@ -668,7 +723,7 @@
                     arrival: "08:00", 
                     price: "179 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 },
                 { 
@@ -677,7 +732,7 @@
                     arrival: "16:20", 
                     price: "199 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 },
                 { 
@@ -686,7 +741,7 @@
                     arrival: "20:25", 
                     price: "219 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 },
                 { 
@@ -695,7 +750,7 @@
                     arrival: "23:55", 
                     price: "189 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 }
             ],
@@ -706,7 +761,7 @@
                     arrival: "07:00", 
                     price: "169 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 },
                 { 
@@ -715,7 +770,7 @@
                     arrival: "09:45", 
                     price: "179 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 },
                 { 
@@ -724,7 +779,7 @@
                     arrival: "18:05", 
                     price: "199 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 },
                 { 
@@ -733,7 +788,7 @@
                     arrival: "22:10", 
                     price: "189 PLN",
                     aircraft: "Airbus A220-300",
-                    seats: 145,
+                    seats: 150,
                     direct: true
                 }
             ],
@@ -809,6 +864,7 @@
             let isRoundTrip = true;
             let selectedOutboundFlight = null;
             let selectedReturnFlight = null;
+            let searchParams = {};
 
             // Inicjalizacja kalendarza dla daty wylotu
             $("#departureDate").datepicker({
@@ -927,15 +983,31 @@
                 
                 errorMessage.style.display = 'none';
                 
-                // Wyświetl wyniki
-                showFlights(from, to, departureDate, tripType);
+                // Zapisz parametry wyszukiwania
+                searchParams = {
+                    from: from,
+                    to: to,
+                    departureDate: departureDate,
+                    returnDate: returnDate,
+                    tripType: tripType
+                };
+                
+                // Wyświetl wyniki wylotowe
+                showOutboundFlights();
             });
             
-            // Przycisk powrotu
-            document.getElementById('backButton').addEventListener('click', function(e) {
+            // Przycisk powrotu do wyszukiwania
+            document.getElementById('backToSearchButton').addEventListener('click', function(e) {
                 e.preventDefault();
                 document.getElementById('searchSection').classList.remove('hidden');
-                document.getElementById('resultsSection').classList.add('hidden');
+                document.getElementById('outboundResults').classList.add('hidden');
+            });
+            
+            // Przycisk powrotu do lotów wylotowych
+            document.getElementById('backToOutboundButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('outboundResults').classList.remove('hidden');
+                document.getElementById('returnResults').classList.add('hidden');
             });
             
             // Obsługa modalnego okna lotnisk
@@ -945,6 +1017,8 @@
             const toInput = document.getElementById('toInput');
             const travelClassInput = document.getElementById('travelClassInput');
             const travelClassModal = document.getElementById('travelClassModal');
+            const detailsModal = document.getElementById('detailsModal');
+            const detailsClose = document.querySelector('.details-close');
             
             fromInput.addEventListener('click', function() {
                 currentInput = 'from';
@@ -970,10 +1044,15 @@
                 });
             });
             
+            detailsClose.addEventListener('click', function() {
+                detailsModal.style.display = 'none';
+            });
+            
             window.addEventListener('click', function(event) {
-                if (event.target === airportModal || event.target === travelClassModal) {
+                if (event.target === airportModal || event.target === travelClassModal || event.target === detailsModal) {
                     airportModal.style.display = 'none';
                     travelClassModal.style.display = 'none';
+                    detailsModal.style.display = 'none';
                 }
             });
             
@@ -1159,6 +1238,33 @@
                 
                 modal.style.display = 'block';
             }
+            
+            // Funkcja wyświetlająca szczegóły lotu
+            function showFlightDetails(flight) {
+                const detailsContent = document.getElementById('detailsContent');
+                detailsContent.innerHTML = `
+                    <div class="flight-details-row">
+                        <div class="flight-details-label">Numer lotu:</div>
+                        <div class="flight-details-value">${flight.number}</div>
+                    </div>
+                    <div class="flight-details-row">
+                        <div class="flight-details-label">Model samolotu:</div>
+                        <div class="flight-details-value">${flight.aircraft}</div>
+                    </div>
+                    <div class="flight-details-row">
+                        <div class="flight-details-label">Liczba miejsc:</div>
+                        <div class="flight-details-value">${flight.seats}</div>
+                    </div>
+                    ${flight.direct ? '' : `
+                    <div class="flight-details-row">
+                        <div class="flight-details-label">Przesiadka w:</div>
+                        <div class="flight-details-value">${flight.connection} (${flight.connectionTime})</div>
+                    </div>
+                    `}
+                `;
+                
+                document.getElementById('detailsModal').style.display = 'block';
+            }
         });
         
         // Funkcja generująca kalendarz na stronie wyników
@@ -1220,8 +1326,13 @@
             return calendarContainer;
         }
         
-        // Funkcja wyświetlająca loty
-        function showFlights(from, to, date, tripType) {
+        // Funkcja wyświetlająca loty wylotowe
+        function showOutboundFlights() {
+            const from = searchParams.from;
+            const to = searchParams.to;
+            const date = searchParams.departureDate;
+            const tripType = searchParams.tripType;
+            
             // Normalizuj nazwy lotnisk
             const normalizedFrom = normalizeAirport(from);
             const normalizedTo = normalizeAirport(to);
@@ -1229,10 +1340,11 @@
             
             // Ukryj formularz, pokaż wyniki
             document.getElementById('searchSection').classList.add('hidden');
-            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('outboundResults').classList.remove('hidden');
+            document.getElementById('returnResults').classList.add('hidden');
             
             // Wyczyść poprzednie wyniki
-            const flightsContainer = document.getElementById('flightsContainer');
+            const flightsContainer = document.getElementById('outboundFlightsContainer');
             flightsContainer.innerHTML = '';
             
             // Dodaj kalendarz na górze
@@ -1268,22 +1380,28 @@
                         flight
                     );
                     
-                    flightCard.addEventListener('click', function() {
-                        // Oznaczenie wybranego lotu
-                        document.querySelectorAll('.flight-card').forEach(card => {
-                            card.classList.remove('flight-selected');
-                        });
-                        this.classList.add('flight-selected');
+                    // Przycisk "Wybierz"
+                    const selectButton = flightCard.querySelector('.btn');
+                    selectButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
                         
-                        // Pokaż szczegóły lotu
-                        const details = this.querySelector('.flight-details');
-                        details.classList.toggle('active');
+                        // Zapisz wybrany lot wylotowy
+                        selectedOutboundFlight = flight;
                         
-                        // Jeśli to lot w obie strony, zapisz wybór i pokaż loty powrotne
+                        // Jeśli to lot w obie strony, pokaż loty powrotne
                         if (tripType === 'roundtrip') {
-                            selectedOutboundFlight = flight;
-                            showReturnFlights(to, from, $("#returnDate").val());
+                            showReturnFlights();
+                        } else {
+                            // Jeśli to lot w jedną stronę, przejdź do podsumowania
+                            showSummary();
                         }
+                    });
+                    
+                    // Przycisk "Zobacz szczegóły"
+                    const detailsButton = flightCard.querySelector('.details-btn');
+                    detailsButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        showFlightDetails(flight);
                     });
                     
                     flightsContainer.appendChild(flightCard);
@@ -1296,6 +1414,84 @@
                         Obsługiwane połączenia:<br>
                         <strong>Warszawa (WAW) ↔ Gdańsk (GDN)</strong><br>
                         <strong>Kraków (KRK) ↔ Gdańsk (GDN)</strong> (z przesiadką w Warszawie)
+                    </div>
+                `;
+            }
+        }
+        
+        // Funkcja wyświetlająca loty powrotne
+        function showReturnFlights() {
+            const from = searchParams.to; // Odwrócone lotniska
+            const to = searchParams.from;
+            const date = searchParams.returnDate;
+            
+            // Normalizuj nazwy lotnisk
+            const normalizedFrom = normalizeAirport(from);
+            const normalizedTo = normalizeAirport(to);
+            const routeKey = `${normalizedFrom}-${normalizedTo}`;
+            
+            // Pokaż wyniki powrotne, ukryj wylotowe
+            document.getElementById('outboundResults').classList.add('hidden');
+            document.getElementById('returnResults').classList.remove('hidden');
+            
+            // Wyczyść poprzednie wyniki
+            const flightsContainer = document.getElementById('returnFlightsContainer');
+            flightsContainer.innerHTML = '';
+            
+            // Formatowanie daty
+            const returnDate = new Date(date.split('.').reverse().join('-'));
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = returnDate.toLocaleDateString('pl-PL', options);
+            
+            // Dodaj nagłówek z informacjami o wyszukiwaniu
+            const searchInfo = document.createElement('div');
+            searchInfo.className = 'search-info';
+            searchInfo.innerHTML = `
+                <h3>${from.split(' (')[0]} → ${to.split(' (')[0]}</h3>
+                <p class="flight-date">${formattedDate}</p>
+            `;
+            flightsContainer.appendChild(searchInfo);
+            
+            // Znajdź loty dla trasy
+            const flights = flightDatabase[routeKey] || [];
+            
+            // Wyświetl dostępne loty
+            if (flights.length > 0) {
+                flights.forEach(flight => {
+                    const flightCard = createFlightCard(
+                        flight.number,
+                        from, to,
+                        flight.departure, flight.arrival,
+                        '1h 00m',
+                        flight.price,
+                        flight
+                    );
+                    
+                    // Przycisk "Wybierz"
+                    const selectButton = flightCard.querySelector('.btn');
+                    selectButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        
+                        // Zapisz wybrany lot powrotny
+                        selectedReturnFlight = flight;
+                        
+                        // Przejdź do podsumowania
+                        showSummary();
+                    });
+                    
+                    // Przycisk "Zobacz szczegóły"
+                    const detailsButton = flightCard.querySelector('.details-btn');
+                    detailsButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        showFlightDetails(flight);
+                    });
+                    
+                    flightsContainer.appendChild(flightCard);
+                });
+            } else {
+                flightsContainer.innerHTML += `
+                    <div class="no-flights-message">
+                        Niestety, nie znaleziono dostępnych lotów powrotnych na wybraną datę.
                     </div>
                 `;
             }
@@ -1321,82 +1517,18 @@
                 <div class="flight-price">
                     ${price}
                     <button class="btn" style="margin-top: 10px; padding: 8px 16px;">Wybierz</button>
-                </div>
-                <div class="flight-details">
-                    <div class="flight-details-title">Szczegóły lotu</div>
-                    <div class="flight-details-row">
-                        <div class="flight-details-label">Model samolotu:</div>
-                        <div class="flight-details-value">${flightData.aircraft}</div>
-                    </div>
-                    ${flightData.direct ? '' : `
-                    <div class="flight-details-row">
-                        <div class="flight-details-label">Przesiadka w:</div>
-                        <div class="flight-details-value">${flightData.connection} (${flightData.connectionTime})</div>
-                    </div>
-                    `}
-                    <div class="flight-details-row">
-                        <div class="flight-details-label">Liczba miejsc:</div>
-                        <div class="flight-details-value">${flightData.seats}</div>
-                    </div>
+                    <button class="btn" style="margin-top: 10px; padding: 8px 16px; background-color: var(--secondary-color);" class="details-btn">Zobacz szczegóły</button>
                 </div>
             `;
             
             return flightCard;
         }
         
-        // Funkcja pokazująca loty powrotne
-        function showReturnFlights(from, to, date) {
-            // Usuń poprzednią sekcję lotów powrotnych jeśli istnieje
-            const existingSection = document.querySelector('.return-flights-section');
-            if (existingSection) existingSection.remove();
-            
-            const returnSection = document.createElement('div');
-            returnSection.className = 'return-flights-section';
-            
-            const title = document.createElement('h3');
-            title.textContent = 'Wybierz lot powrotny';
-            returnSection.appendChild(title);
-            
-            const normalizedFrom = normalizeAirport(from);
-            const normalizedTo = normalizeAirport(to);
-            const returnKey = `${normalizedFrom}-${normalizedTo}`;
-            const returnFlights = flightDatabase[returnKey] || [];
-            
-            if (returnFlights.length > 0) {
-                returnFlights.forEach(flight => {
-                    const flightCard = createFlightCard(
-                        flight.number,
-                        from, to,
-                        flight.departure, flight.arrival,
-                        '1h 00m',
-                        flight.price,
-                        flight
-                    );
-                    
-                    flightCard.addEventListener('click', function() {
-                        document.querySelectorAll('.return-flights-section .flight-card').forEach(card => {
-                            card.classList.remove('flight-selected');
-                        });
-                        this.classList.add('flight-selected');
-                        
-                        // Pokaż szczegóły lotu
-                        const details = this.querySelector('.flight-details');
-                        details.classList.toggle('active');
-                        
-                        // Zapisz wybrany lot powrotny
-                        selectedReturnFlight = flight;
-                    });
-                    
-                    returnSection.appendChild(flightCard);
-                });
-            } else {
-                const noFlights = document.createElement('div');
-                noFlights.className = 'no-flights-message';
-                noFlights.textContent = 'Brak dostępnych lotów powrotnych na wybraną datę.';
-                returnSection.appendChild(noFlights);
-            }
-            
-            document.getElementById('flightsContainer').appendChild(returnSection);
+        // Funkcja wyświetlająca podsumowanie rezerwacji
+        function showSummary() {
+            // Tutaj można dodać kod do wyświetlenia podsumowania rezerwacji
+            alert('Podsumowanie rezerwacji:\n\nLot wylotowy: ' + selectedOutboundFlight.number + 
+                  (selectedReturnFlight ? '\nLot powrotny: ' + selectedReturnFlight.number : ''));
         }
     </script>
 </body>
